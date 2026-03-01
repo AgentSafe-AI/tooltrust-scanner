@@ -1,9 +1,9 @@
 # AgentSafe
 
-[![CI](https://github.com/brian93512/agentsafe/actions/workflows/ci.yml/badge.svg)](https://github.com/brian93512/agentsafe/actions/workflows/ci.yml)
-[![Security](https://github.com/brian93512/agentsafe/actions/workflows/security.yml/badge.svg)](https://github.com/brian93512/agentsafe/actions/workflows/security.yml)
-[![codecov](https://codecov.io/gh/brian93512/agentsafe/branch/main/graph/badge.svg)](https://codecov.io/gh/brian93512/agentsafe)
-[![Go Report Card](https://goreportcard.com/badge/github.com/brian93512/agentsafe?v=2)](https://goreportcard.com/report/github.com/brian93512/agentsafe)
+[![CI](https://github.com/AgentSafe-AI/agentsafe/actions/workflows/ci.yml/badge.svg)](https://github.com/AgentSafe-AI/agentsafe/actions/workflows/ci.yml)
+[![Security](https://github.com/AgentSafe-AI/agentsafe/actions/workflows/security.yml/badge.svg)](https://github.com/AgentSafe-AI/agentsafe/actions/workflows/security.yml)
+[![codecov](https://codecov.io/gh/AgentSafe-AI/agentsafe/branch/main/graph/badge.svg)](https://codecov.io/gh/AgentSafe-AI/agentsafe)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AgentSafe-AI/agentsafe?v=2)](https://goreportcard.com/report/github.com/AgentSafe-AI/agentsafe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.24-00ADD8.svg)](go.mod)
 
@@ -84,22 +84,22 @@ agentsafe/
 
 ```bash
 # macOS (Apple Silicon)
-curl -L https://github.com/brian93512/agentsafe/releases/latest/download/agentsafe_darwin_arm64 \
+curl -L https://github.com/AgentSafe-AI/agentsafe/releases/latest/download/agentsafe_darwin_arm64 \
   -o /usr/local/bin/agentsafe && chmod +x /usr/local/bin/agentsafe
 
 # macOS (Intel)
-curl -L https://github.com/brian93512/agentsafe/releases/latest/download/agentsafe_darwin_amd64 \
+curl -L https://github.com/AgentSafe-AI/agentsafe/releases/latest/download/agentsafe_darwin_amd64 \
   -o /usr/local/bin/agentsafe && chmod +x /usr/local/bin/agentsafe
 
 # Linux (amd64)
-curl -L https://github.com/brian93512/agentsafe/releases/latest/download/agentsafe_linux_amd64 \
+curl -L https://github.com/AgentSafe-AI/agentsafe/releases/latest/download/agentsafe_linux_amd64 \
   -o /usr/local/bin/agentsafe && chmod +x /usr/local/bin/agentsafe
 ```
 
 ### Build from source
 
 ```bash
-git clone https://github.com/brian93512/agentsafe.git
+git clone https://github.com/AgentSafe-AI/agentsafe.git
 cd agentsafe
 make build          # binaries in dist/
 ```
@@ -143,7 +143,7 @@ agentsafe-mcp
 ```bash
 docker run --rm \
   -v $(pwd)/tools.json:/tools.json \
-  ghcr.io/brian93512/agentsafe:latest \
+  ghcr.io/AgentSafe-AI/agentsafe:latest \
   scan --protocol mcp --input /tools.json
 ```
 

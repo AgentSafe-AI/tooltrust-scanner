@@ -45,5 +45,5 @@ CMD ["--help"]
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="AgentSafe"
 LABEL org.opencontainers.image.description="AI Agent Tool Security Scanner"
-LABEL org.opencontainers.image.source="https://github.com/brian93512/agentsafe"
+LABEL org.opencontainers.image.source="https://github.com/AgentSafe-AI/agentsafe"
 LABEL org.opencontainers.image.licenses="MIT"

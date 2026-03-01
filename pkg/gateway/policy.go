@@ -4,7 +4,7 @@ package gateway
 import (
 	"fmt"
 
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 // defaultGradeBRateLimit is applied to Grade-B tools that are allowed but should

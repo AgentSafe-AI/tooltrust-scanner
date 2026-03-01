@@ -6,7 +6,7 @@ package sandbox
 import (
 	"context"
 
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 // ExecutionResult holds the output of a sandboxed tool invocation.

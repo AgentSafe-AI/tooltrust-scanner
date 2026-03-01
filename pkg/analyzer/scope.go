@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 // readOnlyPrefixes are name prefixes that imply the tool only reads data.

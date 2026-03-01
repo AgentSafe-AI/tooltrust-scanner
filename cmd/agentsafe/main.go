@@ -8,10 +8,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/brian93512/agentsafe/pkg/adapter/mcp"
-	"github.com/brian93512/agentsafe/pkg/analyzer"
-	"github.com/brian93512/agentsafe/pkg/gateway"
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/adapter/mcp"
+	"github.com/AgentSafe-AI/agentsafe/pkg/analyzer"
+	"github.com/AgentSafe-AI/agentsafe/pkg/gateway"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 // version is set at build time via -ldflags.

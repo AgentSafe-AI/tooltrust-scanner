@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/brian93512/agentsafe/pkg/adapter/openai"
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/adapter/openai"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 func TestAdapter_Protocol(t *testing.T) {

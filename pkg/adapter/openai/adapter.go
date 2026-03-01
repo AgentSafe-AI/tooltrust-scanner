@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 // Adapter converts OpenAI function-calling tool definitions into []model.UnifiedTool.

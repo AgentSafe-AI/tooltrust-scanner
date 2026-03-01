@@ -3,7 +3,7 @@ package analyzer
 import (
 	"fmt"
 
-	"github.com/brian93512/agentsafe/pkg/model"
+	"github.com/AgentSafe-AI/agentsafe/pkg/model"
 )
 
 const largeSchemaPropThreshold = 10
