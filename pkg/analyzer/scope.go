@@ -42,6 +42,7 @@ func (c *ScopeChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 			for _, wp := range writePermissions {
 				if perm == wp {
 					issues = append(issues, model.Issue{
+						RuleID:   "AS-004",
 						Severity: model.SeverityHigh,
 						Code:     "SCOPE_MISMATCH",
 						Description: fmt.Sprintf(
@@ -79,6 +80,7 @@ func (c *ScopeChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 		}
 		if !hasLocalWritePerm {
 			issues = append(issues, model.Issue{
+				RuleID:      "AS-004",
 				Severity:    model.SeverityMedium,
 				Code:        "SCOPE_MISMATCH",
 				Description: fmt.Sprintf("tool name %q implies local write operation but only remote/network-class permissions were detected", tool.Name),

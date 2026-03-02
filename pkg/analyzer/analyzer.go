@@ -10,11 +10,12 @@ import (
 )
 
 // severityWeight maps a Severity to its numeric risk contribution.
+// Weights match the published formula: Critical(25) High(15) Medium(8) Low(3).
 var severityWeight = map[model.Severity]int{
-	model.SeverityCritical: 40,
-	model.SeverityHigh:     20,
-	model.SeverityMedium:   10,
-	model.SeverityLow:      5,
+	model.SeverityCritical: 25,
+	model.SeverityHigh:     15,
+	model.SeverityMedium:   8,
+	model.SeverityLow:      3,
 	model.SeverityInfo:     1,
 }
 

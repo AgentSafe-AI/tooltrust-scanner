@@ -9,7 +9,8 @@ import (
 
 // injectionPatterns are compiled regexes that signal prompt injection attempts.
 var injectionPatterns = []*regexp.Regexp{
-	regexp.MustCompile(`(?i)ignore\s+(previous|prior|all)\s+(instructions?|prompts?|context)`),
+	// "ignore previous instructions", "ignore all previous instructions", "ignore all instructions"
+	regexp.MustCompile(`(?i)ignore\s+(?:all\s+)?(?:previous\s+|prior\s+)?(instructions?|prompts?|context|rules?)`),
 	regexp.MustCompile(`(?i)disregard\s+(your|all|previous|prior)?\s*(instructions?|context|rules?)`),
 	regexp.MustCompile(`(?i)system\s*:`),
 	regexp.MustCompile(`(?i)<\s*INST\s*>`),
@@ -38,6 +39,7 @@ func (c *PoisoningChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 	for _, pattern := range injectionPatterns {
 		if pattern.MatchString(desc) {
 			issues = append(issues, model.Issue{
+				RuleID:      "AS-001",
 				Severity:    model.SeverityCritical,
 				Code:        "TOOL_POISONING",
 				Description: "possible prompt injection detected in tool description: pattern matched: " + pattern.String(),

@@ -40,6 +40,7 @@ func GradeFromScore(score int) Grade {
 
 // Issue describes a single risk finding detected during analysis.
 type Issue struct {
+	RuleID      string // unique rule identifier, e.g. "AS-001"
 	Severity    Severity
 	Code        string // e.g. "TOOL_POISONING", "SCOPE_MISMATCH"
 	Description string
