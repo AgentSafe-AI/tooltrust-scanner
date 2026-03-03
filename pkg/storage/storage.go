@@ -1,4 +1,4 @@
-// Package storage persists AgentSentry scan results to a SQLite database.
+// Package storage persists ToolTrust Scanner results to a SQLite database.
 // It uses modernc.org/sqlite — a pure-Go driver with no CGo dependency,
 // making cross-compilation (linux/darwin/windows) straightforward.
 package storage
@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 
 	_ "modernc.org/sqlite" // register "sqlite" driver
 )

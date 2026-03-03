@@ -59,7 +59,7 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - github.com/AgentSafe-AI/agentsentry
+        - github.com/AgentSafe-AI/tooltrust-scanner
 
 issues:
   max-issues-per-linter: 0

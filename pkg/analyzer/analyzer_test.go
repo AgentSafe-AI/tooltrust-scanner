@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/analyzer"
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/analyzer"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 func TestScanner_CleanTool(t *testing.T) {

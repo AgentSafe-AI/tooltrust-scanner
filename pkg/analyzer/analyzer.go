@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // severityWeight maps a Severity to its numeric risk contribution.

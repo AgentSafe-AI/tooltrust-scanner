@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 
-	"github.com/AgentSafe-AI/agentsentry/internal/jsonschema"
+	"github.com/AgentSafe-AI/tooltrust-scanner/internal/jsonschema"
 )
 
 // ProtocolType identifies the source protocol of a tool.

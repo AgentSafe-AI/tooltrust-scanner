@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
-	"github.com/AgentSafe-AI/agentsentry/pkg/storage"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/storage"
 )
 
 func openTestStore(t *testing.T) *storage.Store {

@@ -1,9 +1,9 @@
 ---
 name: tdd-go
-description: Enforces TDD red-green-refactor cycle for Go development in AgentSafe. Use when implementing any new feature, package, or function. Applies to all Go files in this project — always write the failing test first, then minimal implementation, then refactor.
+description: Enforces TDD red-green-refactor cycle for Go development in ToolTrust Scanner. Use when implementing any new feature, package, or function. Applies to all Go files in this project — always write the failing test first, then minimal implementation, then refactor.
 ---
 
-# TDD for AgentSafe (Go)
+# TDD for ToolTrust Scanner (Go)
 
 ## The Cycle
 

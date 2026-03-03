@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // injectionPatterns are compiled regexes that signal prompt injection attempts.

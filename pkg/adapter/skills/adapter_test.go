@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/adapter/skills"
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/adapter/skills"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 func TestAdapter_Protocol(t *testing.T) {

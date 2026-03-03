@@ -1,17 +1,17 @@
-BINARY_CLI    := agentsentry
-BINARY_MCP    := agentsentry-mcp
+BINARY_CLI    := tooltrust-scanner
+BINARY_MCP    := tooltrust-scanner-mcp
 VERSION       ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 LDFLAGS       := -ldflags "-X main.version=$(VERSION) -s -w"
 
 BUILD_DIR     := dist
-CLI_PKG       := ./cmd/agentsentry
+CLI_PKG       := ./cmd/tooltrust-scanner
 MCP_PKG       := ./cmd/mcpserver
 
 GO            := go
 GOTEST        := $(GO) test -race -count=1
 
 # Docker / GHCR settings (override via env or CLI)
-IMAGE_REPO    ?= ghcr.io/agentsafe-ai/agentsentry
+IMAGE_REPO    ?= ghcr.io/agentsafe-ai/tooltrust-scanner
 IMAGE_TAG     ?= $(VERSION)
 
 # Cross-compile targets: GOOS/GOARCH pairs
@@ -115,9 +115,9 @@ docker-push: docker-build
 	docker push $(IMAGE_REPO):$(IMAGE_TAG)
 	docker push $(IMAGE_REPO):latest
 
-# ── AgentSentry Self-Scan ───────────────────────────────────────────────────────
+# ── ToolTrust Scanner Self-Scan ────────────────────────────────────────────────
 
-## scan: run AgentSentry against testdata/tools.json and fail on blocked tools
+## scan: run tooltrust-scanner against testdata/tools.json and fail on blocked tools
 scan: build-cli
 	$(BUILD_DIR)/$(BINARY_CLI) scan --protocol mcp --input testdata/tools.json --fail-on block
 

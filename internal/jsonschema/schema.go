@@ -9,7 +9,7 @@ type Property struct {
 	Items       *Property           `json:"items,omitempty"`
 }
 
-// Schema is a minimal JSON Schema (draft-07 compatible) used throughout AgentSafe.
+// Schema is a minimal JSON Schema (draft-07 compatible) used throughout ToolTrust Scanner.
 type Schema struct {
 	Type        string              `json:"type,omitempty"`
 	Description string              `json:"description,omitempty"`

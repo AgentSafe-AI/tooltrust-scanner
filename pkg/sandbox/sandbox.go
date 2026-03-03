@@ -6,7 +6,7 @@ package sandbox
 import (
 	"context"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // ExecutionResult holds the output of a sandboxed tool invocation.

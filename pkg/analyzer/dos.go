@@ -3,7 +3,7 @@ package analyzer
 import (
 	"strings"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // dosRiskyPermissions are permissions that imply outbound/resource-heavy

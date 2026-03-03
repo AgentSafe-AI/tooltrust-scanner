@@ -1,4 +1,4 @@
-# AgentSentry — Developer Guide
+# ToolTrust Scanner — Developer Guide
 
 ## Prerequisites
 
@@ -9,11 +9,11 @@
 ## Architecture
 
 ```
-github.com/AgentSafe-AI/agentsentry
+github.com/AgentSafe-AI/tooltrust-scanner
 │
 ├── cmd/
-│   ├── agentsentry/     CLI — scan, version
-│   └── mcpserver/       MCP meta-scanner (exposes agentsentry_scan to AI agents)
+│   ├── tooltrust-scanner/  CLI — scan, version
+│   └── mcpserver/          MCP meta-scanner (exposes tooltrust_scanner_scan to AI agents)
 │
 ├── pkg/
 │   ├── adapter/         Protocol converters → UnifiedTool
@@ -60,9 +60,9 @@ make coverage-html  # open HTML report in browser
 make lint           # golangci-lint (v2)
 make fmt            # go fmt ./...
 make vet            # go vet ./...
-make build          # compile dist/agentsentry + dist/agentsentry-mcp
+make build          # compile dist/tooltrust-scanner + dist/tooltrust-scanner-mcp
 make cross-compile  # linux/amd64 · linux/arm64 · darwin/amd64 · darwin/arm64 · windows/amd64
-make docker         # build ghcr.io/agentsafe-ai/agentsentry:dev
+make docker         # build ghcr.io/agentsafe-ai/tooltrust-scanner:dev
 make scan           # self-scan testdata/tools.json (integration check)
 make clean          # remove dist/ + coverage files
 ```
@@ -139,7 +139,7 @@ All scan output conforms to `schema_version: "1.0"`:
    }
    ```
 2. Write a `_test.go` with table-driven cases for valid + invalid inputs.
-3. Wire it into `cmd/agentsentry/main.go`'s `switch protocol { ... }`.
+3. Wire it into `cmd/tooltrust-scanner/main.go`'s `switch protocol { ... }`.
 
 ## CI/CD
 
@@ -148,3 +148,13 @@ All scan output conforms to `schema_version: "1.0"`:
 | `ci.yml` | push/PR to main | test (race), coverage ≥60%, lint, build, self-scan |
 | `release.yml` | `v*.*.*` tags | cross-compile, GitHub Release, Docker push to GHCR |
 | `security.yml` | push/PR + weekly | govulncheck, gosec (SARIF), dependency-review, meta-scan |
+
+## Release process
+
+1. Ensure `main` is green: `make test && make lint`
+2. Update [CHANGELOG.md](../CHANGELOG.md): move items from `[Unreleased]` to a new version section
+3. Commit changelog: `git add CHANGELOG.md && git commit -m "chore: release v0.1.3"`
+4. Tag: `git tag v0.1.3`
+5. Push tag: `git push origin v0.1.3`
+6. Release workflow runs: builds `tooltrust-scanner_*` and `tooltrust-scanner-mcp_*` binaries, creates GitHub Release, pushes Docker image
+7. If using Homebrew [Formula](../Formula/tooltrust-scanner.rb): update `url` and `sha256` (run `shasum -a 256` on the new tarball)

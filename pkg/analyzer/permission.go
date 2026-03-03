@@ -3,7 +3,7 @@ package analyzer
 import (
 	"fmt"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 const largeSchemaPropThreshold = 10

@@ -5,7 +5,7 @@ package analyzer
 import (
 	"context"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // ScanReport is the high-level result returned by Engine.Scan.

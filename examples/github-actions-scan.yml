@@ -1,0 +1,47 @@
+# Complete GitHub Actions job: install ToolTrust Scanner and scan tool definitions.
+# Copy this into your .github/workflows/*.yml and adjust paths as needed.
+#
+# Prerequisites: Your repo must have tool definitions in MCP format (tools/list JSON)
+# at the path you pass to --input. Use testdata/tools.json structure as reference.
+
+name: ToolTrust Scanner
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  scan:
+    name: ToolTrust Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Install ToolTrust Scanner
+        run: |
+          go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Scan tool definitions
+        run: |
+          # Fails CI if: tool poisoning (AS-001), Critical CVE (AS-004), or grade-F tools
+          tooltrust-scanner scan \
+            --protocol mcp \
+            --input tools.json \
+            --output scan-report.json \
+            --fail-on block
+        # If tools.json path differs, e.g. --input path/to/your-tools.json
+
+      - name: Upload scan report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tooltrust-scanner-scan-report
+          path: scan-report.json
+          retention-days: 30

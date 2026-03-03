@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/AgentSafe-AI/agentsentry/internal/jsonschema"
-	"github.com/AgentSafe-AI/agentsentry/pkg/analyzer"
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/internal/jsonschema"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/analyzer"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 func TestPermissionChecker_NoPermissions(t *testing.T) {

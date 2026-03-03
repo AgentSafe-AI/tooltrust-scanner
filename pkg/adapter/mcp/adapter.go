@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/AgentSafe-AI/agentsentry/internal/jsonschema"
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/internal/jsonschema"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // Adapter converts MCP tools/list payloads into []model.UnifiedTool.

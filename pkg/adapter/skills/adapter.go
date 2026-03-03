@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 // Adapter converts Markdown-based Skill definitions into []model.UnifiedTool.

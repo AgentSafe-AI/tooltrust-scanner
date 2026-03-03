@@ -9,11 +9,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/adapter/mcp"
-	"github.com/AgentSafe-AI/agentsentry/pkg/analyzer"
-	"github.com/AgentSafe-AI/agentsentry/pkg/gateway"
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
-	"github.com/AgentSafe-AI/agentsentry/pkg/storage"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/adapter/mcp"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/analyzer"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/gateway"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/storage"
 )
 
 var version = "dev"
@@ -26,9 +26,9 @@ func main() {
 
 func newRootCmd() *cobra.Command {
 	root := &cobra.Command{
-		Use:   "agentsentry",
+		Use:   "tooltrust-scanner",
 		Short: "AI Agent Tool Security Scanner",
-		Long:  "AgentSentry scans AI agent tool definitions for security risks and generates gateway policies.",
+		Long:  "ToolTrust Scanner scans AI agent tool definitions for security risks and generates gateway policies.",
 	}
 	root.AddCommand(newVersionCmd())
 	root.AddCommand(newScanCmd())
@@ -38,9 +38,9 @@ func newRootCmd() *cobra.Command {
 func newVersionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
-		Short: "Print the AgentSentry version",
+		Short: "Print the ToolTrust Scanner version",
 		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println("agentsentry", version)
+			fmt.Println("tooltrust-scanner", version)
 		},
 	}
 }
@@ -73,10 +73,10 @@ func newScanCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "scan",
 		Short: "Scan tool definitions and generate gateway policies",
-		Example: `  agentsentry scan --protocol mcp --input tools.json
-  agentsentry scan --protocol mcp --input tools.json --output report.json
-  agentsentry scan --protocol mcp --input tools.json --fail-on block
-  agentsentry scan --protocol mcp --input tools.json --db scans.db`,
+		Example: `  tooltrust-scanner scan --protocol mcp --input tools.json
+  tooltrust-scanner scan --protocol mcp --input tools.json --output report.json
+  tooltrust-scanner scan --protocol mcp --input tools.json --fail-on block
+  tooltrust-scanner scan --protocol mcp --input tools.json --db scans.db`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			return runScan(cmd.Context(), scanOpts{
 				inputFile:  inputFile,

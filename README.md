@@ -1,15 +1,17 @@
-# AgentSentry
+# ToolTrust Scanner
 
-[![CI](https://github.com/AgentSafe-AI/agentsentry/actions/workflows/ci.yml/badge.svg)](https://github.com/AgentSafe-AI/agentsentry/actions/workflows/ci.yml)
-[![Security](https://github.com/AgentSafe-AI/agentsentry/actions/workflows/security.yml/badge.svg)](https://github.com/AgentSafe-AI/agentsentry/actions/workflows/security.yml)
-[![codecov](https://codecov.io/gh/AgentSafe-AI/agentsentry/branch/main/graph/badge.svg)](https://codecov.io/gh/AgentSafe-AI/agentsentry)
-[![Go Report Card](https://goreportcard.com/badge/github.com/AgentSafe-AI/agentsentry)](https://goreportcard.com/report/github.com/AgentSafe-AI/agentsentry)
+[![CI](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml/badge.svg)](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml)
+[![Security](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml/badge.svg)](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml)
+[![codecov](https://codecov.io/gh/AgentSafe-AI/tooltrust-scanner/branch/main/graph/badge.svg)](https://codecov.io/gh/AgentSafe-AI/tooltrust-scanner)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AgentSafe-AI/tooltrust-scanner)](https://goreportcard.com/report/github.com/AgentSafe-AI/tooltrust-scanner)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/go-1.24-00ADD8.svg)](go.mod)
 
 **The security trust layer for MCP servers, OpenAI tools, and AI Skills.**
 
-AI agents blindly trust the tools they call. A single poisoned tool definition can hijack an agent, exfiltrate data, or silently escalate privileges. AgentSentry intercepts tool definitions *before* execution and blocks threats at the source.
+AI agents blindly trust the tools they call. A single poisoned tool definition can hijack an agent, exfiltrate data, or silently escalate privileges. ToolTrust Scanner intercepts tool definitions *before* execution and blocks threats at the source.
+
+**Used by** — [ToolTrust Directory](https://github.com/AgentSafe-AI/tooltrust-directory): 100+ MCP servers and AI tools with verified A–F security grades.
 
 ---
 
@@ -50,31 +52,55 @@ $$\text{RiskScore} = \sum_{i=1}^{n} \left( \text{SeverityWeight}_i \times \text{
 
 ## Quick integration
 
-**CLI**
-```bash
-curl -L https://github.com/AgentSafe-AI/agentsentry/releases/latest/download/agentsentry_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed s/x86_64/amd64/) \
-  -o /usr/local/bin/agentsentry && chmod +x /usr/local/bin/agentsentry
+*One poisoned tool can hijack your agent. One step blocks it.*
 
-agentsentry scan --protocol mcp --input tools.json
-agentsentry scan --protocol mcp --input tools.json --fail-on block   # CI gate
-agentsentry scan --protocol mcp --input tools.json --db scans.db     # persist history
+**Install** (choose one)
+```bash
+# Go (always up to date)
+go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+
+# Homebrew (macOS)
+brew install --formula "https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/Formula/tooltrust-scanner.rb"
+
+# Pre-built binary (v0.1.3+; Linux, macOS, Windows)
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+curl -sSL "https://github.com/AgentSafe-AI/tooltrust-scanner/releases/latest/download/tooltrust-scanner_${OS}_${ARCH}" \
+  -o /usr/local/bin/tooltrust-scanner && chmod +x /usr/local/bin/tooltrust-scanner
 ```
 
-**GitHub Actions**
+**Run your first scan**
+```bash
+# Clone and scan the included test fixture
+git clone https://github.com/AgentSafe-AI/tooltrust-scanner.git && cd tooltrust-scanner
+tooltrust-scanner scan --protocol mcp --input testdata/tools.json
+
+# Your own tools
+tooltrust-scanner scan --protocol mcp --input tools.json --fail-on block   # CI gate — blocks poisoned tools & Critical CVEs
+tooltrust-scanner scan --protocol mcp --input tools.json --db scans.db     # persist history
+```
+
+**GitHub Actions** — [full example](examples/github-actions-scan.yml)
 ```yaml
-- name: AgentSentry scan
-  run: agentsentry scan --protocol mcp --input tools.json --fail-on block
+- uses: actions/setup-go@v5
+  with:
+    go-version: "1.24"
+    cache: true
+- run: go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+- run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+# Fails CI if tool poisoning (AS-001), Critical CVE (AS-004), or blocked-grade tools are detected
+- run: tooltrust-scanner scan --protocol mcp --input tools.json --fail-on block
 ```
 
 **MCP meta-scanner** — let Claude scan tools for you:
 ```bash
-agentsentry-mcp   # stdio, exposes agentsentry_scan to any MCP client
+tooltrust-scanner-mcp   # stdio, exposes tooltrust_scanner_scan to any MCP client
 ```
 
 **Docker**
 ```bash
 docker run --rm -v $(pwd)/tools.json:/tools.json \
-  ghcr.io/agentsafe-ai/agentsentry:latest scan --protocol mcp --input /tools.json
+  ghcr.io/agentsafe-ai/tooltrust-scanner:latest scan --protocol mcp --input /tools.json
 ```
 
 ---
@@ -122,4 +148,4 @@ docker run --rm -v $(pwd)/tools.json:/tools.json \
 
 ---
 
-[Developer guide](docs/DEVELOPER.md) · [License: MIT](LICENSE) © 2026 AgentSafe-AI
+[Developer guide](docs/DEVELOPER.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [License: MIT](LICENSE) © 2026 AgentSafe-AI

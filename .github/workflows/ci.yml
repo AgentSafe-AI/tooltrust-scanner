@@ -106,8 +106,8 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Build CLI (agentsentry)
-        run: go build -v ./cmd/agentsentry/...
+      - name: Build CLI (tooltrust-scanner)
+        run: go build -v ./cmd/tooltrust-scanner/...
 
       - name: Build MCP Server
         run: go build -v ./cmd/mcpserver/...
@@ -127,12 +127,12 @@ jobs:
           go-version: "1.24"
           cache: true
 
-      - name: Build agentsentry binary
-        run: go build -o /tmp/agentsentry ./cmd/agentsentry/
+      - name: Build tooltrust-scanner binary
+        run: go build -o /tmp/tooltrust-scanner ./cmd/tooltrust-scanner/
 
-      - name: Run AgentSentry self-scan (testdata fixture)
+      - name: Run ToolTrust Scanner self-scan (testdata fixture)
         run: |
-          /tmp/agentsentry scan \
+          /tmp/tooltrust-scanner scan \
             --protocol mcp \
             --input testdata/tools.json \
             --output /tmp/scan_report.json
@@ -140,17 +140,73 @@ jobs:
 
       - name: Validate --fail-on flag (must not BLOCK safe tools)
         run: |
-          /tmp/agentsentry scan \
+          /tmp/tooltrust-scanner scan \
             --protocol mcp \
             --input testdata/tools.json \
             --fail-on block || {
-            echo "::error::AgentSentry self-scan found BLOCKED tool(s) in testdata/tools.json"
+            echo "::error::ToolTrust Scanner self-scan found BLOCKED tool(s) in testdata/tools.json"
             exit 1
           }
 
       - name: Upload scan report
         uses: actions/upload-artifact@v4
         with:
-          name: agentsentry-scan-report
+          name: tooltrust-scanner-scan-report
           path: /tmp/scan_report.json
           retention-days: 30
+
+  # ── 5. Verify install guide (go install + binary) ───────────────────────────
+  verify-install:
+    name: Verify Install Guide
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Verify go install (README primary method)
+        run: |
+          go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+          BIN="$(go env GOPATH)/bin/tooltrust-scanner"
+          $BIN version
+          $BIN scan --protocol mcp --input testdata/tools.json -o /tmp/go-install-scan.json
+          echo "✓ go install works"
+
+      - name: Verify pre-built binary download (requires v0.1.3+)
+        continue-on-error: true
+        run: |
+          OS=linux
+          ARCH=amd64
+          URL="https://github.com/AgentSafe-AI/tooltrust-scanner/releases/latest/download/tooltrust-scanner_${OS}_${ARCH}"
+          if curl -sfSL -o /tmp/tooltrust-scanner_bin "$URL"; then
+            chmod +x /tmp/tooltrust-scanner_bin
+            /tmp/tooltrust-scanner_bin version
+            /tmp/tooltrust-scanner_bin scan --protocol mcp --input testdata/tools.json -o /dev/null
+            echo "✓ pre-built binary works"
+          else
+            echo "::notice::Pre-built binary not found (expected until v0.1.3 release)"
+          fi
+
+  # ── 6. Verify Homebrew install (macOS) ──────────────────────────────────────
+  verify-install-homebrew:
+    name: Verify Install (Homebrew)
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install via Homebrew Formula
+        run: |
+          brew install --formula "$GITHUB_WORKSPACE/Formula/tooltrust-scanner.rb"
+          tooltrust-scanner version
+          tooltrust-scanner scan --protocol mcp --input testdata/tools.json -o /dev/null
+          echo "✓ Homebrew install works"
+
+      - name: Uninstall
+        if: always()
+        run: brew uninstall tooltrust-scanner 2>/dev/null || true

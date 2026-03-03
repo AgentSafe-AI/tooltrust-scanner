@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/AgentSafe-AI/agentsentry/pkg/model"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
 const (
