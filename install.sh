@@ -23,8 +23,8 @@ if [ -z "$RELEASE_TAG" ]; then
     exit 1
 fi
 
-# 組合下載網址
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$RELEASE_TAG/tooltrust_${OS}_${ARCH}"
+# Release artifact naming: tooltrust-scanner_${OS}_${ARCH}
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$RELEASE_TAG/tooltrust-scanner_${OS}_${ARCH}"
 TMP_DIR=$(mktemp -d)
 TMP_FILE="$TMP_DIR/tooltrust"
 

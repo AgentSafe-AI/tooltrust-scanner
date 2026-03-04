@@ -171,7 +171,8 @@ jobs:
 
       - name: Verify go install (README primary method)
         run: |
-          go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+          # Use @main: v0.1.2 lacks cmd/tooltrust-scanner; main has correct structure
+          go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@main
           BIN="$(go env GOPATH)/bin/tooltrust-scanner"
           $BIN version
           $BIN scan --protocol mcp --input testdata/tools.json -o /tmp/go-install-scan.json
@@ -202,7 +203,8 @@ jobs:
 
       - name: Install via Homebrew Formula
         run: |
-          brew install --formula "$GITHUB_WORKSPACE/Formula/tooltrust-scanner.rb"
+          # Use remote URL: Homebrew rejects local paths (not in a tap)
+          brew install --formula "https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/Formula/tooltrust-scanner.rb"
           tooltrust-scanner version
           tooltrust-scanner scan --protocol mcp --input testdata/tools.json -o /dev/null
           echo "✓ Homebrew install works"
