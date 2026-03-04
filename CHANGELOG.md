@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.1.3] - 2026-03-04
+
 ### Changed
 
 - **BREAKING**: Repository renamed from `agentsentry` to `tooltrust-scanner`
@@ -25,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Engine docstring: corrected rule mapping (AS-003, AS-004, etc.)
-- Root command description: "AgentSentry" instead of "AgentSafe"
+- Homebrew formula: fixed install path to match renamed cmd entrypoint (`cmd/tooltrust-scanner`)
 
 ---
 
@@ -62,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MCP meta-scanner server (`tooltrust-scanner-mcp`)
 - Docker image, CI/CD, GitHub Actions
 
-[Unreleased]: https://github.com/AgentSafe-AI/tooltrust-scanner/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/AgentSafe-AI/tooltrust-scanner/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/AgentSafe-AI/tooltrust-scanner/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/AgentSafe-AI/tooltrust-scanner/compare/v0.1.0...v0.1.2
 [0.1.0]: https://github.com/AgentSafe-AI/tooltrust-scanner/releases/tag/v0.1.0
