@@ -50,57 +50,16 @@ $$\text{RiskScore} = \sum_{i=1}^{n} \left( \text{SeverityWeight}_i \times \text{
 
 ---
 
-## Quick integration
+## 🚀 Quick Start
 
-*One poisoned tool can hijack your agent. One step blocks it.*
-
-**Install** (choose one)
+**Install via automated script (macOS / Linux):**
 ```bash
-# Go (always up to date)
-go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
-
-# Homebrew (macOS)
-brew install --formula "https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/Formula/tooltrust-scanner.rb"
-
-# Pre-built binary (v0.1.3+; Linux, macOS, Windows)
-OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-curl -sSL "https://github.com/AgentSafe-AI/tooltrust-scanner/releases/latest/download/tooltrust-scanner_${OS}_${ARCH}" \
-  -o /usr/local/bin/tooltrust-scanner && chmod +x /usr/local/bin/tooltrust-scanner
+curl -fsSL https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/install.sh | bash
 ```
 
-**Run your first scan**
+**Run your first scan:**
 ```bash
-# Clone and scan the included test fixture
-git clone https://github.com/AgentSafe-AI/tooltrust-scanner.git && cd tooltrust-scanner
-tooltrust-scanner scan --protocol mcp --input testdata/tools.json
-
-# Your own tools
-tooltrust-scanner scan --protocol mcp --input tools.json --fail-on block   # CI gate — blocks poisoned tools & Critical CVEs
-tooltrust-scanner scan --protocol mcp --input tools.json --db scans.db     # persist history
-```
-
-**GitHub Actions** — [full example](examples/github-actions-scan.yml)
-```yaml
-- uses: actions/setup-go@v5
-  with:
-    go-version: "1.24"
-    cache: true
-- run: go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
-- run: echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-# Fails CI if tool poisoning (AS-001), Critical CVE (AS-004), or blocked-grade tools are detected
-- run: tooltrust-scanner scan --protocol mcp --input tools.json --fail-on block
-```
-
-**MCP meta-scanner** — let Claude scan tools for you:
-```bash
-tooltrust-scanner-mcp   # stdio, exposes tooltrust_scanner_scan to any MCP client
-```
-
-**Docker**
-```bash
-docker run --rm -v $(pwd)/tools.json:/tools.json \
-  ghcr.io/agentsafe-ai/tooltrust-scanner:latest scan --protocol mcp --input /tools.json
+tooltrust scan --input tools.json
 ```
 
 ---
