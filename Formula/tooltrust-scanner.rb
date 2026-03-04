@@ -9,7 +9,7 @@ class TooltrustScanner < Formula
   homepage "https://github.com/AgentSafe-AI/tooltrust-scanner"
   version "0.1.2"
   url "https://github.com/AgentSafe-AI/tooltrust-scanner/archive/refs/tags/v#{version}.tar.gz"
-  sha256 "9e4c3beb7e7c5e8d34969ed661e64590b518d87a2341d041c718a58bab369bc9"
+  sha256 "8311892bd4de772c738955b63de3c45cfdb782fd60398bf4c29f1ad34362354e"
   license "MIT"
 
   depends_on "go" => :build
