@@ -14,7 +14,7 @@ We release security updates for the following versions:
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-If you believe you have found a security vulnerability in AgentSentry:
+If you believe you have found a security vulnerability in ToolTrust Scanner:
 
 1. **Email** the maintainers with details. You can reach us via:
    - Open an issue with the `security` label and mark it as **private** if your GitHub org supports it, or
@@ -32,7 +32,7 @@ If you believe you have found a security vulnerability in AgentSentry:
 
 ## Security-Critical Areas
 
-AgentSentry is a static analysis tool that scans tool definitions. Areas of particular security interest:
+ToolTrust Scanner is a static analysis tool that scans tool definitions. Areas of particular security interest:
 
 - **Parser behavior** — malformed input handling in `pkg/adapter/*`
 - **OSV API interaction** — supply-chain checker (`pkg/analyzer/supply_chain.go`) makes outbound requests; ensure no injection or credential leakage

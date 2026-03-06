@@ -1,4 +1,4 @@
-# Contributing to AgentSentry
+# Contributing to ToolTrust Scanner
 
 Thank you for your interest in contributing. This document explains how to set up your environment, submit changes, and add new scan rules or adapters.
 
