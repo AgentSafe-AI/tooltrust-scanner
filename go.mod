@@ -1,6 +1,6 @@
 module github.com/AgentSafe-AI/tooltrust-scanner
 
-go 1.24.5
+go 1.26
 
 require (
 	github.com/mark3labs/mcp-go v0.44.1
