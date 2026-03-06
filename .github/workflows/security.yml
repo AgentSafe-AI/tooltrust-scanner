@@ -77,9 +77,9 @@ jobs:
         with:
           fail-on-severity: high
 
-  # ── 4. AgentSafe scans its own dependencies' MCP tools (meta-scan) ────────
+  # ── 4. ToolTrust Scanner scans its own MCP tool fixtures (meta-scan) ────────
   meta-scan:
-    name: AgentSafe Meta-Scan
+    name: ToolTrust Meta-Scan
     runs-on: ubuntu-latest
 
     steps:
@@ -96,10 +96,10 @@ jobs:
       - name: Run meta-scan against project's MCP tool fixtures
         run: |
           if [ -f testdata/tools.json ]; then
-            /tmp/tooltrust-scanner scan --protocol mcp --input testdata/tools.json --output /tmp/meta_scan.json
+            /tmp/tooltrust-scanner scan --protocol mcp --input testdata/tools.json --output json --file /tmp/meta_scan.json
           else
             echo '{"tools":[]}' > /tmp/empty.json
-            /tmp/tooltrust-scanner scan --protocol mcp --input /tmp/empty.json --output /tmp/meta_scan.json
+            /tmp/tooltrust-scanner scan --protocol mcp --input /tmp/empty.json --output json --file /tmp/meta_scan.json
           fi
           cat /tmp/meta_scan.json
 
