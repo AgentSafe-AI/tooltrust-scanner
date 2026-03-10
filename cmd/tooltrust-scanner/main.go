@@ -133,9 +133,13 @@ type scanOpts struct {
 func runScan(ctx context.Context, opts scanOpts) error {
 	// Validate --output flag early.
 	switch opts.output {
-	case "text", "json":
+	case "text", "json", "sarif":
 	default:
-		return fmt.Errorf("invalid --output value %q (use: text | json)", opts.output)
+		return fmt.Errorf("invalid --output value %q (use: text | json | sarif)", opts.output)
+	}
+
+	if opts.output == "json" || opts.output == "sarif" {
+		pterm.DisableOutput()
 	}
 
 	if (opts.inputFile == "") == (opts.serverCmd == "") {
@@ -239,6 +243,10 @@ func writeOutput(opts scanOpts, report ScanReport) error {
 			fmt.Println(string(encoded))
 		}
 		return nil
+	}
+
+	if opts.output == "sarif" {
+		return writeSarifOutput(opts, report)
 	}
 
 	// Default: text mode — render with pterm.
