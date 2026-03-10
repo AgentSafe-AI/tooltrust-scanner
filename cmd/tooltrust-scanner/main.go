@@ -149,9 +149,13 @@ func runScan(ctx context.Context, opts scanOpts) error {
 		if opts.protocol != "mcp" {
 			return fmt.Errorf("--server only supports the 'mcp' protocol")
 		}
-		tools, err = scanLiveServer(ctx, opts.serverCmd)
+
+		liveCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+
+		tools, err = scanLiveServer(liveCtx, opts.serverCmd)
 		if err != nil {
-			return fmt.Errorf("live server scan failed: %w", err)
+			return fmt.Errorf("live server scan failed (or timed out): %w", err)
 		}
 	} else {
 		data, err := os.ReadFile(opts.inputFile)

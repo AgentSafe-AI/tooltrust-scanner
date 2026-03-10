@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
+	"github.com/kballard/go-shellquote"
 	"github.com/mark3labs/mcp-go/client"
 	mcpgo "github.com/mark3labs/mcp-go/mcp"
 	"github.com/pterm/pterm"
@@ -15,7 +15,10 @@ import (
 )
 
 func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool, error) {
-	args := strings.Fields(serverCmd)
+	args, err := shellquote.Split(serverCmd)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse server command: %w", err)
+	}
 	if len(args) == 0 {
 		return nil, fmt.Errorf("empty server command")
 	}
