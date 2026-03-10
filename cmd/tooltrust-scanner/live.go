@@ -35,6 +35,11 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 	}
 
 	if startErr := c.Start(ctx); startErr != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			spinner.Fail("Connection to MCP server timed out after 30 seconds.")
+			pterm.Error.Println("❌ Error: Connection to MCP server timed out after 30 seconds.")
+			return nil, fmt.Errorf("connection to MCP server timed out: %w", startErr)
+		}
 		spinner.Fail("Failed to start client")
 		return nil, fmt.Errorf("failed to start client: %w", startErr)
 	}
@@ -49,6 +54,11 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 
 	_, err = c.Initialize(ctx, initReq)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			spinner.Fail("Connection to MCP server timed out after 30 seconds.")
+			pterm.Error.Println("❌ Error: Connection to MCP server timed out after 30 seconds.")
+			return nil, fmt.Errorf("initialization timed out: %w", err)
+		}
 		spinner.Fail("Initialization failed")
 		return nil, fmt.Errorf("initialization failed: %w", err)
 	}
@@ -56,6 +66,11 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 	listReq := mcpgo.ListToolsRequest{}
 	resp, err := c.ListTools(ctx, listReq)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			spinner.Fail("Connection to MCP server timed out after 30 seconds.")
+			pterm.Error.Println("❌ Error: Connection to MCP server timed out after 30 seconds.")
+			return nil, fmt.Errorf("tools/list map timed out: %w", err)
+		}
 		spinner.Fail("Failed to fetch tools")
 		return nil, fmt.Errorf("tools/list map failed: %w", err)
 	}
