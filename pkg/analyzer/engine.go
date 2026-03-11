@@ -45,8 +45,12 @@ type Engine struct {
 //   - AS-006  Arbitrary Code Execution (ArbitraryCodeChecker)
 //   - AS-010  Secret Handling          (SecretHandlingChecker)
 //   - AS-011  DoS Resilience           (DoSResilienceChecker)
-func NewEngine(enableDeepScan bool) *Engine {
-	return &Engine{scanner: NewScanner(enableDeepScan)}
+func NewEngine(enableDeepScan bool, rulesDir string) (*Engine, error) {
+	scanner, err := NewScanner(enableDeepScan, rulesDir)
+	if err != nil {
+		return nil, err
+	}
+	return &Engine{scanner: scanner}, nil
 }
 
 // Scan analyses tool and returns a ScanReport.  It uses a background context.

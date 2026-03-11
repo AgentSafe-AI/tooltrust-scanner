@@ -42,7 +42,8 @@ func TestEngine_AS004_NoDependencies_NoFinding(t *testing.T) {
 		Name:        "simple_tool",
 		Description: "Does something safe.",
 	}
-	report := analyzer.NewEngine(false).Scan(tool)
+	eng_8bb451, _ := analyzer.NewEngine(false, "")
+	report := eng_8bb451.Scan(tool)
 	assert.False(t, report.HasFinding("AS-004"),
 		"tool with no metadata should not trigger AS-004")
 }
@@ -53,7 +54,8 @@ func TestEngine_AS004_EmptyDependencies_NoFinding(t *testing.T) {
 		Description: "No deps.",
 		Metadata:    map[string]any{"dependencies": []any{}},
 	}
-	report := analyzer.NewEngine(false).Scan(tool)
+	eng_e7b04a, _ := analyzer.NewEngine(false, "")
+	report := eng_e7b04a.Scan(tool)
 	assert.False(t, report.HasFinding("AS-004"))
 }
 

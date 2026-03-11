@@ -104,6 +104,7 @@ func TestEngine_AS010_SecretParam(t *testing.T) {
 			},
 		},
 	}
-	report := analyzer.NewEngine(false).Scan(tool)
+	eng_936989, _ := analyzer.NewEngine(false, "")
+	report := eng_936989.Scan(tool)
 	assert.True(t, report.HasFinding("AS-010"))
 }

@@ -86,6 +86,7 @@ func newScanCmd() *cobra.Command {
 		dbPath     string
 		verbose    bool
 		deepScan   bool
+		rulesDir   string
 	)
 
 	cmd := &cobra.Command{
@@ -107,6 +108,7 @@ func newScanCmd() *cobra.Command {
 				dbPath:     dbPath,
 				verbose:    verbose,
 				deepScan:   deepScan,
+				rulesDir:   rulesDir,
 			})
 		},
 	}
@@ -120,6 +122,7 @@ func newScanCmd() *cobra.Command {
 	cmd.Flags().StringVar(&dbPath, "db", "", "persist scan results to SQLite database at this path")
 	cmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "print per-tool scan process tree to stderr during scan")
 	cmd.Flags().BoolVar(&deepScan, "deep-scan", false, "Enable AI-based semantic analysis for deep prompt injection detection (downloads a ~22MB local model on first run)")
+	cmd.Flags().StringVar(&rulesDir, "rules-dir", "", "path to directory containing custom YAML rules")
 	// Mutual exclusivity checked in runScan
 
 	return cmd
@@ -135,6 +138,7 @@ type scanOpts struct {
 	dbPath     string
 	verbose    bool
 	deepScan   bool
+	rulesDir   string
 }
 
 func runScan(ctx context.Context, opts scanOpts) error {
@@ -177,15 +181,15 @@ func runScan(ctx context.Context, opts scanOpts) error {
 			return fmt.Errorf("live server scan failed (or timed out): %w", err)
 		}
 	} else {
-		data, err := os.ReadFile(opts.inputFile)
-		if err != nil {
-			return fmt.Errorf("cannot read input file: %w", err)
+		defData, readErr := os.ReadFile(opts.inputFile)
+		if readErr != nil {
+			return fmt.Errorf("failed to read input file: %w", readErr)
 		}
 
 		switch opts.protocol {
 		case "mcp":
 			a := mcp.NewAdapter()
-			tools, err = a.Parse(ctx, data)
+			tools, err = a.Parse(ctx, defData)
 			if err != nil {
 				return fmt.Errorf("parse error: %w", err)
 			}
@@ -194,7 +198,10 @@ func runScan(ctx context.Context, opts scanOpts) error {
 		}
 	}
 
-	scanner := analyzer.NewScanner(opts.deepScan)
+	scanner, err := analyzer.NewScanner(opts.deepScan, opts.rulesDir)
+	if err != nil {
+		return fmt.Errorf("failed to initialize scanner: %w", err)
+	}
 	var policies []model.GatewayPolicy
 	summary := ScanSummary{Total: len(tools), ScannedAt: time.Now().UTC()}
 

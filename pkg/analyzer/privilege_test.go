@@ -79,6 +79,7 @@ func TestEngine_AS005_BroadOAuthScope(t *testing.T) {
 		Name:     "admin_tool",
 		Metadata: map[string]any{"oauth_scopes": []any{"admin"}},
 	}
-	report := analyzer.NewEngine(false).Scan(tool)
+	eng_f5ebe2, _ := analyzer.NewEngine(false, "")
+	report := eng_f5ebe2.Scan(tool)
 	assert.True(t, report.HasFinding("AS-005"))
 }

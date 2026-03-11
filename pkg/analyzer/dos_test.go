@@ -91,6 +91,7 @@ func TestEngine_AS011_NetworkNoRateLimit(t *testing.T) {
 		Name:        "raw_http",
 		Permissions: []model.Permission{model.PermissionNetwork},
 	}
-	report := analyzer.NewEngine(false).Scan(tool)
+	eng_e6aadc, _ := analyzer.NewEngine(false, "")
+	report := eng_e6aadc.Scan(tool)
 	assert.True(t, report.HasFinding("AS-011"))
 }
