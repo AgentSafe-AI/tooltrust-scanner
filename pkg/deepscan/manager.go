@@ -49,6 +49,7 @@ func Init(ctx context.Context) error {
 	}
 
 	IsInitialized = true
+	pterm.Info.Println("🧪 ONNX ML Engine active (Semantic Tokenizer is currently in Alpha preview)")
 	return nil
 }
 
