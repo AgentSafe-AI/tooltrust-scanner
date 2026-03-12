@@ -10,7 +10,7 @@ fmt:
 lint:
 	@echo "🔍 Running linter..."
 	go vet ./...
-	# 如果你有裝 golangci-lint，可以把下面這行取消註解
+	# If you have golangci-lint installed, uncomment the line below
 	# golangci-lint run
 
 test:

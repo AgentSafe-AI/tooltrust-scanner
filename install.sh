@@ -7,7 +7,7 @@ OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/')"
 REPO="AgentSafe-AI/tooltrust-scanner"
 
-# 檢查是否有傳入參數（例如 v1.0.0），沒有的話預設為 latest
+# Check if a version argument is provided (e.g. v1.0.0), default to latest if not
 TARGET_VERSION=${1:-"latest"}
 
 if [ "$TARGET_VERSION" = "latest" ]; then
