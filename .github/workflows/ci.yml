@@ -212,6 +212,22 @@ jobs:
           TAP_DIR="$(brew --prefix)/Library/Taps/agentsafe-ai/homebrew-tooltrust-scanner"
           mkdir -p "$TAP_DIR/Formula"
           cp "$GITHUB_WORKSPACE/Formula/tooltrust-scanner.rb" "$TAP_DIR/Formula/"
+          
+          # Get version from formula
+          VERSION=$(awk '/version "/ {print $2}' "$TAP_DIR/Formula/tooltrust-scanner.rb" | tr -d '"')
+          
+          # Homebrew expects the unpacked folder to be named <formula>-<version>
+          TEST_DIR="/tmp/brew-test/tooltrust-scanner-${VERSION}"
+          mkdir -p "$TEST_DIR"
+          rsync -a "$GITHUB_WORKSPACE/" "$TEST_DIR/" --exclude ".git"
+          
+          tar -czf /tmp/ci_source.tar.gz -C /tmp/brew-test "tooltrust-scanner-${VERSION}"
+          URL="file:///tmp/ci_source.tar.gz"
+          SHA256=$(shasum -a 256 /tmp/ci_source.tar.gz | awk '{print $1}')
+          
+          sed -i '' "s|url \".*\"|url \"$URL\"|" "$TAP_DIR/Formula/tooltrust-scanner.rb"
+          sed -i '' "s|sha256 \".*\"|sha256 \"$SHA256\"|" "$TAP_DIR/Formula/tooltrust-scanner.rb"
+
           brew install AgentSafe-AI/tooltrust-scanner/tooltrust-scanner
           tooltrust-scanner version
           tooltrust-scanner scan --protocol mcp --input testdata/tools.json --output text
