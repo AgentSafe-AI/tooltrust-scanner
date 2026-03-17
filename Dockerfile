@@ -22,8 +22,8 @@ RUN CGO_ENABLED=0 go build \
 
 RUN CGO_ENABLED=0 go build \
       -ldflags "-X main.version=${VERSION} -s -w" \
-      -o /out/tooltrust-scanner-mcp \
-      ./cmd/mcpserver/
+      -o /out/tooltrust-mcp \
+      ./cmd/tooltrust-mcp/
 
 # ── Stage 2: Minimal runtime image ───────────────────────────────────────────
 FROM scratch
@@ -36,7 +36,7 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 
 # Copy compiled binaries
 COPY --from=builder /out/tooltrust-scanner     /usr/local/bin/tooltrust-scanner
-COPY --from=builder /out/tooltrust-scanner-mcp /usr/local/bin/tooltrust-scanner-mcp
+COPY --from=builder /out/tooltrust-mcp /usr/local/bin/tooltrust-mcp
 
 # Default: run the CLI
 ENTRYPOINT ["/usr/local/bin/tooltrust-scanner"]

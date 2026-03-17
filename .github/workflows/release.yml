@@ -73,7 +73,7 @@ jobs:
           go build \
             -ldflags "-X main.version=${VERSION} -s -w" \
             -o "dist/tooltrust-mcp_${{ matrix.goos }}_${{ matrix.goarch }}${SUFFIX}" \
-            ./cmd/mcpserver/
+            ./cmd/tooltrust-mcp/
 
       - name: Generate checksums
         run: |
