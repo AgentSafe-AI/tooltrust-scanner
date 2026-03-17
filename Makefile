@@ -20,6 +20,7 @@ test:
 build:
 	@echo "🔨 Verifying build..."
 	go build -o tooltrust-scanner ./cmd/tooltrust-scanner
+	go build -o tooltrust-mcp ./cmd/mcpserver
 
 e2e: scan-test
 
@@ -30,4 +31,4 @@ scan-test: build
 
 clean:
 	@echo "🧹 Cleaning up..."
-	rm -f tooltrust-scanner
+	rm -f tooltrust-scanner tooltrust-mcp
