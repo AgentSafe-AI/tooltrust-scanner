@@ -80,6 +80,7 @@ async function main() {
       await downloadFile(downloadUrl, binPath);
     } catch (e) {
       console.error(`Error downloading binary: ${e.message}`);
+      console.error("Failed to download binary. If you are behind a proxy, try setting NODE_TLS_REJECT_UNAUTHORIZED=0 or download the binary manually from GitHub Releases.");
       process.exit(1);
     }
   }
