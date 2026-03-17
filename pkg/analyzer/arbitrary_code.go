@@ -79,14 +79,14 @@ func (c *ArbitraryCodeChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 			strings.Contains(nameLower, strings.ReplaceAll(kw, " ", ""))
 		descMatch := strings.Contains(descLower, kw)
 		if nameMatch || descMatch {
-			return emitArbitraryCodeFinding(), nil
+			return emitArbitraryCodeFinding(tool.Name), nil
 		}
 	}
 
 	// 2. Name-suffix patterns (e.g. chrome_evaluate, cdp_eval).
 	for _, suffix := range arbitraryCodeNameSuffixes {
 		if strings.HasSuffix(nameLower, suffix) || strings.Contains(nameLower, suffix) {
-			return emitArbitraryCodeFinding(), nil
+			return emitArbitraryCodeFinding(tool.Name), nil
 		}
 	}
 
@@ -94,16 +94,17 @@ func (c *ArbitraryCodeChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 	combined := nameLower + " " + descLower
 	for _, re := range arbitraryCodePatterns {
 		if re.MatchString(combined) {
-			return emitArbitraryCodeFinding(), nil
+			return emitArbitraryCodeFinding(tool.Name), nil
 		}
 	}
 
 	return nil, nil
 }
 
-func emitArbitraryCodeFinding() []model.Issue {
+func emitArbitraryCodeFinding(toolName string) []model.Issue {
 	return []model.Issue{{
 		RuleID:      "AS-006",
+		ToolName:    toolName,
 		Severity:    model.SeverityCritical,
 		Code:        "ARBITRARY_CODE_EXECUTION",
 		Description: "tool name or description implies arbitrary script/code execution (evaluate_script, execute javascript, etc.)",

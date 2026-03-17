@@ -35,6 +35,7 @@ func (c *PermissionChecker) Check(tool model.UnifiedTool) ([]model.Issue, error)
 		}
 		issues = append(issues, model.Issue{
 			RuleID:      "AS-002",
+			ToolName:    tool.Name,
 			Severity:    sev,
 			Code:        "HIGH_RISK_PERMISSION",
 			Description: fmt.Sprintf("tool declares %s permission", perm),
@@ -45,6 +46,7 @@ func (c *PermissionChecker) Check(tool model.UnifiedTool) ([]model.Issue, error)
 	if propCount := len(tool.InputSchema.Properties); propCount > largeSchemaPropThreshold {
 		issues = append(issues, model.Issue{
 			RuleID:      "AS-002",
+			ToolName:    tool.Name,
 			Severity:    model.SeverityLow,
 			Code:        "LARGE_INPUT_SURFACE",
 			Description: fmt.Sprintf("input schema exposes %d properties (threshold: %d)", propCount, largeSchemaPropThreshold),

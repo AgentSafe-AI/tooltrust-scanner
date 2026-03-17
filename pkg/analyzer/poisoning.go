@@ -50,6 +50,7 @@ func (c *PoisoningChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 		if pattern.MatchString(desc) {
 			issues = append(issues, model.Issue{
 				RuleID:      "AS-001",
+				ToolName:    tool.Name,
 				Severity:    model.SeverityCritical,
 				Code:        "TOOL_POISONING",
 				Description: "possible prompt injection detected in tool description: pattern matched: " + pattern.String(),
@@ -64,6 +65,7 @@ func (c *PoisoningChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 		if _, found := deepscan.Analyze(desc); found {
 			issues = append(issues, model.Issue{
 				RuleID:      "AS-001",
+				ToolName:    tool.Name,
 				Severity:    model.SeverityCritical,
 				Code:        "TOOL_POISONING",
 				Description: "semantic AI analysis detected deep prompt injection in tool description",

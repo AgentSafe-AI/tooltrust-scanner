@@ -55,6 +55,7 @@ func (c *SecretHandlingChecker) Check(tool model.UnifiedTool) ([]model.Issue, er
 			if nameLower == pattern || strings.Contains(nameLower, pattern) {
 				issues = append(issues, model.Issue{
 					RuleID:      "AS-010",
+					ToolName:    tool.Name,
 					Severity:    model.SeverityHigh,
 					Code:        "SECRET_IN_INPUT",
 					Description: fmt.Sprintf("input parameter %q appears to accept a secret or credential", propName),
@@ -71,6 +72,7 @@ func (c *SecretHandlingChecker) Check(tool model.UnifiedTool) ([]model.Issue, er
 		if strings.Contains(descLower, pattern) {
 			issues = append(issues, model.Issue{
 				RuleID:      "AS-010",
+				ToolName:    tool.Name,
 				Severity:    model.SeverityMedium,
 				Code:        "INSECURE_SECRET_HANDLING",
 				Description: fmt.Sprintf("tool description suggests insecure credential handling: %q", pattern),

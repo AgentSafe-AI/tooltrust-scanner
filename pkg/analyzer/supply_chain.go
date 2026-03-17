@@ -188,6 +188,7 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 		for _, v := range vulns {
 			issues = append(issues, model.Issue{
 				RuleID:      "AS-004",
+				ToolName:    tool.Name,
 				Severity:    osvSeverityToModel(v),
 				Code:        "SUPPLY_CHAIN_CVE",
 				Description: fmt.Sprintf("%s in %s@%s: %s", v.ID, dep.Name, dep.Version, v.Summary),

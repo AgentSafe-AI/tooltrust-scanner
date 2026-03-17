@@ -61,6 +61,7 @@ func (c *PrivilegeEscalationChecker) Check(tool model.UnifiedTool) ([]model.Issu
 					strings.Contains(scopeLower, "admin") || scopeLower == "*" {
 					issues = append(issues, model.Issue{
 						RuleID:      "AS-005",
+						ToolName:    tool.Name,
 						Severity:    model.SeverityHigh,
 						Code:        "BROAD_OAUTH_SCOPE",
 						Description: fmt.Sprintf("tool declares over-broad OAuth scope %q", scope),
@@ -78,6 +79,7 @@ func (c *PrivilegeEscalationChecker) Check(tool model.UnifiedTool) ([]model.Issu
 		if strings.Contains(descLower, pattern) {
 			issues = append(issues, model.Issue{
 				RuleID:      "AS-005",
+				ToolName:    tool.Name,
 				Severity:    model.SeverityHigh,
 				Code:        "PRIVILEGE_ESCALATION",
 				Description: fmt.Sprintf("tool description suggests privilege escalation: %q", pattern),

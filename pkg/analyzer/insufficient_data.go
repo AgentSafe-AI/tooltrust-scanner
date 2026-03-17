@@ -25,6 +25,7 @@ func (c *InsufficientDataChecker) Check(tool model.UnifiedTool) ([]model.Issue, 
 	if strings.TrimSpace(tool.Description) == "" {
 		issues = append(issues, model.Issue{
 			RuleID:      "AS-007",
+			ToolName:    tool.Name,
 			Severity:    model.SeverityInfo,
 			Code:        "INSUFFICIENT_TOOL_DATA",
 			Description: fmt.Sprintf("Tool '%s' has no description - agents cannot reason about its purpose, and static analysis coverage is limited", tool.Name),

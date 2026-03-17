@@ -43,6 +43,7 @@ func (c *DoSResilienceChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 
 	return []model.Issue{{
 		RuleID:   "AS-011",
+		ToolName: tool.Name,
 		Severity: model.SeverityLow,
 		Code:     "MISSING_RATE_LIMIT",
 		Description: "tool performs network or execution operations but declares no " +

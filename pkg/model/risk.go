@@ -47,6 +47,7 @@ type Issue struct {
 	Code        string   `json:"code"` // e.g. "TOOL_POISONING", "SCOPE_MISMATCH"
 	Description string   `json:"description,omitempty"`
 	Location    string   `json:"location,omitempty"`
+	ToolName    string   `json:"tool_name,omitempty"`
 }
 
 // RiskScore is the aggregated result of running all analyzers on a UnifiedTool.
