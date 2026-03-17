@@ -157,3 +157,83 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             VERSION=${{ github.ref_name }}
+
+  # ── 5. Smoke Test Released Binaries ────────────────────────────────────────
+  smoke-test:
+    name: Smoke Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: [release]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goos: linux
+            goarch: amd64
+            ext: ""
+          - os: macos-latest
+            goos: darwin
+            goarch: arm64
+            ext: ""
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            ext: ".exe"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: binaries-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/
+
+      - name: Make executable (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x dist/tooltrust-scanner_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}
+          chmod +x dist/tooltrust-mcp_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}
+
+      - name: Create Test JSON
+        shell: bash
+        run: |
+          mkdir -p testdata
+          cat << 'EOF' > testdata/tools.json
+          {
+            "tools": [
+              {
+                "name": "test_tool",
+                "description": "A simple test tool",
+                "inputSchema": { "type": "object", "properties": {} }
+              }
+            ]
+          }
+          EOF
+
+      - name: Test Scanner CLI
+        shell: bash
+        run: |
+          BIN_PATH="dist/tooltrust-scanner_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}"
+          # Try running a basic scan to ensure it doesn't crash
+          $BIN_PATH scan --input testdata/tools.json
+
+      - name: Test MCP Server
+        shell: bash
+        run: |
+          BIN_PATH="dist/tooltrust-mcp_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.ext }}"
+          # Send a basic initialize request and check if it replies without crashing
+          echo '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "test", "version": "1.0.0"}}}' | $BIN_PATH
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test NPM Wrapper
+        shell: bash
+        run: |
+          # Use npx to download and run the wrapper. We must use tooltrust-mcp
+          # Note: Since the release was just created, the binary is already available on GitHub.
+          npx -y tooltrust-mcp@latest --help
+
