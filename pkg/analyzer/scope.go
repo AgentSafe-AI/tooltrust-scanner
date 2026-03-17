@@ -40,7 +40,11 @@ func (c *ScopeChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 	if isReadOnlyName {
 		for _, perm := range tool.Permissions {
 			for _, wp := range writePermissions {
+				// Exception: 'network' permission is allowed for read-only API tools like get_*, list_*, fetch_*
 				if perm == wp {
+					if perm == model.PermissionNetwork {
+						continue
+					}
 					issues = append(issues, model.Issue{
 						RuleID:   "AS-003",
 						Severity: model.SeverityHigh,

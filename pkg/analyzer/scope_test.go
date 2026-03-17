@@ -42,7 +42,8 @@ func TestScopeChecker_ReadPrefixWithNetwork(t *testing.T) {
 	}
 	issues, err := analyzer.NewScopeChecker().Check(tool)
 	require.NoError(t, err)
-	assert.NotEmpty(t, issues)
+	// Read-only tools are now allowed to have network permission
+	assert.Empty(t, issues)
 }
 
 func TestScopeChecker_ListPrefixWithDB(t *testing.T) {
