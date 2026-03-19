@@ -31,6 +31,7 @@ go.work.sum
 .DS_Store
 Thumbs.db
 tooltrust-scanner
+tooltrust-mcp
 *.sarif
 .clauderules
 .cursorrules
