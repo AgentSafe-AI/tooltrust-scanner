@@ -476,11 +476,11 @@ func formatToolLabel(policy model.GatewayPolicy) string {
 // ruleHint returns a short, specific fix hint for each rule ID.
 var ruleHint = map[string]string{
 	"AS-001": "→ Remove adversarial instructions from the tool description before registering it.",
-	"AS-002": "→ If unused: remove the tool. If needed: restrict permissions to minimum required.",
+	"AS-002": "→ Tool requests broad permissions (exec/fs/network). Validate input parameters using Enums where possible, and restrict file system operations to explicit allowed directories.",
 	"AS-003": "→ Rename the tool or fix its permission declarations so name and capabilities match.",
 	"AS-004": "→ Upgrade or replace the vulnerable dependency. Enable Dependabot on the repo.",
 	"AS-005": "→ Narrow OAuth scopes. Remove admin/:write wildcards and sudo-style escalation.",
-	"AS-006": "→ If unused: remove from MCP config. If needed: set approval_required: true and never run unattended.",
+	"AS-006": "→ This tool can execute arbitrary code. If not strictly needed, remove it. If required, you MUST set approval_required: true in your MCP client config to ensure human-in-the-loop confirmation.",
 	"AS-007": "→ Ask the tool author to add a description and input schema to this tool.",
 	"AS-010": "→ Never pass raw credentials as tool inputs. Use a secret manager instead.",
 	"AS-011": "→ Add explicit timeout and rate-limit config to the tool before use in production.",
