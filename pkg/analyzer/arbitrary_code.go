@@ -47,7 +47,9 @@ var arbitraryCodePatterns = []*regexp.Regexp{
 	// page.evaluate() / frame.evaluate() / window.eval — common in CDP/Puppeteer
 	regexp.MustCompile(`(?i)(page|frame|window|document)\.(eval|evaluate)\b`),
 	// hidden shell command in backticks: `curl ... | bash`, `wget`, `sh`
-	regexp.MustCompile("(?i)`[^`]*(curl|wget|bash|sh)[^`]*`"),
+	// Word boundaries prevent matching "sh" inside words like "shown",
+	// "troubleshooting", "publish", "refresh", etc.
+	regexp.MustCompile("(?i)`[^`]*\\b(curl|wget|bash|sh)\\b[^`]*`"),
 }
 
 // arbitraryCodeNameSuffixes are tool-name suffixes that strongly signal JS
