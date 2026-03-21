@@ -51,6 +51,16 @@ func TestShadowingChecker_DifferentScanEngines_NoCrossContamination(t *testing.T
 		"different engine instances must have independent state")
 }
 
+func TestShadowingChecker_PluralSuffix_NoFinding(t *testing.T) {
+	// WHATSAPP_GET_PHONE_NUMBER vs WHATSAPP_GET_PHONE_NUMBERS — same server,
+	// plural/singular variant. Must NOT trigger AS-013 (suffix-extension skip).
+	checker := NewShadowingChecker()
+	_, _ = checker.Check(model.UnifiedTool{Name: "WHATSAPP_GET_PHONE_NUMBER", Description: "get one"})
+	issues, err := checker.Check(model.UnifiedTool{Name: "WHATSAPP_GET_PHONE_NUMBERS", Description: "get many"})
+	assert.NoError(t, err)
+	assert.Empty(t, issues, "plural/singular variant must not trigger AS-013")
+}
+
 func TestShadowingChecker_SeparatorVariant_Triggers(t *testing.T) {
 	// read_file vs readfile (separator stripped during normalization).
 	checker := NewShadowingChecker()

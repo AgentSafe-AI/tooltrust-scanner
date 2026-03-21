@@ -19,10 +19,16 @@ var popularMCPToolNames = []string{
 	"create_file", "delete_file", "move_file", "search_files",
 	"get_file_info", "list_allowed_directories",
 	"brave_web_search", "brave_local_search",
+	// GitHub MCP server (github/github-mcp-server + modelcontextprotocol/servers)
 	"create_or_edit_file", "push_files", "search_repositories",
 	"create_issue", "create_pull_request", "fork_repository",
 	"create_repository", "get_file_contents", "get_issue",
 	"list_commits", "list_issues",
+	"search_code", "search_issues", "search_users",
+	"get_pull_request", "list_pull_requests", "merge_pull_request",
+	"update_issue", "add_issue_comment", "get_commit",
+	"list_branches", "create_branch", "delete_branch",
+	"get_repository", "list_tags", "get_tag",
 	"fetch", "fetch_url", "get_current_time", "convert_time",
 	"sequentialthinking",
 	// Playwright / browser tools
@@ -113,11 +119,18 @@ func (c *TyposquattingChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 	}
 	normName := normalizeToolName(name)
 
+	// If this name IS a canonical tool, it cannot be a typosquat — bail before
+	// the distance loop so we don't accidentally flag it against a different
+	// entry that happens to be within edit-distance 2 (e.g. search_code vs
+	// search_nodes).
+	for _, known := range popularMCPToolNames {
+		if normName == normalizeToolName(known) {
+			return nil, nil
+		}
+	}
+
 	for _, known := range popularMCPToolNames {
 		normKnown := normalizeToolName(known)
-		if normName == normKnown {
-			continue // exact match — not a typosquat
-		}
 		// Skip if length difference alone exceeds threshold (fast reject).
 		diff := len(normName) - len(normKnown)
 		if diff < 0 {

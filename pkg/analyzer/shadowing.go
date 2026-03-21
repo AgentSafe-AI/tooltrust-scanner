@@ -55,6 +55,10 @@ func (c *ShadowingChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 	}
 
 	// Near-duplicate check (edit distance 1 on normalised names, min len 5).
+	// Skip when one name is a pure suffix extension of the other (e.g. plural
+	// +S or +ES): "whatsappgetphonenumbers" vs "whatsappgetphonenumber" — these
+	// are intentional plural/singular variants within the same server, not a
+	// shadowing attack. Real shadowing uses substitutions mid-name, not appends.
 	if len(norm) >= 5 {
 		for seenNorm, seenName := range c.seen {
 			if len(seenNorm) < 5 {
@@ -67,21 +71,32 @@ func (c *ShadowingChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 			if diff > 1 {
 				continue
 			}
-			if levenshtein(norm, seenNorm) == 1 {
-				c.seen[norm] = name
-				return []model.Issue{{
-					RuleID:   "AS-013",
-					ToolName: tool.Name,
-					Severity: model.SeverityMedium,
-					Code:     "TOOL_SHADOWING_NEAR",
-					Description: fmt.Sprintf(
-						"tool name %q is nearly identical to %q (edit distance 1) — "+
-							"could shadow a trusted tool in a multi-server environment",
-						tool.Name, seenName,
-					),
-					Location: "name",
-				}}, nil
+			if levenshtein(norm, seenNorm) != 1 {
+				continue
 			}
+			// Skip pure suffix-extension pairs (one is a prefix of the other).
+			shorter, longer := norm, seenNorm
+			if len(norm) > len(seenNorm) {
+				shorter, longer = seenNorm, norm
+			}
+			if strings.HasPrefix(longer, shorter) {
+				// e.g. "getphonenumber" vs "getphonenumbers" — just plural
+				c.seen[norm] = name
+				continue
+			}
+			c.seen[norm] = name
+			return []model.Issue{{
+				RuleID:   "AS-013",
+				ToolName: tool.Name,
+				Severity: model.SeverityMedium,
+				Code:     "TOOL_SHADOWING_NEAR",
+				Description: fmt.Sprintf(
+					"tool name %q is nearly identical to %q (edit distance 1) — "+
+						"could shadow a trusted tool in a multi-server environment",
+					tool.Name, seenName,
+				),
+				Location: "name",
+			}}, nil
 		}
 	}
 

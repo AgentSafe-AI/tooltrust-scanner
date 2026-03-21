@@ -70,3 +70,21 @@ func TestTyposquattingChecker_UnrelatedName_NoFinding(t *testing.T) {
 			"unrelated name %q must not trigger AS-009", name)
 	}
 }
+
+func TestTyposquattingChecker_LegitimateGitHubTools_NoFinding(t *testing.T) {
+	// These are canonical GitHub MCP server tools — they must not trigger AS-009
+	// even though some are within edit-distance 2 of other list entries
+	// (e.g. search_code vs search_nodes).
+	for _, name := range []string{
+		"search_code", "search_issues", "search_users",
+		"get_pull_request", "list_pull_requests", "merge_pull_request",
+		"update_issue", "add_issue_comment", "get_commit",
+		"list_branches", "create_branch",
+	} {
+		tool := model.UnifiedTool{Name: name, Description: "github mcp tool"}
+		eng, _ := NewEngine(false, "")
+		report := eng.Scan(tool)
+		assert.False(t, report.HasFinding("AS-009"),
+			"legitimate GitHub tool %q must not trigger AS-009", name)
+	}
+}
