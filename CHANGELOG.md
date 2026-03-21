@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.1.13] - 2026-03-21
+
+### Fixed
+- **MCP parser**: The JSON Schema `"type"` field may be either a plain string
+  (`"string"`) or an array of strings (`["string","null"]`) per the JSON Schema
+  spec. The MCP adapter now handles both via a new `FlexType` unmarshaler.
+  Previously, Smithery-hosted tools such as `googlesheets` caused a hard parse
+  error (`cannot unmarshal array into Go struct field … of type string`), silently
+  skipping the tool in the directory pipeline.
+
+---
+
 ## [0.1.12] - 2026-03-20
 
 ### Fixed
