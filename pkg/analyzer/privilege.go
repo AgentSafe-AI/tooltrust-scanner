@@ -41,6 +41,14 @@ var privilegedDescriptionPatterns = []string{
 // Rule ID: AS-005.
 type PrivilegeEscalationChecker struct{}
 
+func (c *PrivilegeEscalationChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-005",
+		Title:       "Privilege Escalation",
+		Description: "Detects tools that acquire elevated access at runtime through broad OAuth scopes, sudo patterns, or admin-level permission requests.",
+	}
+}
+
 // NewPrivilegeEscalationChecker returns a new PrivilegeEscalationChecker.
 func NewPrivilegeEscalationChecker() *PrivilegeEscalationChecker {
 	return &PrivilegeEscalationChecker{}

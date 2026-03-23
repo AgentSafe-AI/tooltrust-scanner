@@ -390,6 +390,14 @@ type SupplyChainChecker struct {
 	client osvClient
 }
 
+func (c *SupplyChainChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-004",
+		Title:       "Supply Chain CVE",
+		Description: "Queries the OSV database for known vulnerabilities in a tool's declared package dependencies.",
+	}
+}
+
 // NewSupplyChainChecker returns a SupplyChainChecker using the live OSV API.
 func NewSupplyChainChecker() *SupplyChainChecker {
 	return &SupplyChainChecker{client: newHTTPOSVClient()}

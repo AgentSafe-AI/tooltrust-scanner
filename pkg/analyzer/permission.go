@@ -21,6 +21,14 @@ var permissionRiskLevel = map[model.Permission]model.Severity{
 // PermissionChecker analyses the declared permissions of a tool.
 type PermissionChecker struct{}
 
+func (c *PermissionChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-002",
+		Title:       "Excessive Permission Surface",
+		Description: "Flags tools requesting broad permissions such as shell execution, unrestricted file writes, or network access beyond their stated purpose.",
+	}
+}
+
 // NewPermissionChecker returns a new PermissionChecker.
 func NewPermissionChecker() *PermissionChecker { return &PermissionChecker{} }
 

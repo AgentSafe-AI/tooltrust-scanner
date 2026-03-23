@@ -72,6 +72,14 @@ var arbitraryCodeNameSuffixes = []string{
 // These are AS-006 with CRITICAL severity — equivalent risk to exec.
 type ArbitraryCodeChecker struct{}
 
+func (c *ArbitraryCodeChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-006",
+		Title:       "Arbitrary Code Execution",
+		Description: "Flags tools that accept or execute arbitrary scripts, eval patterns, or sandbox escape mechanisms.",
+	}
+}
+
 // NewArbitraryCodeChecker returns a new ArbitraryCodeChecker.
 func NewArbitraryCodeChecker() *ArbitraryCodeChecker { return &ArbitraryCodeChecker{} }
 

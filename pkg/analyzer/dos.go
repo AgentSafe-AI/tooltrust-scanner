@@ -28,6 +28,14 @@ var rateLimitIndicators = []string{
 // Rule ID: AS-011.
 type DoSResilienceChecker struct{}
 
+func (c *DoSResilienceChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-011",
+		Title:       "DoS Resilience",
+		Description: "Detects tools with outbound or resource-heavy permissions that lack rate-limiting or timeout configuration.",
+	}
+}
+
 // NewDoSResilienceChecker returns a new DoSResilienceChecker.
 func NewDoSResilienceChecker() *DoSResilienceChecker { return &DoSResilienceChecker{} }
 

@@ -11,6 +11,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+	"time"
 
 	"github.com/kballard/go-shellquote"
 	"github.com/mark3labs/mcp-go/client"
@@ -27,6 +31,9 @@ import (
 // version is set at build time via -ldflags.
 var version = "dev"
 
+// scanTimeout is the maximum time allowed for a single server scan.
+const scanTimeout = 60 * time.Second
+
 func main() {
 	help := flag.Bool("help", false, "Show usage information")
 	flag.BoolVar(help, "h", false, "Show usage information")
@@ -41,7 +48,7 @@ func main() {
 		fmt.Printf("  -h, --help     Show this help message\n")
 		fmt.Printf("  -v, --version  Show version information\n")
 		fmt.Printf("  -r, --rules    List all supported security rules (catalog)\n\n")
-		fmt.Printf("Configuration for Claude Desktop:\n")
+		fmt.Printf("Configuration for Claude Code:\n")
 		fmt.Printf("  {\"command\": \"npx\", \"args\": [\"-y\", \"@agentsafe/tooltrust-mcp\"]}\n")
 	}
 	flag.Parse()
@@ -55,16 +62,7 @@ func main() {
 		os.Exit(0)
 	}
 	if *rules {
-		fmt.Printf("Supported Security Rules (Catalog):\n")
-		fmt.Printf("  AS-001  Tool Poisoning / Prompt Injection (malicious instructions in tool descriptions)\n")
-		fmt.Printf("  AS-002  Excessive Permission Surface (executing commands, file writes, network access)\n")
-		fmt.Printf("  AS-003  Scope Mismatch (tool name implies read-only but requests write permissions)\n")
-		fmt.Printf("  AS-004  Supply Chain CVE (known vulnerabilities in declared package dependencies)\n")
-		fmt.Printf("  AS-005  Privilege Escalation (tools that acquire elevated access at runtime)\n")
-		fmt.Printf("  AS-006  Arbitrary Code Execution (eval, execute_script, sandbox escape patterns)\n")
-		fmt.Printf("  AS-007  Insufficient Tool Data (missing description or input schema)\n")
-		fmt.Printf("  AS-010  Secret Handling (tools requesting API keys, tokens, or credentials)\n")
-		fmt.Printf("  AS-011  DoS Resilience (missing rate-limit or timeout configuration)\n")
+		printRulesCatalog()
 		os.Exit(0)
 	}
 
@@ -76,10 +74,25 @@ func main() {
 	srv.AddTool(buildScanJSONTool(), handleScanJSON)
 	srv.AddTool(buildScanServerTool(), handleScanServer)
 	srv.AddTool(buildLookupTool(), handleLookup)
+	srv.AddTool(buildListRulesTool(), handleListRules)
+	srv.AddTool(buildScanConfigTool(), handleScanConfig)
 
 	if err := server.ServeStdio(srv); err != nil {
 		fmt.Fprintf(os.Stderr, "tooltrust-scanner mcp server error: %v\n", err)
 		os.Exit(1)
+	}
+}
+
+// printRulesCatalog dynamically enumerates all registered checkers.
+func printRulesCatalog() {
+	scanner, err := analyzer.NewScanner(false, "")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to initialize scanner: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Supported Security Rules (Catalog):\n")
+	for _, r := range scanner.Rules() {
+		fmt.Printf("  %-6s  %s (%s)\n", r.ID, r.Title, r.Description)
 	}
 }
 
@@ -158,10 +171,13 @@ func handleScanServer(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.
 		return mcplib.NewToolResultError("command argument is required and must be a non-empty string"), nil
 	}
 
-	tools, err := scanLiveServer(ctx, command)
+	args, err := shellquote.Split(command)
 	if err != nil {
-		// Return failure as text rather than crashing the calling agent,
-		// so the agent can see the connection/parsing failed.
+		return mcplib.NewToolResultError(fmt.Sprintf("failed to parse server command: %v", err)), nil
+	}
+
+	tools, err := scanLiveServer(ctx, args, nil)
+	if err != nil {
 		return mcplib.NewToolResultText(fmt.Sprintf("Failed to scan live server: %v", err)), nil
 	}
 
@@ -172,20 +188,25 @@ func handleScanServer(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.
 	return processTools(ctx, tools)
 }
 
-func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool, error) {
-	args, err := shellquote.Split(serverCmd)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse server command: %w", err)
-	}
+// scanLiveServer spawns an MCP server, connects via stdio, lists its tools,
+// and returns parsed UnifiedTools. The extraEnv parameter allows injecting
+// additional environment variables into the child process.
+func scanLiveServer(ctx context.Context, args, extraEnv []string) ([]model.UnifiedTool, error) {
 	if len(args) == 0 {
 		return nil, fmt.Errorf("empty server command")
 	}
 
-	// Create a cancelable context to forcefully kill the sub-process on exit.
-	execCtx, cancel := context.WithCancel(ctx)
+	// Enforce a 60s timeout to prevent hung servers from blocking indefinitely.
+	// 60s accommodates npx cold cache (~15-20s for package install).
+	execCtx, cancel := context.WithTimeout(ctx, scanTimeout)
 	defer cancel()
 
-	stdioTransport := transport.NewStdioWithOptions(args[0], nil, args[1:])
+	var envSlice []string
+	if len(extraEnv) > 0 {
+		envSlice = append(os.Environ(), extraEnv...)
+	}
+
+	stdioTransport := transport.NewStdioWithOptions(args[0], envSlice, args[1:])
 	if startErr := stdioTransport.Start(execCtx); startErr != nil {
 		return nil, fmt.Errorf("failed to start transport: %w", startErr)
 	}
@@ -200,13 +221,13 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 		Version: "1.0.0",
 	}
 
-	_, err = c.Initialize(ctx, initReq)
+	_, err := c.Initialize(execCtx, initReq)
 	if err != nil {
 		return nil, fmt.Errorf("initialization failed: %w", err)
 	}
 
 	listReq := mcplib.ListToolsRequest{}
-	resp, err := c.ListTools(ctx, listReq)
+	resp, err := c.ListTools(execCtx, listReq)
 	if err != nil {
 		return nil, fmt.Errorf("tools/list map failed: %w", err)
 	}
@@ -223,7 +244,7 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 	}
 
 	adapter := localmcp.NewAdapter()
-	tools, err := adapter.Parse(ctx, data)
+	tools, err := adapter.Parse(execCtx, data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse tools: %w", err)
 	}
@@ -281,6 +302,241 @@ func handleLookup(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.Call
 	return mcplib.NewToolResultText(string(bodyBytes)), nil
 }
 
+// ── tooltrust_list_rules (Rule Catalog) ──────────────────────────────────────
+
+func buildListRulesTool() mcplib.Tool {
+	return mcplib.NewTool(
+		"tooltrust_list_rules",
+		mcplib.WithDescription(
+			"Returns the full catalog of security rules used by the ToolTrust scanner, "+
+				"including rule IDs, titles, and descriptions. Useful for understanding what the scanner checks for.",
+		),
+	)
+}
+
+func handleListRules(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
+	scanner, err := analyzer.NewScanner(false, "")
+	if err != nil {
+		return mcplib.NewToolResultError(fmt.Sprintf("failed to initialize scanner: %v", err)), nil
+	}
+	rules := scanner.Rules()
+	encoded, err := json.MarshalIndent(rules, "", "  ")
+	if err != nil {
+		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize rules: %v", err)), nil
+	}
+	return mcplib.NewToolResultText(string(encoded)), nil
+}
+
+// ── tooltrust_scan_config (Scan All Configured Servers) ─────────────────────
+
+// mcpConfig represents the structure of .mcp.json or ~/.claude.json.
+type mcpConfig struct {
+	MCPServers map[string]mcpServerEntry `json:"mcpServers"`
+}
+
+type mcpServerEntry struct {
+	Command string            `json:"command"`
+	Args    []string          `json:"args"`
+	Env     map[string]string `json:"env"`
+}
+
+// serverScanResult holds the result of scanning one server.
+type serverScanResult struct {
+	Server  string      `json:"server"`
+	Status  string      `json:"status"` // "ok", "error", "skipped"
+	Error   string      `json:"error,omitempty"`
+	Result  *ScanResult `json:"result,omitempty"`
+	Skipped string      `json:"skipped,omitempty"`
+}
+
+// configScanResult is the full response from tooltrust_scan_config.
+type configScanResult struct {
+	ConfigFile string             `json:"config_file"`
+	Servers    []serverScanResult `json:"servers"`
+	Summary    configScanSummary  `json:"summary"`
+}
+
+type configScanSummary struct {
+	Total   int `json:"total"`
+	Scanned int `json:"scanned"`
+	Errors  int `json:"errors"`
+	Skipped int `json:"skipped"`
+}
+
+func buildScanConfigTool() mcplib.Tool {
+	return mcplib.NewTool(
+		"tooltrust_scan_config",
+		mcplib.WithDescription(
+			"Reads the user's Claude Code MCP configuration and scans all configured servers in parallel. "+
+				"Searches for .mcp.json in the current directory, then ~/.claude.json as fallback. "+
+				"Returns a summary report with scan results for each server. Servers that fail to start "+
+				"are reported with an error note; scanning continues for remaining servers.",
+		),
+	)
+}
+
+func handleScanConfig(ctx context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
+	configPath, cfg, err := loadMCPConfig()
+	if err != nil {
+		return mcplib.NewToolResultError(err.Error()), nil
+	}
+
+	if len(cfg.MCPServers) == 0 {
+		return mcplib.NewToolResultText(fmt.Sprintf("No MCP servers configured in %s.", configPath)), nil
+	}
+
+	// Scan all servers in parallel.
+	type indexedResult struct {
+		index  int
+		result serverScanResult
+	}
+
+	serverNames := make([]string, 0, len(cfg.MCPServers))
+	for name := range cfg.MCPServers {
+		serverNames = append(serverNames, name)
+	}
+
+	results := make([]serverScanResult, len(serverNames))
+	var wg sync.WaitGroup
+	ch := make(chan indexedResult, len(serverNames))
+
+	for i, name := range serverNames {
+		entry := cfg.MCPServers[name]
+		wg.Add(1)
+		go func(idx int, serverName string, e mcpServerEntry) {
+			defer wg.Done()
+			ch <- indexedResult{
+				index:  idx,
+				result: scanOneServer(ctx, serverName, e),
+			}
+		}(i, name, entry)
+	}
+
+	// Close channel when all goroutines complete.
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for ir := range ch {
+		results[ir.index] = ir.result
+	}
+
+	summary := configScanSummary{Total: len(results)}
+	for _, r := range results {
+		switch r.Status {
+		case "ok":
+			summary.Scanned++
+		case "error":
+			summary.Errors++
+		case "skipped":
+			summary.Skipped++
+		}
+	}
+
+	out := configScanResult{
+		ConfigFile: configPath,
+		Servers:    results,
+		Summary:    summary,
+	}
+	encoded, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize result: %v", err)), nil
+	}
+	return mcplib.NewToolResultText(string(encoded)), nil
+}
+
+// scanOneServer scans a single MCP server from config.
+func scanOneServer(ctx context.Context, name string, entry mcpServerEntry) serverScanResult {
+	// Skip self-scan.
+	if isSelfEntry(name, entry) {
+		return serverScanResult{
+			Server:  name,
+			Status:  "skipped",
+			Skipped: "tooltrust-mcp (self)",
+		}
+	}
+
+	args := append([]string{entry.Command}, entry.Args...)
+
+	// Build extra env from config entry.
+	var extraEnv []string
+	for k, v := range entry.Env {
+		extraEnv = append(extraEnv, k+"="+v)
+	}
+
+	tools, err := scanLiveServer(ctx, args, extraEnv)
+	if err != nil {
+		return serverScanResult{
+			Server: name,
+			Status: "error",
+			Error:  err.Error(),
+		}
+	}
+
+	if len(tools) == 0 {
+		return serverScanResult{
+			Server: name,
+			Status: "ok",
+			Result: &ScanResult{Summary: ScanSummary{Total: 0}},
+		}
+	}
+
+	scanResult, err := processToolsRaw(ctx, tools)
+	if err != nil {
+		return serverScanResult{
+			Server: name,
+			Status: "error",
+			Error:  err.Error(),
+		}
+	}
+
+	return serverScanResult{
+		Server: name,
+		Status: "ok",
+		Result: scanResult,
+	}
+}
+
+// isSelfEntry returns true if the config entry refers to tooltrust-mcp itself.
+func isSelfEntry(name string, entry mcpServerEntry) bool {
+	if strings.Contains(strings.ToLower(name), "tooltrust") {
+		return true
+	}
+	cmdStr := entry.Command + " " + strings.Join(entry.Args, " ")
+	return strings.Contains(cmdStr, "tooltrust-mcp")
+}
+
+// loadMCPConfig searches for the MCP config file and parses it.
+func loadMCPConfig() (string, mcpConfig, error) {
+	// 1. Check .mcp.json in current directory.
+	if data, err := os.ReadFile(".mcp.json"); err == nil {
+		var cfg mcpConfig
+		if err := json.Unmarshal(data, &cfg); err != nil {
+			return ".mcp.json", mcpConfig{}, fmt.Errorf("failed to parse .mcp.json: %w", err)
+		}
+		return ".mcp.json", cfg, nil
+	}
+
+	// 2. Check ~/.claude.json.
+	home, err := os.UserHomeDir()
+	if err == nil {
+		claudePath := filepath.Join(home, ".claude.json")
+		if data, err := os.ReadFile(claudePath); err == nil { // #nosec G304 -- path is ~/.claude.json, not user-controlled
+			var cfg mcpConfig
+			if err := json.Unmarshal(data, &cfg); err != nil {
+				return claudePath, mcpConfig{}, fmt.Errorf("failed to parse %s: %w", claudePath, err)
+			}
+			return claudePath, cfg, nil
+		}
+	}
+
+	return "", mcpConfig{}, fmt.Errorf(
+		"no MCP config found; searched " +
+			".mcp.json (current directory) and ~/.claude.json (global Claude Code config)",
+	)
+}
+
 // ── Common Scanner Processing Logic ─────────────────────────────────────────
 
 // ScanResult is the JSON shape returned by the scan tools.
@@ -298,9 +554,23 @@ type ScanSummary struct {
 }
 
 func processTools(ctx context.Context, tools []model.UnifiedTool) (*mcplib.CallToolResult, error) {
+	result, err := processToolsRaw(ctx, tools)
+	if err != nil {
+		return mcplib.NewToolResultError(err.Error()), nil
+	}
+	encoded, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize result: %v", err)), nil
+	}
+	return mcplib.NewToolResultText(string(encoded)), nil
+}
+
+// processToolsRaw runs the scanner and returns raw results (used by both
+// processTools and scanOneServer to avoid double-serialization).
+func processToolsRaw(ctx context.Context, tools []model.UnifiedTool) (*ScanResult, error) {
 	scanner, err := analyzer.NewScanner(false, "")
 	if err != nil {
-		return mcplib.NewToolResultError(fmt.Sprintf("failed to initialize scanner: %v", err)), nil
+		return nil, fmt.Errorf("failed to initialize scanner: %v", err)
 	}
 	var policies []model.GatewayPolicy
 	summary := ScanSummary{Total: len(tools)}
@@ -308,11 +578,11 @@ func processTools(ctx context.Context, tools []model.UnifiedTool) (*mcplib.CallT
 	for i := range tools {
 		score, scanErr := scanner.Scan(ctx, tools[i])
 		if scanErr != nil {
-			return mcplib.NewToolResultError(fmt.Sprintf("scan failed for tool %q: %v", tools[i].Name, scanErr)), nil
+			return nil, fmt.Errorf("scan failed for tool %q: %v", tools[i].Name, scanErr)
 		}
 		policy, evalErr := gateway.Evaluate(tools[i].Name, score)
 		if evalErr != nil {
-			return mcplib.NewToolResultError(fmt.Sprintf("policy evaluation failed for tool %q: %v", tools[i].Name, evalErr)), nil
+			return nil, fmt.Errorf("policy evaluation failed for tool %q: %v", tools[i].Name, evalErr)
 		}
 		policies = append(policies, policy)
 
@@ -326,11 +596,5 @@ func processTools(ctx context.Context, tools []model.UnifiedTool) (*mcplib.CallT
 		}
 	}
 
-	result := ScanResult{Policies: policies, Summary: summary}
-	encoded, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize result: %v", err)), nil
-	}
-
-	return mcplib.NewToolResultText(string(encoded)), nil
+	return &ScanResult{Policies: policies, Summary: summary}, nil
 }

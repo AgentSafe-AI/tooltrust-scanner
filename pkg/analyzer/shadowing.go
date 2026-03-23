@@ -27,6 +27,14 @@ type ShadowingChecker struct {
 	seen map[string]string
 }
 
+func (c *ShadowingChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-013",
+		Title:       "Tool Shadowing",
+		Description: "Detects exact tool name collisions within a scan session, where a malicious server registers an identically-named tool to intercept calls intended for a trusted tool.",
+	}
+}
+
 // NewShadowingChecker returns a fresh ShadowingChecker with an empty seen set.
 func NewShadowingChecker() *ShadowingChecker {
 	return &ShadowingChecker{seen: make(map[string]string)}

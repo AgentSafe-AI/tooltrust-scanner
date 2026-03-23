@@ -79,9 +79,16 @@ var injectionRules = []patternRule{
 	},
 }
 
-// PoisoningChecker inspects a tool's description for prompt injection signals.
 type PoisoningChecker struct {
 	enableDeepScan bool
+}
+
+func (c *PoisoningChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-001",
+		Title:       "Tool Poisoning / Prompt Injection",
+		Description: "Detects malicious instructions embedded in tool descriptions that attempt to hijack agent behavior, exfiltrate data, or override safety constraints.",
+	}
 }
 
 // NewPoisoningChecker returns a new PoisoningChecker.

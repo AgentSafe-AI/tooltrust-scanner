@@ -15,6 +15,14 @@ import (
 // Severity: INFO.
 type InsufficientDataChecker struct{}
 
+func (c *InsufficientDataChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-007",
+		Title:       "Insufficient Tool Data",
+		Description: "Reports tools that lack a description or input schema, hindering agent reasoning and limiting static analysis coverage.",
+	}
+}
+
 func NewInsufficientDataChecker() *InsufficientDataChecker {
 	return &InsufficientDataChecker{}
 }
