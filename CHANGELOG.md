@@ -5,6 +5,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.2.0] - 2026-03-22
+
+### Added
+- **`tooltrust_scan_config` MCP tool**: reads Claude Code MCP config (`.mcp.json`
+  or `~/.claude.json`), scans all configured servers in parallel, returns a
+  summary report. Merges per-server env vars from config, skips self-scan,
+  handles server failures gracefully with partial results.
+- **`tooltrust_list_rules` MCP tool**: returns the full security rule catalog
+  dynamically from registered checkers — no hardcoded lists.
+- **`RuleMeta` interface**: each checker now exports its rule ID, title, and
+  description via `Meta()`, enabling dynamic rule enumeration across the codebase.
+- **28 tests** for all MCP tool handlers (new and existing), covering happy paths,
+  error handling, config parsing, self-skip, and edge cases.
+
+### Changed
+- **60s scan timeout** enforced on all live server scans via `context.WithTimeout`,
+  preventing hung MCP servers from blocking indefinitely. 60s accommodates
+  `npx -y` cold cache (~15-20s for package installation).
+- **`scanLiveServer` refactored** to accept `[]string` args directly instead of
+  a shell-quoted command string. Eliminates lossy round-trip for config-sourced
+  commands with spaces in arguments.
+- **`--rules` CLI** now dynamically enumerates registered checkers instead of
+  using a hardcoded list (previously missing AS-009 and AS-013).
+- **Parallel server scanning** in `tooltrust_scan_config` using goroutines —
+  all servers scan concurrently with independent 60s timeouts.
+
 ## [0.1.15] - 2026-03-21
 
 ### Fixed
