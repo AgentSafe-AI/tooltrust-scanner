@@ -9,9 +9,9 @@
 class TooltrustScanner < Formula
   desc "Security scanner for AI agent tool definitions"
   homepage "https://github.com/AgentSafe-AI/tooltrust-scanner"
-  version "0.1.15"
+  version "0.2.0"
   url "https://github.com/AgentSafe-AI/tooltrust-scanner/archive/refs/tags/v#{version}.tar.gz"
-  sha256 "3b8e0b0cd493f7f8ac51b1b5e0d613af217116503e2bb944b4bcdd66ce4a4267"
+  sha256 "9da678baabfeae8225ab8ba9ce38a6f3d2603893bab860ded358b80106878a6a"
   license "MIT"
 
   depends_on "go" => :build
