@@ -27,6 +27,14 @@ type CustomRuleChecker struct {
 	Re   *regexp.Regexp
 }
 
+func (c *CustomRuleChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          c.Rule.ID,
+		Title:       c.Rule.Description,
+		Description: c.Rule.Description,
+	}
+}
+
 // Check evaluates the tool against the custom regex.
 func (c *CustomRuleChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 	var target string

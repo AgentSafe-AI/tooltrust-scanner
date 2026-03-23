@@ -20,6 +20,14 @@ var writePermissions = []model.Permission{
 // declared permissions.
 type ScopeChecker struct{}
 
+func (c *ScopeChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-003",
+		Title:       "Scope Mismatch",
+		Description: "Detects when a tool's name implies read-only behavior but it requests write-class permissions, or vice versa.",
+	}
+}
+
 // NewScopeChecker returns a new ScopeChecker.
 func NewScopeChecker() *ScopeChecker { return &ScopeChecker{} }
 

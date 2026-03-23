@@ -107,6 +107,14 @@ func normalizeToolName(name string) string {
 // tool to gain execution in a user's agent environment.
 type TyposquattingChecker struct{}
 
+func (c *TyposquattingChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-009",
+		Title:       "Typosquatting",
+		Description: "Detects tool names within edit distance 2 of well-known MCP tool names, indicating possible impersonation.",
+	}
+}
+
 // NewTyposquattingChecker returns a new TyposquattingChecker.
 func NewTyposquattingChecker() *TyposquattingChecker { return &TyposquattingChecker{} }
 

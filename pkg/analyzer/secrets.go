@@ -40,6 +40,14 @@ var secretDescriptionPatterns = []string{
 // Rule ID: AS-010.
 type SecretHandlingChecker struct{}
 
+func (c *SecretHandlingChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-010",
+		Title:       "Secret Handling",
+		Description: "Flags tools that accept API keys, tokens, or credentials as input parameters, risking exposure in logs or agent traces.",
+	}
+}
+
 // NewSecretHandlingChecker returns a new SecretHandlingChecker.
 func NewSecretHandlingChecker() *SecretHandlingChecker { return &SecretHandlingChecker{} }
 

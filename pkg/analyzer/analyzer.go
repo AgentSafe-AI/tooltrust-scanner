@@ -20,9 +20,17 @@ var severityWeight = map[model.Severity]int{
 	model.SeverityInfo:     0,
 }
 
+// RuleMeta describes a single security rule for catalog enumeration.
+type RuleMeta struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
 // checker is an internal interface for a single analysis pass.
 type checker interface {
 	Check(tool model.UnifiedTool) ([]model.Issue, error)
+	Meta() RuleMeta
 }
 
 // Scanner orchestrates all registered checkers and aggregates their output
@@ -58,6 +66,15 @@ func NewScanner(enableDeepScan bool, rulesDir string) (*Scanner, error) {
 	}
 
 	return &Scanner{checkers: checkers}, nil
+}
+
+// Rules returns the metadata for all registered checkers.
+func (s *Scanner) Rules() []RuleMeta {
+	rules := make([]RuleMeta, len(s.checkers))
+	for i, c := range s.checkers {
+		rules[i] = c.Meta()
+	}
+	return rules
 }
 
 // Scan runs all checkers against the tool and returns the aggregated RiskScore.
