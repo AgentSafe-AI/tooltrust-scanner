@@ -522,7 +522,7 @@ func loadMCPConfig() (string, mcpConfig, error) {
 	home, err := os.UserHomeDir()
 	if err == nil {
 		claudePath := filepath.Join(home, ".claude.json")
-		if data, err := os.ReadFile(claudePath); err == nil {
+		if data, err := os.ReadFile(claudePath); err == nil { // #nosec G304 -- path is ~/.claude.json, not user-controlled
 			var cfg mcpConfig
 			if err := json.Unmarshal(data, &cfg); err != nil {
 				return claudePath, mcpConfig{}, fmt.Errorf("failed to parse %s: %w", claudePath, err)

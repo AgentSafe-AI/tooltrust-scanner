@@ -111,7 +111,7 @@ func LoadCustomRules(dir string) ([]checker, error) {
 			return nil
 		}
 
-		data, readErr := os.ReadFile(path) // #nosec G304 -- path comes from user-specified rules directory, intentional
+		data, readErr := os.ReadFile(path) // #nosec G304,G122 -- path comes from user-specified rules directory, intentional
 		if readErr != nil {
 			return fmt.Errorf("failed to read %s: %w", path, readErr)
 		}
