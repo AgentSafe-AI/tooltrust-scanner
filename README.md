@@ -32,7 +32,7 @@ Then ask your agent to run `tooltrust_scan_config` — it reads your MCP config 
 | `tooltrust_scan_server` | Launch and scan a specific MCP server |
 | `tooltrust_scanner_scan` | Scan a JSON blob of tool definitions |
 | `tooltrust_lookup` | Look up a server's trust grade from the [ToolTrust Directory](https://www.tooltrust.dev) |
-| `tooltrust_list_rules` | List all 11 security rules with IDs and descriptions |
+| `tooltrust_list_rules` | List all 12 security rules with IDs and descriptions |
 
 ## 💻 CLI
 
@@ -132,6 +132,7 @@ fi
 | **AS-005** | High | Privilege escalation (`admin` scopes, `sudo`) |
 | **AS-006** | Critical | Arbitrary code execution |
 | **AS-007** | Info | Missing description or schema |
+| **AS-008** | **Critical** | **Known-compromised package versions** — offline blacklist (TeamPCP/litellm, trivy, langflow) with zero latency |
 | **AS-009** | Medium | Typosquatting (edit-distance impersonation) |
 | **AS-010** | Medium | Insecure secret handling in params |
 | **AS-011** | Low | Missing rate-limits or timeouts |
