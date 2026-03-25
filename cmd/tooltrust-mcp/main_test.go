@@ -27,17 +27,14 @@ func TestHandleScanJSON_ValidInput(t *testing.T) {
 	require.NotNil(t, result)
 	assert.False(t, result.IsError)
 
-	// Content[0] = summary box, Content[1] = detailed tree, Content[2] = JSON.
-	require.GreaterOrEqual(t, len(result.Content), 3)
+	// Content[0] = compact summary, Content[1] = JSON.
+	require.GreaterOrEqual(t, len(result.Content), 2)
 
 	summary := result.Content[0].(mcplib.TextContent).Text
 	assert.Contains(t, summary, "Scan Summary")
 
-	details := result.Content[1].(mcplib.TextContent).Text
-	assert.Contains(t, details, "Scan Results")
-
 	var sr ScanResult
-	text := result.Content[2].(mcplib.TextContent).Text
+	text := result.Content[1].(mcplib.TextContent).Text
 	require.NoError(t, json.Unmarshal([]byte(text), &sr))
 	assert.Equal(t, 1, sr.Summary.Total)
 }
@@ -91,10 +88,10 @@ func TestHandleScanJSON_EmptyToolsList(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, result.IsError)
 
-	require.GreaterOrEqual(t, len(result.Content), 3)
+	require.GreaterOrEqual(t, len(result.Content), 2)
 
 	var sr ScanResult
-	text := result.Content[2].(mcplib.TextContent).Text
+	text := result.Content[1].(mcplib.TextContent).Text
 	require.NoError(t, json.Unmarshal([]byte(text), &sr))
 	assert.Equal(t, 0, sr.Summary.Total)
 }
