@@ -151,13 +151,20 @@ func TestBlacklist_HighSeverityEntry(t *testing.T) {
 
 func TestBlacklist_SetupTrivy_WildcardMatch(t *testing.T) {
 	bc := analyzer.NewBlacklistChecker()
-	// setup-trivy with any version should produce a WARN
-	for _, ver := range []string{"v1.0.0", "0.0.1", "99.99.99", "latest"} {
+	// setup-trivy < v0.2.6 should WARN
+	for _, ver := range []string{"v0.0.1", "v0.2.0", "v0.2.5"} {
 		tool := toolWithDep("setup-trivy", ver, "github-actions")
 		issues, err := bc.Check(tool)
 		require.NoError(t, err, "version %s", ver)
-		require.Len(t, issues, 1, "version %s should match wildcard", ver)
+		require.Len(t, issues, 1, "version %s should be flagged (< v0.2.6)", ver)
 		assert.Equal(t, "SUPPLY_CHAIN_WARN", issues[0].Code)
+	}
+	// setup-trivy v0.2.6+ should be clean
+	for _, ver := range []string{"v0.2.6", "v0.3.0", "v1.0.0"} {
+		tool := toolWithDep("setup-trivy", ver, "github-actions")
+		issues, err := bc.Check(tool)
+		require.NoError(t, err, "version %s", ver)
+		assert.Empty(t, issues, "version %s should be safe (>= v0.2.6)", ver)
 	}
 }
 

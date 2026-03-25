@@ -33,10 +33,10 @@
     "id": "GHSA-69fq-xp46-6x23",
     "component": "setup-trivy",
     "ecosystem": "github-actions",
-    "affected_versions": ["*"],
+    "affected_versions": ["< v0.2.6"],
     "action": "WARN",
     "severity": "HIGH",
-    "reason": "All versions at elevated risk during the March 2026 TeamPCP exposure window. Perform a manual audit and pin to a known-good SHA before use.",
+    "reason": "Versions prior to v0.2.6 were at elevated risk during the March 2026 TeamPCP exposure window (~4 hours). Upgrade to v0.2.6+ (SHA: 3fb12ec) or pin by digest.",
     "link": "https://github.com/aquasecurity/trivy/security/advisories/GHSA-69fq-xp46-6x23"
   },
   {
