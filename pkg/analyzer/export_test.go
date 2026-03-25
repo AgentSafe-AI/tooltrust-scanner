@@ -16,3 +16,9 @@ func ParseGoSumForTest(data []byte) ([]Dependency, error) {
 func ParseRequirementsTxtForTest(data []byte) ([]Dependency, error) {
 	return parseRequirementsTxt(data)
 }
+
+// NewBlacklistCheckerWithDataForTest constructs a BlacklistChecker from custom
+// JSON for unit tests, bypassing the embedded blacklist.json.
+func NewBlacklistCheckerWithDataForTest(data []byte) (*BlacklistChecker, error) {
+	return newBlacklistCheckerWithData(data)
+}

@@ -324,9 +324,9 @@ func printPtermUI(report ScanReport) error {
 	avgScore, avgGrade := avgRiskScore(report.Policies)
 	summaryContent := fmt.Sprintf(
 		"Total Scanned    : %d\n"+
-			"  Allowed          : %d\n"+
-			"  Require Approval : %d\n"+
-			"  Blocked          : %d\n"+
+			"  ✅ Allowed       : %d\n"+
+			"  ⚠️  Req Approval : %d\n"+
+			"  🚫 Blocked       : %d\n"+
 			"Avg Risk Score   : %d (grade %s)\n"+
 			"Grade Breakdown  : %s\n"+
 			"Scanned At       : %s",

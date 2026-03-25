@@ -563,14 +563,14 @@ func processTools(ctx context.Context, tools []model.UnifiedTool) (*mcplib.CallT
 		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize result: %v", err)), nil
 	}
 
-	formatted := renderFormattedReport(result)
+	summary := renderSummaryLine(result)
 
 	return &mcplib.CallToolResult{
 		Content: []mcplib.Content{
 			mcplib.TextContent{
 				Annotated: mcplib.Annotated{},
 				Type:      "text",
-				Text:      formatted,
+				Text:      summary,
 			},
 			mcplib.TextContent{
 				Annotated: mcplib.Annotated{},
@@ -606,6 +606,29 @@ func severityEmoji(s model.Severity) string {
 	}
 }
 
+// boxLine builds a fixed-width summary box line (40 display cols including │…│).
+// It pads content to 38 display columns, correctly handling double-width emoji.
+func boxLine(content string) string {
+	dw := 0
+	for _, r := range content {
+		if r == 0xFE0F || r == 0x200D { // zero-width variation selector / joiner
+			continue
+		}
+		if r >= 0x1F000 || // Supplementary Multilingual Plane (most emoji)
+			(r >= 0x2600 && r <= 0x27BF) || // Misc symbols & dingbats
+			r == 0x2705 || r == 0x26A0 || r == 0x2714 { // ✅ ⚠ ✔
+			dw += 2
+		} else {
+			dw++
+		}
+	}
+	pad := 38 - dw
+	if pad < 0 {
+		pad = 0
+	}
+	return "│" + content + strings.Repeat(" ", pad) + "│\n"
+}
+
 // actionEmoji returns the emoji for a gateway action.
 func actionEmoji(a model.Action) string {
 	switch a {
@@ -623,58 +646,9 @@ func actionEmoji(a model.Action) string {
 // renderFormattedReport builds a unicode-formatted scan report with emojis and
 // box-drawing characters, suitable for display in MCP clients that render
 // monospace text (e.g. Claude Code).
-func renderFormattedReport(result *ScanResult) string {
-	var b strings.Builder
-
-	b.WriteString("Scan Results\n")
-
-	for i, policy := range result.Policies {
-		// Tree connector
-		connector := "├─"
-		childPrefix := "│  "
-		if i == len(result.Policies)-1 {
-			connector = "└─"
-			childPrefix = "   "
-		}
-
-		// Tool header
-		fmt.Fprintf(&b, "%s Tool: %s  [%s]  score=%d grade=%s\n",
-			connector,
-			policy.ToolName,
-			policy.Action,
-			policy.Score.Score,
-			policy.Score.Grade,
-		)
-
-		// Findings or pass
-		if len(policy.Score.Issues) == 0 {
-			fmt.Fprintf(&b, "%s  └─ ✅ Pass\n", childPrefix)
-		} else {
-			muted := policy.Action == model.ActionAllow
-			for j, issue := range policy.Score.Issues {
-				wt := severityWeight[issue.Severity]
-				issueConnector := "├─"
-				if j == len(policy.Score.Issues)-1 {
-					issueConnector = "└─"
-				}
-				emoji := severityEmoji(issue.Severity)
-				if muted {
-					emoji = "ℹ️ "
-				}
-				fmt.Fprintf(&b, "%s  %s %s [%s] %s (+%d): %s\n",
-					childPrefix,
-					issueConnector,
-					emoji,
-					issue.RuleID,
-					issue.Severity,
-					wt,
-					issue.Description,
-				)
-			}
-		}
-	}
-
-	// Collect finding severity counts across all tools.
+// renderSummaryLine builds a compact 2-line scan summary for MCP clients.
+// The detailed per-tool breakdown is in the JSON content block.
+func renderSummaryLine(result *ScanResult) string {
 	severityCounts := map[model.Severity]int{}
 	for _, p := range result.Policies {
 		for _, issue := range p.Score.Issues {
@@ -682,15 +656,11 @@ func renderFormattedReport(result *ScanResult) string {
 		}
 	}
 
-	// Summary box
-	b.WriteString("\n")
-	b.WriteString("┌──────────── Scan Summary ────────────┐\n")
-	fmt.Fprintf(&b, "│ Total Scanned      : %-15d │\n", result.Summary.Total)
-	fmt.Fprintf(&b, "│   Allowed          : %-15d │\n", result.Summary.Allowed)
-	fmt.Fprintf(&b, "│   Require Approval : %-15d │\n", result.Summary.Approval)
-	fmt.Fprintf(&b, "│   Blocked          : %-15d │\n", result.Summary.Blocked)
+	// Line 1: tool counts by action
+	line1 := fmt.Sprintf("Scan Summary: %d tools | ✅ %d allowed  ⚠️ %d req approval  🚫 %d blocked",
+		result.Summary.Total, result.Summary.Allowed, result.Summary.Approval, result.Summary.Blocked)
 
-	// Findings breakdown by severity (no emoji — emoji width breaks %-Ns padding)
+	// Line 2: findings + grades
 	sevOrder := []model.Severity{model.SeverityCritical, model.SeverityHigh, model.SeverityMedium, model.SeverityLow, model.SeverityInfo}
 	var sevParts []string
 	for _, s := range sevOrder {
@@ -698,11 +668,6 @@ func renderFormattedReport(result *ScanResult) string {
 			sevParts = append(sevParts, fmt.Sprintf("%s×%d", s, n))
 		}
 	}
-	if len(sevParts) > 0 {
-		fmt.Fprintf(&b, "│ Findings: %-26s │\n", strings.Join(sevParts, " "))
-	}
-
-	// Grade breakdown
 	counts := map[model.Grade]int{}
 	for _, p := range result.Policies {
 		counts[p.Score.Grade]++
@@ -714,14 +679,10 @@ func renderFormattedReport(result *ScanResult) string {
 			parts = append(parts, fmt.Sprintf("%s×%d", g, n))
 		}
 	}
-	gradeBreakdown := "—"
-	if len(parts) > 0 {
-		gradeBreakdown = strings.Join(parts, "  ")
-	}
-	fmt.Fprintf(&b, "│ Grade Breakdown: %-19s │\n", gradeBreakdown)
-	b.WriteString("└──────────────────────────────────────┘\n")
+	line2 := fmt.Sprintf("Findings: %s | Grades: %s",
+		strings.Join(sevParts, "  "), strings.Join(parts, "  "))
 
-	return b.String()
+	return line1 + "\n" + line2
 }
 
 // processToolsRaw runs the scanner and returns raw results (used by both

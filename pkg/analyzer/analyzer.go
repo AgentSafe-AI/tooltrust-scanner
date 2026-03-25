@@ -44,6 +44,7 @@ type Scanner struct {
 // NewScannerWithCheckers or use Engine.Scan which calls the real checker.
 func NewScanner(enableDeepScan bool, rulesDir string) (*Scanner, error) {
 	checkers := []checker{
+		NewBlacklistChecker(),               // AS-008 (offline blacklist, runs first)
 		NewPoisoningChecker(enableDeepScan), // AS-001
 		NewPermissionChecker(),              // AS-002
 		NewScopeChecker(),                   // AS-003

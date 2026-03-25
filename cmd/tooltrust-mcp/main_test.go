@@ -27,15 +27,17 @@ func TestHandleScanJSON_ValidInput(t *testing.T) {
 	require.NotNil(t, result)
 	assert.False(t, result.IsError)
 
-	// Content[0] is the formatted report, Content[1] is the JSON.
-	require.GreaterOrEqual(t, len(result.Content), 2)
+	// Content[0] = summary box, Content[1] = detailed tree, Content[2] = JSON.
+	require.GreaterOrEqual(t, len(result.Content), 3)
 
-	formatted := result.Content[0].(mcplib.TextContent).Text
-	assert.Contains(t, formatted, "Scan Results")
-	assert.Contains(t, formatted, "Scan Summary")
+	summary := result.Content[0].(mcplib.TextContent).Text
+	assert.Contains(t, summary, "Scan Summary")
+
+	details := result.Content[1].(mcplib.TextContent).Text
+	assert.Contains(t, details, "Scan Results")
 
 	var sr ScanResult
-	text := result.Content[1].(mcplib.TextContent).Text
+	text := result.Content[2].(mcplib.TextContent).Text
 	require.NoError(t, json.Unmarshal([]byte(text), &sr))
 	assert.Equal(t, 1, sr.Summary.Total)
 }
@@ -89,10 +91,10 @@ func TestHandleScanJSON_EmptyToolsList(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, result.IsError)
 
-	require.GreaterOrEqual(t, len(result.Content), 2)
+	require.GreaterOrEqual(t, len(result.Content), 3)
 
 	var sr ScanResult
-	text := result.Content[1].(mcplib.TextContent).Text
+	text := result.Content[2].(mcplib.TextContent).Text
 	require.NoError(t, json.Unmarshal([]byte(text), &sr))
 	assert.Equal(t, 0, sr.Summary.Total)
 }
@@ -162,7 +164,7 @@ func TestHandleListRules_ReturnsAllRules(t *testing.T) {
 	var rules []map[string]string
 	text := result.Content[0].(mcplib.TextContent).Text
 	require.NoError(t, json.Unmarshal([]byte(text), &rules))
-	assert.Len(t, rules, 11, "should return all 11 built-in rules")
+	assert.Len(t, rules, 12, "should return all 12 built-in rules")
 
 	// Verify expected rule IDs.
 	ids := make(map[string]bool)
@@ -171,7 +173,7 @@ func TestHandleListRules_ReturnsAllRules(t *testing.T) {
 		assert.NotEmpty(t, r["title"], "rule %s should have a title", r["id"])
 		assert.NotEmpty(t, r["description"], "rule %s should have a description", r["id"])
 	}
-	expectedIDs := []string{"AS-001", "AS-002", "AS-003", "AS-004", "AS-005", "AS-006", "AS-007", "AS-009", "AS-010", "AS-011", "AS-013"}
+	expectedIDs := []string{"AS-001", "AS-002", "AS-003", "AS-004", "AS-005", "AS-006", "AS-007", "AS-008", "AS-009", "AS-010", "AS-011", "AS-013"}
 	for _, id := range expectedIDs {
 		assert.True(t, ids[id], "missing rule %s", id)
 	}

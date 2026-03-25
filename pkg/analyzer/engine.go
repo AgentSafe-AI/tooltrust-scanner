@@ -44,6 +44,7 @@ type Engine struct {
 //   - AS-005  Privilege Escalation     (PrivilegeEscalationChecker)
 //   - AS-006  Arbitrary Code Execution (ArbitraryCodeChecker)
 //   - AS-007  Insufficient Tool Data   (InsufficientDataChecker)
+//   - AS-008  Known Compromised Pkg    (BlacklistChecker)
 //   - AS-009  Typosquatting            (TyposquattingChecker)
 //   - AS-010  Secret Handling          (SecretHandlingChecker)
 //   - AS-011  DoS Resilience           (DoSResilienceChecker)
