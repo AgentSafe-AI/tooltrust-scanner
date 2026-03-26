@@ -5,6 +5,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.2.3] - 2026-03-25
+
+### Fixed
+- **MCP per-tool findings**: scan summary now lists every tool with its action emoji
+  (✅/⚠️/🚫), grade, score, and individual findings — previously only non-ALLOW tools
+  were shown. Applies to `tooltrust_scan_server`, `tooltrust_scanner_scan`, and
+  `tooltrust_scan_config`.
+- **CLI severity emojis**: reverted grade-A muting — all tools now show real severity
+  emojis (🔴/⚠️/🔵) regardless of grade, matching MCP output behaviour.
+
+---
+
 ## [0.2.2] - 2026-03-24
 
 ### Fixed
