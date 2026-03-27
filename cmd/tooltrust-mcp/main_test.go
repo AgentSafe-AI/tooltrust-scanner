@@ -27,16 +27,17 @@ func TestHandleScanJSON_ValidInput(t *testing.T) {
 	require.NotNil(t, result)
 	assert.False(t, result.IsError)
 
-	// Content[0] = compact summary, Content[1] = JSON.
-	require.GreaterOrEqual(t, len(result.Content), 2)
+	require.Len(t, result.Content, 1)
 
-	summary := result.Content[0].(mcplib.TextContent).Text
-	assert.Contains(t, summary, "Scan Summary")
-
-	var sr ScanResult
-	text := result.Content[1].(mcplib.TextContent).Text
-	require.NoError(t, json.Unmarshal([]byte(text), &sr))
-	assert.Equal(t, 1, sr.Summary.Total)
+	text := result.Content[0].(mcplib.TextContent).Text
+	assert.Contains(t, text, "Scan Summary:")
+	assert.Contains(t, text, "Tool Grades:")
+	assert.Contains(t, text, "Findings by Severity:")
+	assert.Contains(t, text, "MEDIUM×1")
+	assert.Contains(t, text, "1 total")
+	assert.NotContains(t, text, "Flagged Tools:")
+	assert.Contains(t, text, "All tools are ✅ GRADE A and allowed.")
+	assert.Contains(t, text, "1 tools")
 }
 
 func TestHandleScanJSON_EmptyToolsJSON(t *testing.T) {
@@ -88,12 +89,13 @@ func TestHandleScanJSON_EmptyToolsList(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, result.IsError)
 
-	require.GreaterOrEqual(t, len(result.Content), 2)
-
-	var sr ScanResult
-	text := result.Content[1].(mcplib.TextContent).Text
-	require.NoError(t, json.Unmarshal([]byte(text), &sr))
-	assert.Equal(t, 0, sr.Summary.Total)
+	require.Len(t, result.Content, 1)
+	text := result.Content[0].(mcplib.TextContent).Text
+	assert.Contains(t, text, "Scan Summary:")
+	assert.Contains(t, text, "0 tools")
+	assert.Contains(t, text, "Tool Grades: None")
+	assert.Contains(t, text, "Findings by Severity: None (0 total)")
+	assert.Contains(t, text, "All tools are ✅ GRADE A")
 }
 
 // ── tooltrust_scan_server tests ─────────────────────────────────────────────

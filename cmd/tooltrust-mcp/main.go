@@ -558,24 +558,14 @@ func processTools(ctx context.Context, tools []model.UnifiedTool) (*mcplib.CallT
 	if err != nil {
 		return mcplib.NewToolResultError(err.Error()), nil
 	}
-	encoded, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return mcplib.NewToolResultError(fmt.Sprintf("failed to serialize result: %v", err)), nil
-	}
-
-	summary := renderSummaryLine(result)
+	report := renderTextReport(result)
 
 	return &mcplib.CallToolResult{
 		Content: []mcplib.Content{
 			mcplib.TextContent{
 				Annotated: mcplib.Annotated{},
 				Type:      "text",
-				Text:      summary,
-			},
-			mcplib.TextContent{
-				Annotated: mcplib.Annotated{},
-				Type:      "text",
-				Text:      string(encoded),
+				Text:      report,
 			},
 		},
 	}, nil
@@ -590,32 +580,29 @@ var severityWeight = map[model.Severity]int{
 	model.SeverityInfo:     0,
 }
 
-// severityEmoji returns the emoji prefix for a finding severity.
-func severityEmoji(s model.Severity) string {
-	switch s {
-	case model.SeverityCritical:
-		return "🚨"
-	case model.SeverityHigh:
+// gradeEmoji returns the emoji prefix for a tool's final grade.
+func gradeEmoji(g model.Grade) string {
+	switch g {
+	case model.GradeA:
+		return "✅"
+	case model.GradeB:
+		return "🟢"
+	case model.GradeC:
+		return "🟡"
+	case model.GradeD:
+		return "🟠"
+	case model.GradeF:
 		return "🔴"
-	case model.SeverityMedium:
-		return "⚠️"
-	case model.SeverityLow:
-		return "🔵"
 	default:
-		return "ℹ️"
+		return "•"
 	}
 }
 
-// renderSummaryLine builds a compact scan summary for MCP clients.
-// Includes: counts with emojis, findings with severity emojis, and flagged tools.
-func renderSummaryLine(result *ScanResult) string {
+// renderTextReport builds a single plain-text report for MCP clients.
+// This avoids duplicate summary + JSON blocks in clients that collapse text.
+func renderTextReport(result *ScanResult) string {
 	var lines []string
 
-	// Line 1: tool counts by action
-	lines = append(lines, fmt.Sprintf("Scan Summary: %d tools | ✅ %d allowed  ⚠️ %d req approval  🚫 %d blocked",
-		result.Summary.Total, result.Summary.Allowed, result.Summary.Approval, result.Summary.Blocked))
-
-	// Line 2: findings with severity emojis + grades
 	severityCounts := map[model.Severity]int{}
 	for _, p := range result.Policies {
 		for _, issue := range p.Score.Issues {
@@ -626,7 +613,7 @@ func renderSummaryLine(result *ScanResult) string {
 	var sevParts []string
 	for _, s := range sevOrder {
 		if n := severityCounts[s]; n > 0 {
-			sevParts = append(sevParts, fmt.Sprintf("%s %s×%d", severityEmoji(s), s, n))
+			sevParts = append(sevParts, fmt.Sprintf("%s×%d", s, n))
 		}
 	}
 	counts := map[model.Grade]int{}
@@ -640,29 +627,133 @@ func renderSummaryLine(result *ScanResult) string {
 			gradeParts = append(gradeParts, fmt.Sprintf("%s×%d", g, n))
 		}
 	}
-	lines = append(lines, fmt.Sprintf("Findings: %s | Grades: %s",
-		strings.Join(sevParts, "  "), strings.Join(gradeParts, "  ")))
 
-	// Lines 3+: per-tool listing with findings
+	totalFindings := 0
+	for _, n := range severityCounts {
+		totalFindings += n
+	}
+
+	lines = append(lines,
+		fmt.Sprintf("Scan Summary: %d tools scanned | %d allowed | %d need approval | %d blocked",
+			result.Summary.Total, result.Summary.Allowed, result.Summary.Approval, result.Summary.Blocked),
+		fmt.Sprintf("Tool Grades: %s", joinOrNone(gradeParts)),
+		fmt.Sprintf("Findings by Severity: %s (%d total)", joinOrNone(sevParts), totalFindings),
+	)
+
+	flaggedCount := 0
 	for _, p := range result.Policies {
-		var actionIcon string
+		if p.Action == model.ActionAllow {
+			continue
+		}
+		if flaggedCount == 0 {
+			lines = append(lines, "", "Flagged Tools:")
+		}
+		flaggedCount++
+
+		var actionLabel string
 		switch p.Action {
 		case model.ActionAllow:
-			actionIcon = "✅"
+			actionLabel = "allowed"
 		case model.ActionRequireApproval:
-			actionIcon = "⚠️"
+			actionLabel = "needs approval"
 		case model.ActionBlock:
-			actionIcon = "🚫"
+			actionLabel = "blocked"
 		}
-		lines = append(lines, fmt.Sprintf("%s %s (grade %s, score %d)",
-			actionIcon, p.ToolName, p.Score.Grade, p.Score.Score))
+		lines = append(lines, fmt.Sprintf("• %s  %s GRADE %s  %s",
+			p.ToolName, gradeEmoji(p.Score.Grade), p.Score.Grade, actionLabel))
 		for _, issue := range p.Score.Issues {
-			lines = append(lines, fmt.Sprintf("  %s %s %s: %s",
-				severityEmoji(issue.Severity), issue.RuleID, issue.Severity, issue.Description))
+			lines = append(lines, fmt.Sprintf("  [%s] %s: %s",
+				issue.RuleID, issue.Severity, humanizeIssue(issue)))
+		}
+		if actionNow, saferConfig := recommendationForPolicy(p); actionNow != "" || saferConfig != "" {
+			if actionNow != "" {
+				lines = append(lines, fmt.Sprintf("  Action now: %s", actionNow))
+			}
+			if saferConfig != "" {
+				lines = append(lines, fmt.Sprintf("  Safer configuration: %s", saferConfig))
+			}
 		}
 	}
 
+	if flaggedCount == 0 {
+		lines = append(lines, "", "All tools are ✅ GRADE A and allowed.")
+	} else if result.Summary.Allowed > 0 {
+		lines = append(lines, "", fmt.Sprintf("%d allowed tools are omitted for brevity.", result.Summary.Allowed))
+	}
+
 	return strings.Join(lines, "\n")
+}
+
+func joinOrNone(parts []string) string {
+	if len(parts) == 0 {
+		return "None"
+	}
+	return strings.Join(parts, "  ")
+}
+
+func humanizeIssue(issue model.Issue) string {
+	switch {
+	case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "network permission"):
+		return "Network access declared"
+	case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "fs permission"):
+		return "Filesystem access declared"
+	case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "db permission"):
+		return "Database access declared"
+	case issue.RuleID == "AS-011" && strings.Contains(issue.Description, "no rate-limit"):
+		return "Missing rate-limit or timeout"
+	default:
+		return issue.Description
+	}
+}
+
+func recommendationForPolicy(policy model.GatewayPolicy) (actionNow, saferConfig string) {
+	hasNetwork := false
+	hasFS := false
+	hasDB := false
+	hasRateLimitGap := false
+
+	for _, issue := range policy.Score.Issues {
+		switch {
+		case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "network permission"):
+			hasNetwork = true
+		case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "fs permission"):
+			hasFS = true
+		case issue.RuleID == "AS-002" && strings.Contains(issue.Description, "db permission"):
+			hasDB = true
+		case issue.RuleID == "AS-011":
+			hasRateLimitGap = true
+		}
+	}
+
+	switch policy.Action {
+	case model.ActionBlock:
+		actionNow = "Do not allow this tool by default."
+	case model.ActionRequireApproval:
+		actionNow = "Keep this tool on manual approval until the risky capabilities are reviewed."
+	case model.ActionAllow:
+		if len(policy.Score.Issues) > 0 {
+			actionNow = "Allowable as-is, but review the declared capabilities before broad deployment."
+		}
+	}
+
+	var safer []string
+	if hasNetwork {
+		safer = append(safer, "confirm the tool truly needs network access; remove it if local-only operation is enough")
+	}
+	if hasFS {
+		safer = append(safer, "limit filesystem access to the intended directories only")
+	}
+	if hasDB {
+		safer = append(safer, "limit database access to the intended operations and credentials")
+	}
+	if hasRateLimitGap {
+		safer = append(safer, "add explicit rate-limit, timeout, or retry settings")
+	}
+	if len(safer) > 0 {
+		saferConfig = strings.Join(safer, "; ") + "."
+	}
+
+	return actionNow, saferConfig
 }
 
 // processToolsRaw runs the scanner and returns raw results (used by both
