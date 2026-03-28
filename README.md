@@ -21,9 +21,25 @@
 - Look up historical grades for popular MCP servers
 - Review findings in a browser before installing or trusting a server
 
+## What it looks like
+
+```
+Scan Summary: 14 tools scanned | 13 allowed | 1 need approval | 0 blocked
+Tool Grades: A×13  C×1
+Findings by Severity: HIGH×1  MEDIUM×14  LOW×1 (16 total)
+
+Flagged Tools:
+• search_files  🟡 GRADE C  needs approval
+  [AS-002] High: Network access declared
+  [AS-011] Low: Missing rate-limit or timeout
+  Action now: Keep this tool on manual approval until the risky capabilities are reviewed.
+```
+
 ## 🤖 Let your AI agent scan its own tools
 
 Add ToolTrust as an MCP server in your `.mcp.json` and your agent can audit every tool it has access to:
+
+> **Note:** First run downloads a ~10MB Go binary from GitHub Releases. Subsequent runs use the cached binary.
 
 ```json
 {
