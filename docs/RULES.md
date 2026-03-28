@@ -1,14 +1,13 @@
 # Security Rules
 
-ToolTrust Scanner checks every MCP tool against 12 built-in rules.
+ToolTrust Scanner checks every MCP tool against 13 built-in rules.
 Each rule fires independently; a tool can trigger multiple rules.
 
 ---
 
-## AS-001
+## 🚨 AS-001 — Prompt Injection / Tool Poisoning
 
-**Prompt Injection / Tool Poisoning**
-Severity: Critical
+**Severity:** Critical
 
 Detects malicious instructions hidden in tool names or descriptions that attempt to hijack the agent's reasoning, override system prompts, or redirect behavior toward attacker-controlled goals.
 
@@ -16,10 +15,9 @@ Common patterns: `ignore previous instructions`, `system:`, `exfiltrate data to`
 
 ---
 
-## AS-002
+## ⚠️ AS-002 — Excessive Permissions
 
-**Excessive Permissions**
-Severity: High / Low (depends on permission type)
+**Severity:** High / Low (depends on permission type)
 
 Flags tools that declare broad capabilities — filesystem access, network access, database access, or arbitrary code execution — without a clear, scoped justification.
 
@@ -27,55 +25,49 @@ Permissions checked: `exec`, `network`, `fs`, `db`.
 
 ---
 
-## AS-003
+## 🔀 AS-003 — Scope Mismatch
 
-**Scope Mismatch**
-Severity: High
+**Severity:** High
 
 Fires when a tool's name implies one capability but its description or schema claims another. Example: a tool called `read_file` that also declares network write access.
 
 ---
 
-## AS-004
+## 📦 AS-004 — Supply Chain CVEs (OSV)
 
-**Supply Chain CVEs (OSV)**
-Severity: High / Critical
+**Severity:** High / Critical
 
 Queries the [OSV vulnerability database](https://osv.dev) for known CVEs in packages declared as dependencies. Requires network access during scan; results are cached per run.
 
 ---
 
-## AS-005
+## 🔐 AS-005 — Privilege Escalation
 
-**Privilege Escalation**
-Severity: High
+**Severity:** High
 
 Detects tools that request or claim `admin`, `root`, `sudo`, or elevated permission scopes beyond what the tool's stated purpose requires.
 
 ---
 
-## AS-006
+## 💻 AS-006 — Arbitrary Code Execution
 
-**Arbitrary Code Execution**
-Severity: Critical
+**Severity:** Critical
 
 Flags tools whose name or description implies the ability to run arbitrary host commands, scripts, or code. Patterns include `exec`, `eval`, `shell`, `run_code`, `execute_script`, backtick shell syntax.
 
 ---
 
-## AS-007
+## ℹ️ AS-007 — Missing Description or Schema
 
-**Missing Description or Schema**
-Severity: Info
+**Severity:** Info
 
 Tools with no description or no input schema give the agent no basis for safe use. Flagged as informational — not a security risk by itself, but a quality signal.
 
 ---
 
-## AS-008
+## 🚨 AS-008 — Known-Compromised Packages (Offline Blacklist)
 
-**Known-Compromised Packages (Offline Blacklist)**
-Severity: Critical
+**Severity:** Critical
 
 Checks an offline bundled blacklist of packages confirmed to have been compromised in supply chain attacks. No network required — zero latency.
 
@@ -83,37 +75,41 @@ Current blacklist: LiteLLM 1.82.7/1.82.8 (TeamPCP `.pth` backdoor), Trivy v0.69.
 
 ---
 
-## AS-009
+## 🎭 AS-009 — Typosquatting
 
-**Typosquatting**
-Severity: Medium
+**Severity:** Medium
 
 Uses edit-distance heuristics to detect tool names that closely resemble known legitimate tools — a common technique for impersonation attacks. Tuned to avoid false positives on legitimate plural/variant tool families.
 
 ---
 
-## AS-010
+## 🔑 AS-010 — Insecure Secret Handling
 
-**Insecure Secret Handling**
-Severity: Medium
+**Severity:** Medium
 
 Flags tools whose input parameters appear designed to accept secrets (API keys, tokens, passwords) in plaintext rather than via environment variables or secret stores.
 
 ---
 
-## AS-011
+## ℹ️ AS-011 — Missing Rate-Limit / Timeout
 
-**Missing Rate-Limit / Timeout**
-Severity: Low
+**Severity:** Low
 
 Tools that perform network or execution operations without declaring rate-limit, timeout, or retry configuration can cause runaway agent behavior or denial-of-service conditions.
 
 ---
 
-## AS-013
+## 🔄 AS-012 — Tool Drift
 
-**Tool Shadowing**
-Severity: High / Medium
+**Severity:** Medium
+
+Detects tools whose definition has changed since the last scan — new parameters added, descriptions modified, or permissions expanded. Drift can indicate a supply chain compromise or unreviewed update.
+
+---
+
+## 👥 AS-013 — Tool Shadowing
+
+**Severity:** High / Medium
 
 Detects tools whose names are exact normalized duplicates of other tools in the same server — a sign that a malicious tool is attempting to shadow or override a legitimate one.
 
