@@ -51,7 +51,7 @@ Then ask your agent to run:
 - Typosquatting, tool shadowing, and insecure secret handling
 - Missing rate-limit, timeout, or retry configuration on risky tools
 
-Full rule catalog: [docs/DEVELOPER.md](docs/DEVELOPER.md) · [tooltrust.dev](https://www.tooltrust.dev/)
+Full rule catalog: [docs/RULES.md](docs/RULES.md) · [tooltrust.dev](https://www.tooltrust.dev/)
 
 ## More ways to use ToolTrust
 
