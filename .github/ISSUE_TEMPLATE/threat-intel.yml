@@ -1,0 +1,47 @@
+name: Threat Intel Report
+description: New MCP security research to evaluate for rule coverage
+labels: ["threat-intel"]
+body:
+  - type: input
+    id: source
+    attributes:
+      label: Source
+      placeholder: "e.g. Koi Security, Invariant Labs, Embrace The Red"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      placeholder: "https://..."
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Date published
+      placeholder: "e.g. 2026-03-28"
+    validations:
+      required: true
+  - type: textarea
+    id: attack-pattern
+    attributes:
+      label: Attack pattern
+      placeholder: Describe the attack technique documented in the post
+    validations:
+      required: true
+  - type: checkboxes
+    id: coverage
+    attributes:
+      label: ToolTrust coverage
+      options:
+        - label: Existing rule covers this
+        - label: Rule needs pattern update
+        - label: New rule needed
+        - label: Needs source-code analysis (not coverable today)
+  - type: checkboxes
+    id: test-fixture
+    attributes:
+      label: Test fixture added?
+      options:
+        - label: "Yes — added to `tests/fixtures/`"
