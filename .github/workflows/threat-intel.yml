@@ -1,0 +1,140 @@
+name: Threat Intel Monitor
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"  # Every Monday 9am UTC
+  workflow_dispatch:       # Manual trigger
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check-feeds:
+    name: Check security blog feeds
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install feedparser
+        run: pip install feedparser
+
+      - name: Check RSS feeds and create issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'EOF'
+          import feedparser
+          import json
+          import os
+          import subprocess
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          STATE_FILE = ".github/threat-intel-state.json"
+
+          FEEDS = [
+              # Tier 1 — Active MCP threat research
+              {"source": "Koi Security",              "url": "https://koi.ai/blog/rss.xml"},
+              {"source": "Invariant Labs",            "url": "https://invariantlabs.ai/blog/rss.xml"},
+              {"source": "Embrace The Red",           "url": "https://embracethered.com/blog/index.xml"},
+              {"source": "Pillar Security",           "url": "https://www.pillarsecurity.com/blog/rss.xml"},
+              # Tier 2 — Broader AI agent security
+              {"source": "Trail of Bits",             "url": "https://blog.trailofbits.com/feed"},
+              {"source": "Wiz Research",              "url": "https://www.wiz.io/blog/rss.xml"},
+          ]
+
+          # Load last-seen timestamps
+          state = {}
+          if Path(STATE_FILE).exists():
+              state = json.loads(Path(STATE_FILE).read_text())
+
+          now = datetime.now(timezone.utc)
+          new_state = dict(state)
+          issues_created = 0
+
+          for feed_info in FEEDS:
+              source = feed_info["source"]
+              url    = feed_info["url"]
+              last_seen = state.get(source, "2020-01-01T00:00:00+00:00")
+              last_seen_dt = datetime.fromisoformat(last_seen)
+
+              try:
+                  feed = feedparser.parse(url)
+              except Exception as e:
+                  print(f"[{source}] fetch error: {e}")
+                  continue
+
+              if feed.bozo and not feed.entries:
+                  print(f"[{source}] could not parse feed: {url}")
+                  continue
+
+              latest_dt = last_seen_dt
+
+              for entry in feed.entries:
+                  # Parse published date
+                  pub = entry.get("published_parsed") or entry.get("updated_parsed")
+                  if not pub:
+                      continue
+                  entry_dt = datetime(*pub[:6], tzinfo=timezone.utc)
+
+                  if entry_dt <= last_seen_dt:
+                      continue
+
+                  title = entry.get("title", "Untitled")
+                  link  = entry.get("link", url)
+                  date  = entry_dt.strftime("%Y-%m-%d")
+
+                  body = f"""**Source:** {source}
+**URL:** {link}
+**Date:** {date}
+**Attack pattern:** *(fill in after reading)*
+
+### ToolTrust coverage
+- [ ] Existing rule covers this
+- [ ] Rule needs pattern update
+- [ ] New rule needed
+- [ ] Needs source-code analysis (not coverable today)
+
+### Test fixture added?
+- [ ] Yes — added to `tests/fixtures/`
+"""
+                  issue_title = f"[threat-intel] {source}: {title}"
+                  result = subprocess.run(
+                      ["gh", "issue", "create",
+                       "--repo", os.environ["REPO"],
+                       "--title", issue_title,
+                       "--body", body,
+                       "--label", "threat-intel"],
+                      capture_output=True, text=True
+                  )
+                  if result.returncode == 0:
+                      print(f"[{source}] created issue: {title}")
+                      issues_created += 1
+                      if entry_dt > latest_dt:
+                          latest_dt = entry_dt
+                  else:
+                      print(f"[{source}] issue creation failed: {result.stderr.strip()}")
+
+              new_state[source] = latest_dt.isoformat()
+
+          # Persist updated state
+          Path(STATE_FILE).parent.mkdir(parents=True, exist_ok=True)
+          Path(STATE_FILE).write_text(json.dumps(new_state, indent=2) + "\n")
+          print(f"\nDone. {issues_created} new issue(s) created.")
+          EOF
+
+      - name: Commit updated state
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/threat-intel-state.json
+          git diff --staged --quiet || git commit -m "chore: update threat-intel feed state"
+          git push
