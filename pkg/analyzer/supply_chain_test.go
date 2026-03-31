@@ -315,3 +315,47 @@ Flask==2.3.1 ; python_requires >= "3.8"
 	assert.Equal(t, "4.2.0", names["django"])
 	assert.Equal(t, "2.3.1", names["Flask"])
 }
+
+func TestParsePNPMLockYAML(t *testing.T) {
+	data := []byte(`
+lockfileVersion: '9.0'
+packages:
+  /axios@1.14.1:
+    resolution: {integrity: sha512-abc}
+  /@scope/sdk@2.3.4(axios@1.14.1):
+    resolution: {integrity: sha512-def}
+`)
+	deps, err := analyzer.ParsePNPMLockYAMLForTest(data)
+	require.NoError(t, err)
+	assert.Len(t, deps, 2)
+
+	names := make(map[string]string)
+	for _, d := range deps {
+		names[d.Name] = d.Version
+		assert.Equal(t, "npm", d.Ecosystem)
+	}
+	assert.Equal(t, "1.14.1", names["axios"])
+	assert.Equal(t, "2.3.4", names["@scope/sdk"])
+}
+
+func TestParseYarnLock(t *testing.T) {
+	data := []byte(`
+"axios@^1.14.1":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.14.1.tgz"
+
+"@scope/sdk@^2.3.4", "@scope/sdk@~2.3.4":
+  version "2.3.4"
+`)
+	deps, err := analyzer.ParseYarnLockForTest(data)
+	require.NoError(t, err)
+	assert.Len(t, deps, 2)
+
+	names := make(map[string]string)
+	for _, d := range deps {
+		names[d.Name] = d.Version
+		assert.Equal(t, "npm", d.Ecosystem)
+	}
+	assert.Equal(t, "1.14.1", names["axios"])
+	assert.Equal(t, "2.3.4", names["@scope/sdk"])
+}

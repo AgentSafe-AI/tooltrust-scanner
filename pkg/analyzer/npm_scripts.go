@@ -37,9 +37,13 @@ var highRiskNPMScriptPatterns = []string{
 }
 
 type npmVersionResponse struct {
-	Name    string            `json:"name"`
-	Version string            `json:"version"`
-	Scripts map[string]string `json:"scripts"`
+	Name                 string            `json:"name"`
+	Version              string            `json:"version"`
+	Scripts              map[string]string `json:"scripts"`
+	Dependencies         map[string]string `json:"dependencies"`
+	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	BundleDependencies   []string          `json:"bundleDependencies"`
+	BundledDependencies  []string          `json:"bundledDependencies"`
 }
 
 type npmRegistryClient interface {

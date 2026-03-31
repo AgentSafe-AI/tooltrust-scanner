@@ -1,6 +1,6 @@
 # Security Rules
 
-ToolTrust Scanner checks every MCP tool against 14 active built-in rules.
+ToolTrust Scanner checks every MCP tool against 15 active built-in rules.
 Each rule fires independently; a tool can trigger multiple rules.
 
 ---
@@ -119,6 +119,14 @@ Flags MCP tools that do not expose `metadata.dependencies` and do not provide a 
 
 ## ⚠️ AS-015 — Suspicious NPM Lifecycle Script
 
-**Severity:** High
+**Severity:** Medium / High
 
-Flags npm dependency versions that publish install-time lifecycle scripts such as `preinstall`, `install`, `postinstall`, or `prepare`. These scripts are a common supply-chain attack primitive because they execute automatically during installation.
+Flags npm dependency versions that publish install-time lifecycle scripts such as `preinstall`, `install`, `postinstall`, or `prepare`. Severity rises when the script contains remote-fetch or inline-execution patterns.
+
+---
+
+## 🚨 AS-016 — Suspicious NPM IOC Dependency
+
+**Severity:** Critical
+
+Flags npm dependency versions whose published registry metadata references known malicious IOC package names, such as `plain-crypto-js`. This is narrower than full tarball signature scanning, but it can still catch compromised releases when an IOC appears in dependency metadata.

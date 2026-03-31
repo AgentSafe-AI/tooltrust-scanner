@@ -14,3 +14,13 @@ func LockfileDepsFetcherForTest() func(string) []Dependency {
 
 // NPMVersionResponseForTest exposes npmVersionResponse for analyzer_test.
 type NPMVersionResponseForTest = npmVersionResponse
+
+// ParsePNPMLockYAMLForTest exposes parsePNPMLockYAML for analyzer_test.
+func ParsePNPMLockYAMLForTest(data []byte) ([]Dependency, error) {
+	return parsePNPMLockYAML(data)
+}
+
+// ParseYarnLockForTest exposes parseYarnLock for analyzer_test.
+func ParseYarnLockForTest(data []byte) ([]Dependency, error) {
+	return parseYarnLock(data)
+}

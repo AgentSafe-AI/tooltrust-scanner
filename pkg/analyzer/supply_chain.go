@@ -12,6 +12,8 @@ import (
 	"sync"
 	"time"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
@@ -196,6 +198,8 @@ var lockfileSpecs = []struct {
 	parse func([]byte) ([]Dependency, error)
 }{
 	{"package-lock.json", parsePackageLockJSON},
+	{"pnpm-lock.yaml", parsePNPMLockYAML},
+	{"yarn.lock", parseYarnLock},
 	{"go.sum", parseGoSum},
 	{"requirements.txt", parseRequirementsTxt},
 }
@@ -304,6 +308,100 @@ func parseRequirementsTxt(data []byte) ([]Dependency, error) {
 	if err := sc.Err(); err != nil {
 		return nil, fmt.Errorf("parse requirements.txt: %w", err)
 	}
+	return deps, nil
+}
+
+type pnpmLockfile struct {
+	Packages map[string]any `yaml:"packages"`
+}
+
+func parsePNPMLockYAML(data []byte) ([]Dependency, error) {
+	var lock pnpmLockfile
+	if err := yaml.Unmarshal(data, &lock); err != nil {
+		return nil, fmt.Errorf("parse pnpm-lock.yaml: %w", err)
+	}
+
+	seen := make(map[string]bool)
+	var deps []Dependency
+	for key := range lock.Packages {
+		name, version, ok := parsePNPMPackageKey(key)
+		if !ok {
+			continue
+		}
+		k := name + "@" + version
+		if seen[k] {
+			continue
+		}
+		seen[k] = true
+		deps = append(deps, Dependency{Name: name, Version: version, Ecosystem: "npm"})
+	}
+	return deps, nil
+}
+
+func parsePNPMPackageKey(key string) (name, version string, ok bool) {
+	trimmed := strings.TrimSpace(strings.TrimPrefix(key, "/"))
+	trimmed = strings.Trim(trimmed, "'\"")
+	if trimmed == "" {
+		return "", "", false
+	}
+	if idx := strings.Index(trimmed, "("); idx >= 0 {
+		trimmed = trimmed[:idx]
+	}
+	trimmed = strings.TrimSuffix(trimmed, ":")
+	idx := strings.LastIndex(trimmed, "@")
+	if idx <= 0 || idx == len(trimmed)-1 {
+		return "", "", false
+	}
+	return trimmed[:idx], trimmed[idx+1:], true
+}
+
+func parseYarnLock(data []byte) ([]Dependency, error) {
+	lines := strings.Split(string(data), "\n")
+	seen := make(map[string]bool)
+	var deps []Dependency
+
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
+		if line == "" || strings.HasPrefix(line, "#") || !strings.HasSuffix(line, ":") {
+			continue
+		}
+		if strings.Contains(line, " version ") {
+			continue
+		}
+
+		for j := i + 1; j < len(lines); j++ {
+			next := strings.TrimSpace(lines[j])
+			if next == "" {
+				break
+			}
+			if strings.HasPrefix(next, "version ") {
+				version := strings.Trim(next[len("version "):], "\"")
+				specs := strings.Split(strings.TrimSuffix(line, ":"), ",")
+				for _, spec := range specs {
+					spec = strings.Trim(strings.TrimSpace(spec), "\"")
+					if spec == "" {
+						continue
+					}
+					idx := strings.LastIndex(spec, "@")
+					if idx <= 0 || idx == len(spec)-1 {
+						continue
+					}
+					name := spec[:idx]
+					k := name + "@" + version
+					if seen[k] {
+						continue
+					}
+					seen[k] = true
+					deps = append(deps, Dependency{Name: name, Version: version, Ecosystem: "npm"})
+				}
+				break
+			}
+			if !strings.HasPrefix(lines[j], " ") && !strings.HasPrefix(lines[j], "\t") {
+				break
+			}
+		}
+	}
+
 	return deps, nil
 }
 

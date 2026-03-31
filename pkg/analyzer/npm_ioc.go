@@ -1,0 +1,125 @@
+package analyzer
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
+)
+
+var suspiciousNPMIOCPackages = map[string]string{
+	"plain-crypto-js": "known IOC linked to the March 31, 2026 malicious axios npm publish",
+}
+
+// NPMIOCChecker flags npm package versions whose published registry metadata
+// references known malicious IOC package names. This is intentionally narrower
+// than a full tarball signature scan, but it helps catch compromised releases
+// even when the top-level package name changes or the IOC appears transitively.
+type NPMIOCChecker struct {
+	client npmRegistryClient
+}
+
+func NewNPMIOCChecker() *NPMIOCChecker {
+	return &NPMIOCChecker{client: newHTTPNPMRegistryClient()}
+}
+
+func NewNPMIOCCheckerWithMock(packages map[string]npmVersionResponse, queryErr error) *NPMIOCChecker {
+	return &NPMIOCChecker{
+		client: &mockNPMRegistryClient{packages: packages, err: queryErr},
+	}
+}
+
+func (c *NPMIOCChecker) Meta() RuleMeta {
+	return RuleMeta{
+		ID:          "AS-016",
+		Title:       "Suspicious NPM IOC Dependency",
+		Description: "Flags npm dependency versions whose published metadata references known malicious IOC package names such as plain-crypto-js.",
+	}
+}
+
+func (c *NPMIOCChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
+	deps, err := collectDependencies(tool)
+	if err != nil || len(deps) == 0 {
+		return nil, nil
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), npmQueryTimeout)
+	defer cancel()
+
+	var issues []model.Issue
+	for _, dep := range deps {
+		if !strings.EqualFold(dep.Ecosystem, "npm") {
+			continue
+		}
+		meta, err := c.client.FetchVersion(ctx, dep.Name, dep.Version)
+		if err != nil {
+			continue
+		}
+
+		if issue, ok := buildNPMIOCIssue(tool.Name, dep, meta); ok {
+			issues = append(issues, issue)
+		}
+	}
+	return issues, nil
+}
+
+func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionResponse) (model.Issue, bool) {
+	type iocHit struct {
+		name   string
+		source string
+		reason string
+	}
+
+	var hit iocHit
+	for name := range meta.Dependencies {
+		if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
+			hit = iocHit{name: name, source: "dependencies", reason: reason}
+			break
+		}
+	}
+	if hit.name == "" {
+		for name := range meta.OptionalDependencies {
+			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "optionalDependencies", reason: reason}
+				break
+			}
+		}
+	}
+	if hit.name == "" {
+		for _, name := range meta.BundleDependencies {
+			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "bundleDependencies", reason: reason}
+				break
+			}
+		}
+	}
+	if hit.name == "" {
+		for _, name := range meta.BundledDependencies {
+			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "bundledDependencies", reason: reason}
+				break
+			}
+		}
+	}
+	if hit.name == "" {
+		return model.Issue{}, false
+	}
+
+	return model.Issue{
+		RuleID:      "AS-016",
+		ToolName:    toolName,
+		Severity:    model.SeverityCritical,
+		Code:        "NPM_IOC_DEPENDENCY",
+		Description: fmt.Sprintf("npm package %s@%s references suspicious IOC package %s via %s. This IOC is %s.", dep.Name, dep.Version, hit.name, hit.source, hit.reason),
+		Location:    fmt.Sprintf("dependency:%s@%s", dep.Name, dep.Version),
+		Evidence: []model.Evidence{
+			{Kind: "package", Value: dep.Name},
+			{Kind: "version", Value: dep.Version},
+			{Kind: "ecosystem", Value: dep.Ecosystem},
+			{Kind: "dependency_source", Value: dep.Source},
+			{Kind: "ioc_package", Value: hit.name},
+			{Kind: "ioc_source", Value: hit.source},
+		},
+	}, true
+}

@@ -1,0 +1,78 @@
+package analyzer_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/analyzer"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
+)
+
+func TestNPMIOCChecker_SuspiciousDependency_Finding(t *testing.T) {
+	checker := analyzer.NewNPMIOCCheckerWithMock(map[string]analyzer.NPMVersionResponseForTest{
+		"axios@1.14.1": {
+			Name:         "axios",
+			Version:      "1.14.1",
+			Dependencies: map[string]string{"plain-crypto-js": "^0.4.2"},
+		},
+	}, nil)
+
+	tool := model.UnifiedTool{
+		Name: "deploy_site",
+		Metadata: map[string]any{
+			"dependencies": []any{
+				map[string]any{"name": "axios", "version": "1.14.1", "ecosystem": "npm"},
+			},
+		},
+	}
+
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "AS-016", issues[0].RuleID)
+	assert.Equal(t, "NPM_IOC_DEPENDENCY", issues[0].Code)
+	assert.Equal(t, model.SeverityCritical, issues[0].Severity)
+	assert.Contains(t, issues[0].Description, "plain-crypto-js")
+}
+
+func TestNPMIOCChecker_NoIOC_NoFinding(t *testing.T) {
+	checker := analyzer.NewNPMIOCCheckerWithMock(map[string]analyzer.NPMVersionResponseForTest{
+		"axios@1.14.0": {
+			Name:         "axios",
+			Version:      "1.14.0",
+			Dependencies: map[string]string{"follow-redirects": "^1.15.0"},
+		},
+	}, nil)
+
+	tool := model.UnifiedTool{
+		Name: "deploy_site",
+		Metadata: map[string]any{
+			"dependencies": []any{
+				map[string]any{"name": "axios", "version": "1.14.0", "ecosystem": "npm"},
+			},
+		},
+	}
+
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	assert.Empty(t, issues)
+}
+
+func TestNPMIOCChecker_QueryError_Skips(t *testing.T) {
+	checker := analyzer.NewNPMIOCCheckerWithMock(nil, assert.AnError)
+
+	tool := model.UnifiedTool{
+		Name: "deploy_site",
+		Metadata: map[string]any{
+			"dependencies": []any{
+				map[string]any{"name": "axios", "version": "1.14.1", "ecosystem": "npm"},
+			},
+		},
+	}
+
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	assert.Empty(t, issues)
+}
