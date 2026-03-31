@@ -85,7 +85,9 @@ jobs:
         run: |
           go tool cover -func=coverage.out >> $GITHUB_STEP_SUMMARY
 
+      # Fork PRs cannot use OIDC to Codecov (ACTIONS_ID_TOKEN_REQUEST_URL unavailable); skip upload so the job passes.
       - name: Upload coverage to Codecov
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: codecov/codecov-action@v4
         with:
           use_oidc: true

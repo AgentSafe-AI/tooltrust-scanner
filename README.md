@@ -19,13 +19,13 @@
 
 ---
 
-Every MCP tool your agent calls is an attack surface — prompt injection, data exfiltration, privilege escalation, supply-chain backdoors. ToolTrust scans tool definitions *before* your agent trusts them and assigns a trust grade (A–F) so you know the risk.
+Every MCP tool your agent calls is an attack surface — prompt injection, data exfiltration, privilege escalation, supply-chain backdoors. ToolTrust scans tool definitions *before* your agent trusts them and assigns a trust grade (A–F) so you know the risk. ToolTrust is an **MCP Server** and a **CLI/CI tool** — not a host, gateway, or runtime proxy.
 
 ![ToolTrust MCP demo](docs/mcp-demo.gif)
 
 ## Scan your setup in 30 seconds
 
-Add ToolTrust as an MCP server and let your agent audit its own tools:
+Add ToolTrust as an MCP server and let your agent audit its own tools (stdio transport — no network listener; your host launches it as a subprocess):
 
 ```json
 {
@@ -118,13 +118,13 @@ npx -y tooltrust-mcp
 
 When running as an MCP server, ToolTrust exposes these tools to your agent:
 
-| Tool | What it does |
-|------|-------------|
-| `tooltrust_scan_config` | Scan all MCP servers in your `.mcp.json` or `~/.claude.json` |
-| `tooltrust_scan_server` | Launch and scan a specific MCP server by command |
-| `tooltrust_scanner_scan` | Scan a raw JSON blob of tool definitions |
-| `tooltrust_lookup` | Look up a server's trust grade from the ToolTrust Directory |
-| `tooltrust_list_rules` | List all built-in security rules |
+| Tool | What it does | Data access |
+|------|-------------|-------------|
+| `tooltrust_scan_config` | Scan all MCP servers in your `.mcp.json` or `~/.claude.json` | Reads local config; spawns each server as subprocess |
+| `tooltrust_scan_server` | Launch and scan a specific MCP server by command | Runs user-supplied command as subprocess (stdio) |
+| `tooltrust_scanner_scan` | Scan a raw JSON blob of tool definitions | In-memory only; no subprocess or network |
+| `tooltrust_lookup` | Look up a server's trust grade from the ToolTrust Directory | Network request to ToolTrust Directory API |
+| `tooltrust_list_rules` | List all built-in security rules | Local catalog only |
 
 ## CI / GitHub Actions
 
@@ -168,6 +168,6 @@ If your MCP server passes ToolTrust, let people know:
 
 ---
 
-[Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE)
+[Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Deployment & security](docs/DEPLOYMENT.md) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE)
 
 © 2026 [AgentSafe AI](https://github.com/AgentSafe-AI)
