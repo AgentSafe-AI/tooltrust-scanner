@@ -26,6 +26,22 @@ make lint
 4. **Commit** — use conventional commits: `feat:`, `fix:`, `docs:`, `chore:`.
 5. **Open a PR** — target `main` and describe your change. Link any related issues.
 
+### Fork PRs and GitHub Actions
+
+Pull requests from forks may show **“Workflow runs waiting for approval”** on the base repo until a maintainer approves them. That is a GitHub security setting, not a code failure. After approval, CI runs the same jobs as for branches on the upstream repo.
+
+### Reproduce CI locally (Linux)
+
+To approximate Ubuntu CI without pushing (requires Docker):
+
+```bash
+git archive --format=tar HEAD > /tmp/src.tar
+docker run --rm -v /tmp/src.tar:/tmp/src.tar:ro golang:1.26-bookworm \
+  bash -c 'mkdir -p /src && tar -xf /tmp/src.tar -C /src && bash /src/scripts/verify-ci-parity.sh'
+docker run --rm --entrypoint bash -v /tmp/src.tar:/tmp/src.tar:ro golangci/golangci-lint:v2.10.1 \
+  -c 'mkdir -p /src && tar -xf /tmp/src.tar -C /src && cd /src && golangci-lint run --timeout=5m'
+```
+
 ## Before opening a PR
 
 - Make sure tests cover the change.
