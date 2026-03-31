@@ -11,3 +11,6 @@ func SetLockfileDepsFetcherForTest(fn func(string) []Dependency) {
 func LockfileDepsFetcherForTest() func(string) []Dependency {
 	return lockfileDepsFetcher
 }
+
+// NPMVersionResponseForTest exposes npmVersionResponse for analyzer_test.
+type NPMVersionResponseForTest = npmVersionResponse

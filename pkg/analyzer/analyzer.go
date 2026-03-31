@@ -56,6 +56,7 @@ func NewScanner(enableDeepScan bool, rulesDir string) (*Scanner, error) {
 		NewSecretHandlingChecker(),          // AS-010
 		NewDoSResilienceChecker(),           // AS-011
 		NewDependencyInventoryChecker(),     // AS-014
+		NewNPMLifecycleScriptChecker(),      // AS-015
 		NewShadowingChecker(),               // AS-013
 	}
 

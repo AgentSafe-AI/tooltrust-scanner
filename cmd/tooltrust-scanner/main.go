@@ -726,6 +726,7 @@ var ruleHint = map[string]string{
 	"AS-010": "→ Never pass raw credentials as tool inputs. Use a secret manager instead.",
 	"AS-011": "→ Add explicit timeout and rate-limit config to the tool before use in production.",
 	"AS-013": "→ Use a unique namespace prefix per server (e.g. github__search_repos) to prevent tool name collisions.",
+	"AS-015": "→ Review the install-time script before use. Prefer a version without lifecycle scripts, or install with --ignore-scripts in CI/sandboxed environments.",
 }
 
 // formatIssueLabel returns a coloured finding line with optional evidence and fix hint.

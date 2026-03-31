@@ -12,6 +12,7 @@ Scan MCP servers for prompt injection, data exfiltration, risky permissions, sup
 - Prompt injection and tool poisoning hidden in descriptions
 - Excessive permissions such as `exec`, `network`, `db`, and `fs`
 - Supply-chain CVEs and known compromised package versions
+- Suspicious npm lifecycle scripts that execute during install
 - Dependency visibility gaps when an MCP server does not expose dependency metadata
 - Privilege escalation and arbitrary code execution patterns
 - Typosquatting, tool shadowing, and insecure secret handling
@@ -42,7 +43,7 @@ Then ask your agent: `run tooltrust_scan_config`
 | `tooltrust_scan_server` | Scan a specific MCP server |
 | `tooltrust_scanner_scan` | Scan a JSON blob of tool definitions |
 | `tooltrust_lookup` | Look up a server's trust grade |
-| `tooltrust_list_rules` | List all 13 security rules |
+| `tooltrust_list_rules` | List all 14 active security rules |
 
 ## Dependency visibility
 

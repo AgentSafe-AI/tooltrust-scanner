@@ -1,6 +1,6 @@
 # Security Rules
 
-ToolTrust Scanner checks every MCP tool against 14 built-in rules.
+ToolTrust Scanner checks every MCP tool against 14 active built-in rules.
 Each rule fires independently; a tool can trigger multiple rules.
 
 ---
@@ -99,14 +99,6 @@ Tools that perform network or execution operations without declaring rate-limit,
 
 ---
 
-## 🔄 AS-012 — Tool Drift
-
-**Severity:** Medium
-
-Detects tools whose definition has changed since the last scan — new parameters added, descriptions modified, or permissions expanded. Drift can indicate a supply chain compromise or unreviewed update.
-
----
-
 ## 👥 AS-013 — Tool Shadowing
 
 **Severity:** High / Medium
@@ -122,3 +114,11 @@ Near-duplicate detection (edit distance 1) was removed in v0.1.15 after a 13/13 
 **Severity:** Info
 
 Flags MCP tools that do not expose `metadata.dependencies` and do not provide a `repo_url`, which limits ToolTrust's ability to perform meaningful supply-chain analysis.
+
+---
+
+## ⚠️ AS-015 — Suspicious NPM Lifecycle Script
+
+**Severity:** High
+
+Flags npm dependency versions that publish install-time lifecycle scripts such as `preinstall`, `install`, `postinstall`, or `prepare`. These scripts are a common supply-chain attack primitive because they execute automatically during installation.

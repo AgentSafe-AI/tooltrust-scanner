@@ -158,6 +158,23 @@ func TestFormatIssueLabel_HidesHintWhenAlreadyShownForRule(t *testing.T) {
 	assert.NotContains(t, label, "Tool requests broad permissions")
 }
 
+func TestFormatIssueLabel_ShowsHintForNPMLifecycleScripts(t *testing.T) {
+	label := formatIssueLabel(model.Issue{
+		RuleID:      "AS-015",
+		Severity:    model.SeverityMedium,
+		Description: "npm package axios@1.14.1 publishes a postinstall lifecycle script (node install.js). Review whether this install-time execution is expected.",
+		Evidence: []model.Evidence{
+			{Kind: "package", Value: "axios"},
+		},
+	}, model.GatewayPolicy{
+		Action: model.ActionRequireApproval,
+		Score:  model.RiskScore{Grade: model.GradeC},
+	}, true)
+
+	assert.Contains(t, label, "• [AS-015] MEDIUM:")
+	assert.Contains(t, label, "Review the install-time script before use")
+}
+
 func TestSummarizeToolReason_EmptyForAllow(t *testing.T) {
 	reason := summarizeToolReason(model.GatewayPolicy{
 		Action: model.ActionAllow,
