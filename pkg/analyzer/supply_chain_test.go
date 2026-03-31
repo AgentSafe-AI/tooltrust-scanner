@@ -224,6 +224,35 @@ func TestSupplyChainChecker_NoSeverityScore_DefaultsToHigh(t *testing.T) {
 		"missing CVSS score should default to HIGH (conservative)")
 }
 
+func TestSupplyChainChecker_RepoURLLockfileDependency_IncludesEvidenceSource(t *testing.T) {
+	prev := analyzer.LockfileDepsFetcherForTest()
+	analyzer.SetLockfileDepsFetcherForTest(func(string) []analyzer.Dependency {
+		return []analyzer.Dependency{
+			{Name: "axios", Version: "1.14.1", Ecosystem: "npm"},
+		}
+	})
+	t.Cleanup(func() {
+		analyzer.SetLockfileDepsFetcherForTest(prev)
+	})
+
+	checker := analyzer.NewSupplyChainCheckerWithMock([]analyzer.MockVuln{
+		{ID: "MAL-2026-0001", Summary: "Known malicious package", CVSSScore: "9.8"},
+	}, nil)
+
+	tool := model.UnifiedTool{
+		Name: "repo_tool",
+		Metadata: map[string]any{
+			"repo_url": "https://github.com/example/repo",
+		},
+	}
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "dependency_source", issues[0].Evidence[3].Kind)
+	assert.Equal(t, "lockfile", issues[0].Evidence[3].Value)
+	assert.Equal(t, "MALICIOUS_PACKAGE", issues[0].Code)
+}
+
 // ---------------------------------------------------------------------------
 // Lockfile parser unit tests
 // ---------------------------------------------------------------------------

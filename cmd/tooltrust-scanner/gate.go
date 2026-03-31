@@ -132,12 +132,14 @@ func runGate(ctx context.Context, opts gateOpts) error {
 		if evalErr != nil {
 			return fmt.Errorf("gateway evaluation failed for tool %q: %w", tools[i].Name, evalErr)
 		}
+		policy.DependencyVisibility, policy.DependencyNote = dependencyVisibilityForTool(tools[i])
 		policies = append(policies, policy)
 	}
 
 	// Build and display the report.
 	summary := ScanSummary{Total: len(tools), ScannedAt: time.Now().UTC()}
-	for _, p := range policies {
+	for i := range policies {
+		p := policies[i]
 		switch p.Action {
 		case model.ActionAllow:
 			summary.Allowed++

@@ -142,10 +142,10 @@ func (c *BlacklistChecker) Meta() RuleMeta {
 	}
 }
 
-// Check examines each dependency declared in tool.Metadata["dependencies"]
-// against the offline blacklist and emits a CRITICAL AS-008 finding on any hit.
+// Check examines metadata-declared and lockfile-derived dependencies against
+// the offline blacklist and emits an AS-008 finding on any hit.
 func (c *BlacklistChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
-	deps, err := extractDependencies(tool)
+	deps, err := collectDependencies(tool)
 	if err != nil || len(deps) == 0 {
 		return nil, nil
 	}
@@ -172,7 +172,7 @@ func (c *BlacklistChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) 
 
 // buildBlacklistIssue constructs an AS-008 finding from a blacklist entry.
 // BLOCK entries get code SUPPLY_CHAIN_BLOCK; WARN entries get SUPPLY_CHAIN_WARN.
-func buildBlacklistIssue(entry blacklistEntry, dep Dependency, toolName string) model.Issue {
+func buildBlacklistIssue(entry blacklistEntry, dep dependencyEvidence, toolName string) model.Issue {
 	sev := blacklistSeverity(entry.Severity)
 
 	code := "SUPPLY_CHAIN_WARN"
@@ -195,6 +195,7 @@ func buildBlacklistIssue(entry blacklistEntry, dep Dependency, toolName string) 
 			{Kind: "package", Value: dep.Name},
 			{Kind: "version", Value: dep.Version},
 			{Kind: "ecosystem", Value: dep.Ecosystem},
+			{Kind: "dependency_source", Value: dep.Source},
 			{Kind: "blacklist_entry", Value: entry.ID},
 			{Kind: "blacklist_action", Value: entry.Action},
 		},

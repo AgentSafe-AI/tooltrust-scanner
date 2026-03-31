@@ -31,11 +31,13 @@ type RateLimit struct {
 
 // GatewayPolicy is the deployment-ready enforcement record for one tool.
 type GatewayPolicy struct {
-	ToolName  string     `json:"tool_name"`
-	Action    Action     `json:"action"`
-	RateLimit *RateLimit `json:"rate_limit,omitempty"`
-	Reason    string     `json:"reason,omitempty"`
-	Score     RiskScore  `json:"score"`
+	ToolName             string     `json:"tool_name"`
+	Action               Action     `json:"action"`
+	RateLimit            *RateLimit `json:"rate_limit,omitempty"`
+	Reason               string     `json:"reason,omitempty"`
+	DependencyVisibility string     `json:"dependency_visibility,omitempty"`
+	DependencyNote       string     `json:"dependency_note,omitempty"`
+	Score                RiskScore  `json:"score"`
 }
 
 // NewGatewayPolicy constructs a GatewayPolicy from a tool name and its RiskScore.

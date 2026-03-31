@@ -12,6 +12,7 @@ Scan MCP servers for prompt injection, data exfiltration, risky permissions, sup
 - Prompt injection and tool poisoning hidden in descriptions
 - Excessive permissions such as `exec`, `network`, `db`, and `fs`
 - Supply-chain CVEs and known compromised package versions
+- Dependency visibility gaps when an MCP server does not expose dependency metadata
 - Privilege escalation and arbitrary code execution patterns
 - Typosquatting, tool shadowing, and insecure secret handling
 - Missing rate-limit, timeout, or retry configuration on risky tools
@@ -42,6 +43,18 @@ Then ask your agent: `run tooltrust_scan_config`
 | `tooltrust_scanner_scan` | Scan a JSON blob of tool definitions |
 | `tooltrust_lookup` | Look up a server's trust grade |
 | `tooltrust_list_rules` | List all 13 security rules |
+
+## Dependency visibility
+
+ToolTrust reports how much dependency evidence it could recover:
+
+- `No dependency data`
+- `Declared by MCP metadata`
+- `Verified from local lockfile`
+- `Verified from remote lockfile`
+- `Repo URL available`
+
+For local scans, ToolTrust will also try to inspect nearby `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `go.sum`, and `requirements.txt` files when it can infer the project root from the launch command.
 
 ## Example output
 

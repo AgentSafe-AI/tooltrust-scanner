@@ -30,7 +30,8 @@ func writeSarifOutput(opts scanOpts, report ScanReport) error {
 
 	sarifReport.AddRun(run)
 
-	for _, policy := range report.Policies {
+	for i := range report.Policies {
+		policy := report.Policies[i]
 		for _, issue := range policy.Score.Issues {
 			level := "note"
 			switch issue.Severity {

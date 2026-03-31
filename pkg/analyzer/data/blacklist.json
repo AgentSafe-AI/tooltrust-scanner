@@ -48,5 +48,15 @@
     "severity": "CRITICAL",
     "reason": "Unauthenticated RCE (CVSS 9.8): POST /api/v1/build_public_tmp/{flow_id}/flow accepts attacker-controlled flow data and passes arbitrary Python code directly to exec() with no sandboxing. Fixed in 1.9.0.",
     "link": "https://github.com/advisories/GHSA-rvqx-wpfh-mfx7"
+  },
+  {
+    "id": "AXIOS-NPM-COMPROMISE-2026-03-31",
+    "component": "axios",
+    "ecosystem": "npm",
+    "affected_versions": ["1.14.1", "0.30.4"],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Confirmed npm supply-chain compromise: attacker reportedly hijacked the maintainer npm account and published malicious axios builds that introduced the plain-crypto-js dependency outside the normal GitHub Actions release flow.",
+    "link": "https://github.com/axios/axios"
   }
 ]

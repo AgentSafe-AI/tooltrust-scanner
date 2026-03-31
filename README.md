@@ -66,9 +66,26 @@ Then ask your agent to run:
 - Prompt injection and tool poisoning hidden in descriptions
 - Excessive permissions such as `exec`, `network`, `db`, and `fs`
 - Supply-chain CVEs and known compromised package versions
+- Dependency visibility gaps when an MCP server does not expose enough metadata for supply-chain analysis
 - Privilege escalation and arbitrary code execution patterns
 - Typosquatting, tool shadowing, and insecure secret handling
 - Missing rate-limit, timeout, or retry configuration on risky tools
+
+ToolTrust now labels supply-chain coverage in scan output:
+
+- `No dependency data`
+- `Declared by MCP metadata`
+- `Verified from local lockfile`
+- `Verified from remote lockfile`
+- `Repo URL available`
+
+For live local scans, ToolTrust will also best-effort inspect common dependency artifacts when it can infer a project root from the launch command:
+
+- `package-lock.json` / `npm-shrinkwrap.json`
+- `pnpm-lock.yaml`
+- `yarn.lock`
+- `go.sum`
+- `requirements.txt`
 
 Full rule catalog: [docs/RULES.md](docs/RULES.md) · [tooltrust.dev](https://www.tooltrust.dev/)
 

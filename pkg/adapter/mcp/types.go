@@ -52,6 +52,21 @@ type Tool struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	InputSchema InputSchema `json:"inputSchema"`
+	RepoURL     string      `json:"repo_url,omitempty"`
+	Metadata    ToolMeta    `json:"metadata,omitempty"`
+}
+
+// ToolMeta carries optional metadata used by downstream analyzers.
+type ToolMeta struct {
+	RepoURL      string               `json:"repo_url,omitempty"`
+	Dependencies []DependencyMetadata `json:"dependencies,omitempty"`
+}
+
+// DependencyMetadata is the MCP-side representation of a package dependency.
+type DependencyMetadata struct {
+	Name      string `json:"name"`
+	Version   string `json:"version"`
+	Ecosystem string `json:"ecosystem"`
 }
 
 // InputSchema is the JSON Schema fragment embedded in an MCP Tool.
