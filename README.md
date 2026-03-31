@@ -169,5 +169,3 @@ If your MCP server passes ToolTrust, let people know:
 ---
 
 [Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Deployment & security](docs/DEPLOYMENT.md) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE)
-
-© 2026 [AgentSafe AI](https://github.com/AgentSafe-AI)
