@@ -49,6 +49,8 @@ type Engine struct {
 //   - AS-010  Secret Handling          (SecretHandlingChecker)
 //   - AS-011  DoS Resilience           (DoSResilienceChecker)
 //   - AS-013  Tool Shadowing           (ShadowingChecker)
+//   - AS-014  Dependency Visibility    (DependencyInventoryChecker)
+//   - AS-015  NPM Lifecycle Scripts    (NPMLifecycleScriptChecker)
 func NewEngine(enableDeepScan bool, rulesDir string) (*Engine, error) {
 	scanner, err := NewScanner(enableDeepScan, rulesDir)
 	if err != nil {

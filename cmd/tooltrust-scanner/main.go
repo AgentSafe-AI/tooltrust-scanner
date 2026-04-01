@@ -220,6 +220,7 @@ func runScan(ctx context.Context, opts scanOpts) error {
 		if evalErr != nil {
 			return fmt.Errorf("gateway evaluation failed for tool %q: %w", tools[i].Name, evalErr)
 		}
+		policy.DependencyVisibility, policy.DependencyNote = dependencyVisibilityForTool(tools[i])
 		policies = append(policies, policy)
 
 		if opts.verbose {
@@ -297,13 +298,24 @@ func printPtermUI(report ScanReport) error {
 	// ── Build the tree ────────────────────────────────────────────────────────
 	var rootChildren []pterm.TreeNode
 
-	for _, policy := range report.Policies {
+	for i := range report.Policies {
+		policy := report.Policies[i]
 		// Tool header label, coloured by action.
 		toolLabel := formatToolLabel(policy)
 
 		// Children: one per finding, or a green ✅ Pass.
 		var children []pterm.TreeNode
 		if len(policy.Score.Issues) == 0 {
+			if line, note := dependencyVisibilityLines(policy); line != "" {
+				children = append(children, pterm.TreeNode{
+					Text: pterm.FgGray.Sprint(line),
+				})
+				if note != "" {
+					children = append(children, pterm.TreeNode{
+						Text: pterm.FgGray.Sprint(note),
+					})
+				}
+			}
 			children = append(children, pterm.TreeNode{
 				Text: pterm.FgGreen.Sprint("✅ Pass"),
 			})
@@ -312,6 +324,16 @@ func printPtermUI(report ScanReport) error {
 				children = append(children, pterm.TreeNode{
 					Text: pterm.FgGray.Sprint(toolReasonLabel(policy) + reason),
 				})
+			}
+			if line, note := dependencyVisibilityLines(policy); line != "" {
+				children = append(children, pterm.TreeNode{
+					Text: pterm.FgGray.Sprint(line),
+				})
+				if note != "" {
+					children = append(children, pterm.TreeNode{
+						Text: pterm.FgGray.Sprint(note),
+					})
+				}
 			}
 			shownHints := map[string]bool{}
 			for _, issue := range policy.Score.Issues {
@@ -372,6 +394,13 @@ func printStarPrompt() {
 	pterm.Info.Println("If ToolTrust helped, star us: github.com/AgentSafe-AI/tooltrust-scanner")
 }
 
+func dependencyVisibilityLines(policy model.GatewayPolicy) (line, note string) {
+	if policy.DependencyVisibility == "" {
+		return "", ""
+	}
+	return "Dependency visibility: " + policy.DependencyVisibility, policy.DependencyNote
+}
+
 // printSupplyChainAlert scans all findings for AS-008 BLOCK issues and prints a
 // high-visibility ANSI red emergency banner when confirmed malware is detected.
 // This runs BEFORE the main scan tree to ensure it is never scrolled past.
@@ -382,7 +411,8 @@ func printSupplyChainAlert(policies []model.GatewayPolicy) {
 	}
 	var alerts []alert
 
-	for _, policy := range policies {
+	for i := range policies {
+		policy := policies[i]
 		for _, issue := range policy.Score.Issues {
 			if issue.RuleID == "AS-008" && issue.Code == "SUPPLY_CHAIN_BLOCK" {
 				alerts = append(alerts, alert{pkg: issue.Location, desc: issue.Description})
@@ -426,7 +456,8 @@ func worstGrade(policies []model.GatewayPolicy) model.Grade {
 		model.GradeF: 4,
 	}
 	worst := model.GradeA
-	for _, p := range policies {
+	for i := range policies {
+		p := policies[i]
 		if order[p.Score.Grade] > order[worst] {
 			worst = p.Score.Grade
 		}
@@ -577,6 +608,8 @@ func summarizeIssueReason(issue model.Issue) string {
 		return "code execution signal"
 	case "AS-008":
 		return "known compromised package"
+	case "AS-014":
+		return ""
 	}
 
 	desc := strings.TrimSpace(issue.Description)
@@ -584,6 +617,85 @@ func summarizeIssueReason(issue model.Issue) string {
 		return ""
 	}
 	return desc
+}
+
+func dependencyVisibilityForTool(tool model.UnifiedTool) (visibility, note string) {
+	if tool.Metadata == nil {
+		return "No dependency data", "No metadata.dependencies or repo_url were exposed by this MCP server."
+	}
+
+	sources := dependencySourcesFromMetadata(tool.Metadata)
+	if len(sources) == 0 {
+		note = metadataString(tool.Metadata, "dependency_visibility_note")
+		if note == "" {
+			note = "No metadata.dependencies or repo_url were exposed by this MCP server."
+		}
+		return "No dependency data", note
+	}
+	return formatDependencyVisibility(sources), visibilityNote(tool.Metadata, sources)
+}
+
+func dependencySourcesFromMetadata(meta map[string]any) []string {
+	seen := map[string]bool{}
+	var sources []string
+
+	if raw, ok := meta["dependencies"]; ok {
+		b, err := json.Marshal(raw)
+		if err == nil {
+			var deps []struct {
+				Source string `json:"source"`
+			}
+			if err := json.Unmarshal(b, &deps); err == nil {
+				for _, dep := range deps {
+					source := dep.Source
+					if source == "" {
+						source = "metadata"
+					}
+					if !seen[source] {
+						seen[source] = true
+						sources = append(sources, source)
+					}
+				}
+			}
+		}
+	}
+
+	if repoURL, ok := meta["repo_url"].(string); ok && strings.TrimSpace(repoURL) != "" {
+		if !seen["repo_url"] {
+			sources = append(sources, "repo_url")
+		}
+	}
+
+	return sources
+}
+
+func visibilityNote(meta map[string]any, sources []string) string {
+	if note := metadataString(meta, "dependency_visibility_note"); note != "" {
+		return note
+	}
+	if len(sources) == 1 && sources[0] == "repo_url" {
+		return "repo_url is available, so ToolTrust can try to inspect remote lockfiles for dependency evidence."
+	}
+	return ""
+}
+
+func formatDependencyVisibility(sources []string) string {
+	labels := make([]string, 0, len(sources))
+	for _, source := range sources {
+		switch source {
+		case "metadata":
+			labels = append(labels, "Declared by MCP metadata")
+		case "local_lockfile":
+			labels = append(labels, "Verified from local lockfile")
+		case "lockfile":
+			labels = append(labels, "Verified from remote lockfile")
+		case "repo_url":
+			labels = append(labels, "Repo URL available")
+		default:
+			labels = append(labels, source)
+		}
+	}
+	return strings.Join(labels, " + ")
 }
 
 // formatToolLabel returns a coloured "Tool: <name>  [ACTION]" label.
@@ -619,6 +731,7 @@ var ruleHint = map[string]string{
 	"AS-010": "→ Never pass raw credentials as tool inputs. Use a secret manager instead.",
 	"AS-011": "→ Add explicit timeout and rate-limit config to the tool before use in production.",
 	"AS-013": "→ Use a unique namespace prefix per server (e.g. github__search_repos) to prevent tool name collisions.",
+	"AS-015": "→ Review the install-time script before use. Prefer a version without lifecycle scripts, or install with --ignore-scripts in CI/sandboxed environments.",
 }
 
 // formatIssueLabel returns a coloured finding line with optional evidence and fix hint.
@@ -707,7 +820,8 @@ func joinIssueDetailLines(main string, groups ...[]string) string {
 // buildRiskLine builds a compact risk summary string e.g. "A×3  B×1  F×1".
 func buildRiskLine(policies []model.GatewayPolicy) string {
 	counts := map[model.Grade]int{}
-	for _, p := range policies {
+	for i := range policies {
+		p := policies[i]
 		counts[p.Score.Grade]++
 	}
 	grades := []model.Grade{model.GradeA, model.GradeB, model.GradeC, model.GradeD, model.GradeF}
@@ -729,11 +843,19 @@ func avgRiskScore(policies []model.GatewayPolicy) (int, model.Grade) {
 		return 0, model.GradeA
 	}
 	total := 0
-	for _, p := range policies {
+	for i := range policies {
+		p := policies[i]
 		total += p.Score.Score
 	}
 	avg := total / len(policies)
 	return avg, model.GradeFromScore(avg)
+}
+
+func metadataString(meta map[string]any, key string) string {
+	if value, ok := meta[key].(string); ok {
+		return value
+	}
+	return ""
 }
 
 // printScanPtree writes a tree view of the scan process to w (stderr) during verbose scan.
@@ -796,7 +918,8 @@ func persistResults(ctx context.Context, dbPath string, tools []model.UnifiedToo
 		}
 	}()
 
-	for i, policy := range policies {
+	for i := range policies {
+		policy := policies[i]
 		rec := storage.ScanRecord{
 			ID:        fmt.Sprintf("%s-%d", tools[i].Name, time.Now().UnixNano()),
 			ToolName:  policy.ToolName,

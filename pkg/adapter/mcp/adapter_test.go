@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/adapter/mcp"
+	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/analyzer"
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
@@ -124,6 +125,88 @@ func TestAdapter_Parse_PreservesRawSource(t *testing.T) {
 	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
 	require.NoError(t, err)
 	assert.NotEmpty(t, tools[0].RawSource)
+}
+
+func TestAdapter_Parse_PopulatesSupplyChainMetadata(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "deploy_site",
+				Description: "Deploy the site",
+				RepoURL:     "https://github.com/example/site",
+				Metadata: mcp.ToolMeta{
+					Dependencies: []mcp.DependencyMetadata{
+						{Name: "axios", Version: "1.14.1", Ecosystem: "npm"},
+						{Name: "litellm", Version: "1.82.8", Ecosystem: "PyPI"},
+					},
+				},
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+
+	meta := tools[0].Metadata
+	require.NotNil(t, meta)
+	assert.Equal(t, "https://github.com/example/site", meta["repo_url"])
+
+	deps, ok := meta["dependencies"].([]map[string]any)
+	require.True(t, ok)
+	require.Len(t, deps, 2)
+	assert.Equal(t, "axios", deps[0]["name"])
+	assert.Equal(t, "1.14.1", deps[0]["version"])
+	assert.Equal(t, "npm", deps[0]["ecosystem"])
+}
+
+func TestAdapter_Parse_PrefersMetadataRepoURL(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "deploy_site",
+				Description: "Deploy the site",
+				RepoURL:     "https://github.com/example/old",
+				Metadata: mcp.ToolMeta{
+					RepoURL: "https://github.com/example/new",
+				},
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+	require.NotNil(t, tools[0].Metadata)
+	assert.Equal(t, "https://github.com/example/new", tools[0].Metadata["repo_url"])
+}
+
+func TestAdapter_Parse_EngineDetectsBlacklistedDependency(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "deploy_site",
+				Description: "Deploy the site",
+				Metadata: mcp.ToolMeta{
+					Dependencies: []mcp.DependencyMetadata{
+						{Name: "axios", Version: "1.14.1", Ecosystem: "npm"},
+					},
+				},
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+
+	engine, err := analyzer.NewEngine(false, "")
+	require.NoError(t, err)
+
+	report := engine.Scan(tools[0])
+	assert.True(t, report.HasFinding("AS-008"))
+	require.NotEmpty(t, report.Findings)
+	assert.Contains(t, report.Findings[0].Description, "axios@1.14.1")
 }
 
 func TestAdapter_Parse_EvaluateScriptInfersExec(t *testing.T) {

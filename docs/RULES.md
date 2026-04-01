@@ -1,6 +1,6 @@
 # Security Rules
 
-ToolTrust Scanner checks every MCP tool against 13 built-in rules.
+ToolTrust Scanner checks every MCP tool against 14 active built-in rules.
 Each rule fires independently; a tool can trigger multiple rules.
 
 ---
@@ -71,7 +71,7 @@ Tools with no description or no input schema give the agent no basis for safe us
 
 Checks an offline bundled blacklist of packages confirmed to have been compromised in supply chain attacks. No network required — zero latency.
 
-Current blacklist: LiteLLM 1.82.7/1.82.8 (TeamPCP `.pth` backdoor), Trivy v0.69.4–v0.69.6 (CI pipeline compromise), Langflow < 1.9.0 (unauthenticated RCE).
+Current blacklist: LiteLLM 1.82.7/1.82.8 (TeamPCP `.pth` backdoor), Trivy v0.69.4–v0.69.6 (CI pipeline compromise), Langflow < 1.9.0 (unauthenticated RCE), Axios 1.14.1/0.30.4 (malicious npm publish).
 
 ---
 
@@ -99,14 +99,6 @@ Tools that perform network or execution operations without declaring rate-limit,
 
 ---
 
-## 🔄 AS-012 — Tool Drift
-
-**Severity:** Medium
-
-Detects tools whose definition has changed since the last scan — new parameters added, descriptions modified, or permissions expanded. Drift can indicate a supply chain compromise or unreviewed update.
-
----
-
 ## 👥 AS-013 — Tool Shadowing
 
 **Severity:** High / Medium
@@ -114,3 +106,19 @@ Detects tools whose definition has changed since the last scan — new parameter
 Detects tools whose names are exact normalized duplicates of other tools in the same server — a sign that a malicious tool is attempting to shadow or override a legitimate one.
 
 Near-duplicate detection (edit distance 1) was removed in v0.1.15 after a 13/13 false-positive rate on legitimate tool families. Only exact normalized duplicates fire this rule.
+
+---
+
+## ℹ️ AS-014 — Dependency Inventory Unavailable
+
+**Severity:** Info
+
+Flags MCP tools that do not expose `metadata.dependencies` and do not provide a `repo_url`, which limits ToolTrust's ability to perform meaningful supply-chain analysis.
+
+---
+
+## ⚠️ AS-015 — Suspicious NPM Lifecycle Script
+
+**Severity:** High
+
+Flags npm dependency versions that publish install-time lifecycle scripts such as `preinstall`, `install`, `postinstall`, or `prepare`. These scripts are a common supply-chain attack primitive because they execute automatically during installation.

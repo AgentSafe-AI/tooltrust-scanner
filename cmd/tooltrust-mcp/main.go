@@ -608,7 +608,8 @@ func renderTextReport(result *ScanResult) string {
 	var lines []string
 
 	severityCounts := map[model.Severity]int{}
-	for _, p := range result.Policies {
+	for i := range result.Policies {
+		p := result.Policies[i]
 		for _, issue := range p.Score.Issues {
 			severityCounts[issue.Severity]++
 		}
@@ -621,7 +622,8 @@ func renderTextReport(result *ScanResult) string {
 		}
 	}
 	counts := map[model.Grade]int{}
-	for _, p := range result.Policies {
+	for i := range result.Policies {
+		p := result.Policies[i]
 		counts[p.Score.Grade]++
 	}
 	grades := []model.Grade{model.GradeA, model.GradeB, model.GradeC, model.GradeD, model.GradeF}
@@ -645,7 +647,8 @@ func renderTextReport(result *ScanResult) string {
 	)
 
 	flaggedCount := 0
-	for _, p := range result.Policies {
+	for i := range result.Policies {
+		p := result.Policies[i]
 		if p.Action == model.ActionAllow {
 			continue
 		}

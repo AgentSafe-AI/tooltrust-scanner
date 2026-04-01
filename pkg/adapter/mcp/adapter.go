@@ -27,7 +27,8 @@ func (a *Adapter) Parse(_ context.Context, data []byte) ([]model.UnifiedTool, er
 	}
 
 	tools := make([]model.UnifiedTool, 0, len(resp.Tools))
-	for _, t := range resp.Tools {
+	for i := range resp.Tools {
+		t := resp.Tools[i]
 		raw, err := json.Marshal(t)
 		if err != nil {
 			// Marshalling a plain struct with only string fields should never fail.
@@ -39,11 +40,46 @@ func (a *Adapter) Parse(_ context.Context, data []byte) ([]model.UnifiedTool, er
 			InputSchema: convertSchema(t.InputSchema),
 			Protocol:    model.ProtocolMCP,
 			RawSource:   raw,
+			Metadata:    buildMetadata(t),
 		}
 		unified.Permissions = inferPermissions(t)
 		tools = append(tools, unified)
 	}
 	return tools, nil
+}
+
+func buildMetadata(t Tool) map[string]any {
+	meta := map[string]any{}
+
+	repoURL := strings.TrimSpace(t.Metadata.RepoURL)
+	if repoURL == "" {
+		repoURL = strings.TrimSpace(t.RepoURL)
+	}
+	if repoURL != "" {
+		meta["repo_url"] = repoURL
+	}
+
+	if len(t.Metadata.Dependencies) > 0 {
+		deps := make([]map[string]any, 0, len(t.Metadata.Dependencies))
+		for _, dep := range t.Metadata.Dependencies {
+			if dep.Name == "" || dep.Version == "" || dep.Ecosystem == "" {
+				continue
+			}
+			deps = append(deps, map[string]any{
+				"name":      dep.Name,
+				"version":   dep.Version,
+				"ecosystem": dep.Ecosystem,
+			})
+		}
+		if len(deps) > 0 {
+			meta["dependencies"] = deps
+		}
+	}
+
+	if len(meta) == 0 {
+		return nil
+	}
+	return meta
 }
 
 // convertSchema maps an MCP InputSchema to the internal jsonschema.Schema.

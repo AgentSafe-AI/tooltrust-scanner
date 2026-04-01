@@ -36,6 +36,11 @@ type Dependency struct {
 	Ecosystem string `json:"ecosystem"` // e.g. "npm", "Go", "PyPI"
 }
 
+type dependencyEvidence struct {
+	Dependency
+	Source string
+}
+
 type osvQueryBody struct {
 	Package osvPackage `json:"package"`
 	Version string     `json:"version,omitempty"`
@@ -194,6 +199,8 @@ var lockfileSpecs = []struct {
 	{"go.sum", parseGoSum},
 	{"requirements.txt", parseRequirementsTxt},
 }
+
+var lockfileDepsFetcher = fetchLockfileDeps
 
 type packageLockJSON struct {
 	Packages     map[string]packageLockEntry `json:"packages"`     // npm v2/v3
@@ -409,18 +416,10 @@ func newSupplyChainCheckerWithClient(c osvClient) *SupplyChainChecker {
 
 // Check queries OSV for all known dependencies and emits AS-004 findings.
 func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
-	metaDeps, err := extractDependencies(tool)
+	deps, err := collectDependencies(tool)
 	if err != nil {
 		return nil, nil
 	}
-
-	// Enrich with lockfile deps when a GitHub repo URL is provided.
-	var lockfileDeps []Dependency
-	if repoURL, ok := tool.Metadata["repo_url"].(string); ok && repoURL != "" {
-		lockfileDeps = fetchLockfileDeps(repoURL)
-	}
-
-	deps := mergeDependencies(metaDeps, lockfileDeps)
 	if len(deps) == 0 {
 		return nil, nil
 	}
@@ -441,7 +440,7 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			vulns, qErr := c.client.Query(ctx, dep)
+			vulns, qErr := c.client.Query(ctx, dep.Dependency)
 			if qErr != nil {
 				ch <- nil
 				return
@@ -469,7 +468,7 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 // buildSupplyChainIssue constructs a single AS-004 finding.
 //   - MAL-* advisories get Critical severity and code MALICIOUS_PACKAGE.
 //   - Fix version from OSV is appended when available.
-func buildSupplyChainIssue(v osvVuln, dep Dependency, toolName string) model.Issue {
+func buildSupplyChainIssue(v osvVuln, dep dependencyEvidence, toolName string) model.Issue {
 	sev := osvSeverityToModel(v)
 	code := "SUPPLY_CHAIN_CVE"
 
@@ -490,6 +489,12 @@ func buildSupplyChainIssue(v osvVuln, dep Dependency, toolName string) model.Iss
 		Code:        code,
 		Description: desc,
 		Location:    fmt.Sprintf("dependency:%s", dep.Name),
+		Evidence: []model.Evidence{
+			{Kind: "package", Value: dep.Name},
+			{Kind: "version", Value: dep.Version},
+			{Kind: "ecosystem", Value: dep.Ecosystem},
+			{Kind: "dependency_source", Value: dep.Source},
+		},
 	}
 }
 
@@ -523,6 +528,48 @@ func extractDependencies(tool model.UnifiedTool) ([]Dependency, error) {
 		return nil, fmt.Errorf("supply_chain: unmarshal deps: %w", err)
 	}
 	return deps, nil
+}
+
+func collectDependencies(tool model.UnifiedTool) ([]dependencyEvidence, error) {
+	metaDeps, err := extractDependencies(tool)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]bool, len(metaDeps))
+	result := make([]dependencyEvidence, 0, len(metaDeps))
+	for _, dep := range metaDeps {
+		k := dep.Ecosystem + ":" + dep.Name + "@" + dep.Version
+		if seen[k] {
+			continue
+		}
+		seen[k] = true
+		result = append(result, dependencyEvidence{
+			Dependency: dep,
+			Source:     "metadata",
+		})
+	}
+
+	if tool.Metadata == nil {
+		return result, nil
+	}
+	repoURL, ok := tool.Metadata["repo_url"].(string)
+	if !ok || repoURL == "" {
+		return result, nil
+	}
+
+	for _, dep := range lockfileDepsFetcher(repoURL) {
+		k := dep.Ecosystem + ":" + dep.Name + "@" + dep.Version
+		if seen[k] {
+			continue
+		}
+		seen[k] = true
+		result = append(result, dependencyEvidence{
+			Dependency: dep,
+			Source:     "lockfile",
+		})
+	}
+	return result, nil
 }
 
 // ── Severity helpers ──────────────────────────────────────────────────────────

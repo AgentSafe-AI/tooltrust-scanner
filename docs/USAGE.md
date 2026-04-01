@@ -23,9 +23,24 @@ curl -sfL https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/
 # Scan any MCP server
 tooltrust-scanner scan --server "npx -y @modelcontextprotocol/server-filesystem /tmp"
 
+# Scan a local Node-based MCP server and inspect nearby lockfiles when possible
+tooltrust-scanner scan --server "node ./server.js"
+
 # Scan-then-install: gate checks a server before adding it to your config
 tooltrust-scanner gate @modelcontextprotocol/server-memory -- /tmp
 ```
+
+### Dependency visibility
+
+ToolTrust reports how much dependency evidence it was able to recover during a scan:
+
+- `No dependency data`: the MCP server did not expose `metadata.dependencies` or `repo_url`
+- `Declared by MCP metadata`: dependencies came from the MCP payload
+- `Verified from local lockfile`: dependencies were recovered from local artifacts near the launched server
+- `Verified from remote lockfile`: dependencies were recovered from a repository lockfile via `repo_url`
+- `Repo URL available`: a repository URL was exposed, even if no lockfile dependency was recovered yet
+
+If ToolTrust cannot see dependency data, it now emits an informational finding so supply-chain coverage gaps are explicit instead of silent.
 
 ### Other install methods
 
