@@ -67,6 +67,7 @@ Then ask your agent to run:
 - Excessive permissions such as `exec`, `network`, `db`, and `fs`
 - Supply-chain CVEs and known compromised package versions
 - Suspicious npm lifecycle scripts that execute during install
+- Suspicious npm IOC dependencies such as `plain-crypto-js` referenced from published package metadata
 - Dependency visibility gaps when an MCP server does not expose enough metadata for supply-chain analysis
 - Privilege escalation and arbitrary code execution patterns
 - Typosquatting, tool shadowing, and insecure secret handling
@@ -83,6 +84,14 @@ ToolTrust now labels supply-chain coverage in scan output:
 For live local scans, ToolTrust will also best-effort inspect common dependency artifacts when it can infer a project root from the launch command:
 
 - `package-lock.json` / `npm-shrinkwrap.json`
+- `pnpm-lock.yaml`
+- `yarn.lock`
+- `go.sum`
+- `requirements.txt`
+
+For remote GitHub repos exposed via `repo_url`, ToolTrust also inspects common lockfiles for transitive dependency evidence:
+
+- `package-lock.json`
 - `pnpm-lock.yaml`
 - `yarn.lock`
 - `go.sum`

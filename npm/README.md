@@ -13,6 +13,7 @@ Scan MCP servers for prompt injection, data exfiltration, risky permissions, sup
 - Excessive permissions such as `exec`, `network`, `db`, and `fs`
 - Supply-chain CVEs and known compromised package versions
 - Suspicious npm lifecycle scripts that execute during install
+- Suspicious npm IOC dependencies such as `plain-crypto-js` referenced from published package metadata
 - Dependency visibility gaps when an MCP server does not expose dependency metadata
 - Privilege escalation and arbitrary code execution patterns
 - Typosquatting, tool shadowing, and insecure secret handling
@@ -43,7 +44,7 @@ Then ask your agent: `run tooltrust_scan_config`
 | `tooltrust_scan_server` | Scan a specific MCP server |
 | `tooltrust_scanner_scan` | Scan a JSON blob of tool definitions |
 | `tooltrust_lookup` | Look up a server's trust grade |
-| `tooltrust_list_rules` | List all 14 active security rules |
+| `tooltrust_list_rules` | List all 15 active security rules |
 
 ## Dependency visibility
 
@@ -56,6 +57,8 @@ ToolTrust reports how much dependency evidence it could recover:
 - `Repo URL available`
 
 For local scans, ToolTrust will also try to inspect nearby `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `go.sum`, and `requirements.txt` files when it can infer the project root from the launch command.
+
+For GitHub-backed `repo_url` scans, ToolTrust also inspects remote `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `go.sum`, and `requirements.txt` files to recover transitive dependency evidence.
 
 ## Example output
 

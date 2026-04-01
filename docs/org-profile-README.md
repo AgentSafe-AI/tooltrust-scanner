@@ -12,7 +12,7 @@ We build open-source tools that let you see the risks before your agent acts on 
 
 ### ToolTrust Scanner
 
-Static security scanner for MCP server tool definitions. 14 active security rules, plus explicit supply-chain visibility signals for missing dependency data. Battle-tested against hundreds of production servers.
+Static security scanner for MCP server tool definitions. 15 active security rules, plus explicit supply-chain visibility signals for missing dependency data and transitive dependency coverage from common lockfiles. Battle-tested against hundreds of production servers.
 
 ```bash
 # Add to your .mcp.json — your agent scans its own tools
