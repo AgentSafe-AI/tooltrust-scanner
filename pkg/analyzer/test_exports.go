@@ -30,5 +30,9 @@ type NPMIOCEntryForTest = npmIOCEntry
 
 // BuildNPMIOCIndexForTest exposes buildNPMIOCIndex for analyzer_test.
 func BuildNPMIOCIndexForTest(data []byte) (map[string]npmIOCEntry, error) {
-	return buildNPMIOCIndex(data)
+	idx, err := buildNPMIOCIndex(data)
+	if err != nil {
+		return nil, err
+	}
+	return idx.packageNames, nil
 }

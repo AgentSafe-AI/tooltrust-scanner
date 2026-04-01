@@ -1,10 +1,22 @@
 [
   {
     "ecosystem": "npm",
+    "ioc_type": "package_name",
     "name": "plain-crypto-js",
     "reason": "Known IOC linked to the March 31, 2026 malicious axios npm publish.",
     "confidence": "high",
     "source": "https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/pkg/analyzer/data/blacklist.json",
+    "first_seen": "2026-03-31",
+    "suggested_action": "flag"
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "script_pattern",
+    "value": "curl -fssl",
+    "match": "contains",
+    "reason": "High-risk install-script IOC pattern often used to fetch remote shell payloads during supply-chain compromise.",
+    "confidence": "medium",
+    "source": "https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/pkg/analyzer/npm_scripts.go",
     "first_seen": "2026-03-31",
     "suggested_action": "flag"
   }

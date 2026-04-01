@@ -36,6 +36,13 @@ Use for:
 
 These entries currently map to `AS-016`.
 
+Supported npm IOC types currently include:
+- `package_name`
+- `dependency_name`
+- `script_pattern`
+- `domain`
+- `url`
+
 ## Candidate Flow
 
 1. Threat-intel monitor opens an issue for a new incident or blog post and writes a draft candidate file under `.github/ioc-candidates/`.

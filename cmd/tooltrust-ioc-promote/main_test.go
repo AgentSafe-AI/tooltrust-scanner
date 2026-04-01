@@ -54,7 +54,7 @@ func TestRun_PromotesNPMIOC(t *testing.T) {
 	assert.Contains(t, string(data), "plain-crypto-js")
 }
 
-func TestRun_SkipsNonNPMIOCEntries(t *testing.T) {
+func TestRun_PromotesDomainIOC(t *testing.T) {
 	dir := t.TempDir()
 	require.NoError(t, os.MkdirAll(filepath.Join(dir, "pkg", "analyzer", "data"), 0o755))
 	require.NoError(t, os.WriteFile(
@@ -96,7 +96,8 @@ func TestRun_SkipsNonNPMIOCEntries(t *testing.T) {
 
 	data, err := os.ReadFile(filepath.Join(dir, "pkg", "analyzer", "data", "npm_iocs.json"))
 	require.NoError(t, err)
-	assert.Equal(t, "[]\n", string(data))
+	assert.Contains(t, string(data), "\"ioc_type\": \"domain\"")
+	assert.Contains(t, string(data), "\"value\": \"evil.example\"")
 }
 
 func TestRun_PromotesBlacklistEntry(t *testing.T) {

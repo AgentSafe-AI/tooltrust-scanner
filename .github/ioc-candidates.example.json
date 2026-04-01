@@ -13,6 +13,19 @@
   },
   {
     "ecosystem": "npm",
+    "ioc_type": "script_pattern",
+    "value": "curl -fssl",
+    "match": "contains",
+    "confidence": "medium",
+    "reason": "Observed in install-time shell fetches tied to npm supply-chain incidents.",
+    "source": "https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/pkg/analyzer/npm_scripts.go",
+    "first_seen": "2026-03-31",
+    "suggested_action": "flag",
+    "promote_to": "npm_iocs",
+    "notes": "Use metadata-level IOC promotion for reviewed install-script indicators."
+  },
+  {
+    "ecosystem": "npm",
     "ioc_type": "package_name",
     "value": "axios",
     "confidence": "high",

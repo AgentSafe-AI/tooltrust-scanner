@@ -129,4 +129,4 @@ Flags npm dependency versions that publish install-time lifecycle scripts such a
 
 **Severity:** Critical
 
-Flags npm dependency versions whose published registry metadata references known malicious IOC package names, such as `plain-crypto-js`. This is narrower than full tarball signature scanning, but it can still catch compromised releases when an IOC appears in dependency metadata.
+Flags npm dependency versions whose published registry metadata or install-time scripts reference known malicious IOC package names, domains, URLs, or script patterns, such as `plain-crypto-js` or reviewed shell-fetch indicators. This is narrower than full tarball signature scanning, but it can still catch compromised releases when an IOC appears in dependency metadata.

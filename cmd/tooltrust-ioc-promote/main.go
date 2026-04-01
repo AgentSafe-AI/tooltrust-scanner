@@ -15,6 +15,7 @@ type candidateIOC struct {
 	Ecosystem       string   `json:"ecosystem"`
 	IOCType         string   `json:"ioc_type"`
 	Value           string   `json:"value"`
+	Match           string   `json:"match,omitempty"`
 	Confidence      string   `json:"confidence"`
 	Reason          string   `json:"reason"`
 	Source          string   `json:"source"`
@@ -30,7 +31,10 @@ type candidateIOC struct {
 
 type npmIOCEntry struct {
 	Ecosystem       string `json:"ecosystem"`
+	IOCType         string `json:"ioc_type,omitempty"`
 	Name            string `json:"name"`
+	Value           string `json:"value,omitempty"`
+	Match           string `json:"match,omitempty"`
 	Reason          string `json:"reason"`
 	Confidence      string `json:"confidence,omitempty"`
 	Source          string `json:"source,omitempty"`
@@ -92,8 +96,9 @@ func run(args []string) error {
 	}
 
 	seen := make(map[string]bool, len(current))
-	for _, entry := range current {
-		seen[strings.ToLower(entry.Name)] = true
+	for i := range current {
+		entry := current[i]
+		seen[npmIOCSeenKey(entry.IOCType, firstNonEmpty(entry.Value, entry.Name), entry.Match)] = true
 	}
 	seenBlacklist := make(map[string]bool, len(blacklist))
 	for i := range blacklist {
@@ -113,18 +118,36 @@ func run(args []string) error {
 			if !strings.EqualFold(candidate.Ecosystem, "npm") {
 				continue
 			}
-			if candidate.IOCType != "package_name" && candidate.IOCType != "dependency_name" {
+			switch candidate.IOCType {
+			case "package_name", "dependency_name", "script_pattern", "domain", "url":
+			default:
 				continue
 			}
 
-			name := strings.TrimSpace(candidate.Value)
-			if seen[strings.ToLower(name)] {
+			value := strings.TrimSpace(candidate.Value)
+			match := strings.TrimSpace(candidate.Match)
+			if match == "" {
+				if candidate.IOCType == "package_name" || candidate.IOCType == "dependency_name" {
+					match = "exact"
+				} else {
+					match = "contains"
+				}
+			}
+			key := npmIOCSeenKey(candidate.IOCType, value, match)
+			if seen[key] {
 				continue
 			}
-			seen[strings.ToLower(name)] = true
+			seen[key] = true
+			name := ""
+			if candidate.IOCType == "package_name" || candidate.IOCType == "dependency_name" {
+				name = value
+			}
 			current = append(current, npmIOCEntry{
 				Ecosystem:       "npm",
+				IOCType:         strings.TrimSpace(candidate.IOCType),
 				Name:            name,
+				Value:           value,
+				Match:           match,
 				Reason:          strings.TrimSpace(candidate.Reason),
 				Confidence:      strings.TrimSpace(candidate.Confidence),
 				Source:          strings.TrimSpace(candidate.Source),
@@ -172,7 +195,9 @@ func run(args []string) error {
 	}
 
 	sort.Slice(current, func(i, j int) bool {
-		return strings.ToLower(current[i].Name) < strings.ToLower(current[j].Name)
+		left := firstNonEmpty(current[i].Value, current[i].Name)
+		right := firstNonEmpty(current[j].Value, current[j].Name)
+		return strings.ToLower(left) < strings.ToLower(right)
 	})
 
 	out, err := json.MarshalIndent(current, "", "  ")
@@ -201,6 +226,19 @@ func run(args []string) error {
 	fmt.Printf("Promoted %d npm IOC candidate(s) into %s\n", addedNPMIOCs, npmIOCPath)
 	fmt.Printf("Promoted %d blacklist candidate(s) into %s\n", addedBlacklist, blacklistPath)
 	return nil
+}
+
+func npmIOCSeenKey(iocType, value, match string) string {
+	return strings.ToLower(strings.TrimSpace(iocType)) + ":" + strings.ToLower(strings.TrimSpace(value)) + ":" + strings.ToLower(strings.TrimSpace(match))
+}
+
+func firstNonEmpty(values ...string) string {
+	for i := range values {
+		if strings.TrimSpace(values[i]) != "" {
+			return values[i]
+		}
+	}
+	return ""
 }
 
 func readNPMIOCs(path string) ([]npmIOCEntry, error) {
