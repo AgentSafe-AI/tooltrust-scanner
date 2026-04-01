@@ -1,0 +1,14 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "plain-crypto-js",
+    "confidence": "high",
+    "reason": "Observed in the malicious axios npm publish on March 31, 2026.",
+    "source": "https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/pkg/analyzer/data/blacklist.json",
+    "first_seen": "2026-03-31",
+    "suggested_action": "flag",
+    "promote_to": "npm_iocs",
+    "notes": "Promote to blacklist only when affected versions are confirmed."
+  }
+]

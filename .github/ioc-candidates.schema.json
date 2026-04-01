@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/AgentSafe-AI/tooltrust-scanner/.github/ioc-candidates.schema.json",
+  "title": "ToolTrust IOC Candidates",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "ecosystem",
+      "ioc_type",
+      "value",
+      "confidence",
+      "reason",
+      "source",
+      "first_seen",
+      "suggested_action",
+      "promote_to"
+    ],
+    "properties": {
+      "ecosystem": {
+        "type": "string",
+        "enum": ["npm", "PyPI", "Go", "github-actions"]
+      },
+      "ioc_type": {
+        "type": "string",
+        "enum": [
+          "package_name",
+          "domain",
+          "script_pattern",
+          "dependency_name",
+          "url",
+          "file_path",
+          "other"
+        ]
+      },
+      "value": {
+        "type": "string",
+        "minLength": 1
+      },
+      "confidence": {
+        "type": "string",
+        "enum": ["low", "medium", "high"]
+      },
+      "reason": {
+        "type": "string",
+        "minLength": 1
+      },
+      "source": {
+        "type": "string",
+        "format": "uri"
+      },
+      "first_seen": {
+        "type": "string",
+        "format": "date"
+      },
+      "suggested_action": {
+        "type": "string",
+        "enum": ["watch", "flag", "block"]
+      },
+      "promote_to": {
+        "type": "string",
+        "enum": ["watch_only", "npm_iocs", "blacklist"]
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  }
+}

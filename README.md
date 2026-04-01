@@ -99,6 +99,8 @@ For remote GitHub repos exposed via `repo_url`, ToolTrust also inspects common l
 
 Full rule catalog: [docs/RULES.md](docs/RULES.md) · [tooltrust.dev](https://www.tooltrust.dev/)
 
+Threat-intel and IOC promotion flow: [docs/IOC_PIPELINE.md](docs/IOC_PIPELINE.md)
+
 ## More ways to use ToolTrust
 
 - CLI install, examples, and flags: [Usage guide](docs/USAGE.md#cli)

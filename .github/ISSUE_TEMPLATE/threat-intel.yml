@@ -45,3 +45,22 @@ body:
       label: Test fixture added?
       options:
         - label: "Yes — added to `tests/fixtures/`"
+  - type: textarea
+    id: candidate-iocs
+    attributes:
+      label: Candidate IOCs
+      description: Paste structured IOC candidates using .github/ioc-candidates.schema.json when possible
+      placeholder: |
+        [
+          {
+            "ecosystem": "npm",
+            "ioc_type": "package_name",
+            "value": "plain-crypto-js",
+            "confidence": "high",
+            "reason": "Observed in malicious package metadata",
+            "source": "https://...",
+            "first_seen": "2026-03-31",
+            "suggested_action": "flag",
+            "promote_to": "npm_iocs"
+          }
+        ]
