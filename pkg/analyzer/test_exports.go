@@ -24,3 +24,11 @@ func ParsePNPMLockYAMLForTest(data []byte) ([]Dependency, error) {
 func ParseYarnLockForTest(data []byte) ([]Dependency, error) {
 	return parseYarnLock(data)
 }
+
+// NPMIOCEntryForTest exposes npmIOCEntry for analyzer_test.
+type NPMIOCEntryForTest = npmIOCEntry
+
+// BuildNPMIOCIndexForTest exposes buildNPMIOCIndex for analyzer_test.
+func BuildNPMIOCIndexForTest(data []byte) (map[string]npmIOCEntry, error) {
+	return buildNPMIOCIndex(data)
+}

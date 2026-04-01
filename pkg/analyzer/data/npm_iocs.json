@@ -1,0 +1,11 @@
+[
+  {
+    "ecosystem": "npm",
+    "name": "plain-crypto-js",
+    "reason": "Known IOC linked to the March 31, 2026 malicious axios npm publish.",
+    "confidence": "high",
+    "source": "https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/pkg/analyzer/data/blacklist.json",
+    "first_seen": "2026-03-31",
+    "suggested_action": "flag"
+  }
+]

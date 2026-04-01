@@ -76,3 +76,18 @@ func TestNPMIOCChecker_QueryError_Skips(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, issues)
 }
+
+func TestBuildNPMIOCIndex_EmbeddedData_LoadsKnownIOC(t *testing.T) {
+	idx, err := analyzer.BuildNPMIOCIndexForTest([]byte(`[
+		{
+			"ecosystem": "npm",
+			"name": "plain-crypto-js",
+			"reason": "Known IOC linked to an npm compromise",
+			"confidence": "high"
+		}
+	]`))
+	require.NoError(t, err)
+	entry, ok := idx["plain-crypto-js"]
+	require.True(t, ok)
+	assert.Equal(t, "high", entry.Confidence)
+}

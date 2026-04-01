@@ -2,14 +2,43 @@ package analyzer
 
 import (
 	"context"
+	_ "embed"
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
-var suspiciousNPMIOCPackages = map[string]string{
-	"plain-crypto-js": "known IOC linked to the March 31, 2026 malicious axios npm publish",
+//go:embed data/npm_iocs.json
+var npmIOCsJSON []byte
+
+type npmIOCEntry struct {
+	Ecosystem       string `json:"ecosystem"`
+	Name            string `json:"name"`
+	Reason          string `json:"reason"`
+	Confidence      string `json:"confidence,omitempty"`
+	Source          string `json:"source,omitempty"`
+	FirstSeen       string `json:"first_seen,omitempty"`
+	SuggestedAction string `json:"suggested_action,omitempty"`
+}
+
+type npmIOCIndex map[string]npmIOCEntry
+
+func buildNPMIOCIndex(data []byte) (npmIOCIndex, error) {
+	var entries []npmIOCEntry
+	if err := json.Unmarshal(data, &entries); err != nil {
+		return nil, fmt.Errorf("npm_ioc: unmarshal: %w", err)
+	}
+	idx := make(npmIOCIndex, len(entries))
+	for i := range entries {
+		entry := entries[i]
+		if !strings.EqualFold(entry.Ecosystem, "npm") || strings.TrimSpace(entry.Name) == "" {
+			continue
+		}
+		idx[strings.ToLower(entry.Name)] = entry
+	}
+	return idx, nil
 }
 
 // NPMIOCChecker flags npm package versions whose published registry metadata
@@ -18,15 +47,25 @@ var suspiciousNPMIOCPackages = map[string]string{
 // even when the top-level package name changes or the IOC appears transitively.
 type NPMIOCChecker struct {
 	client npmRegistryClient
+	index  npmIOCIndex
 }
 
 func NewNPMIOCChecker() *NPMIOCChecker {
-	return &NPMIOCChecker{client: newHTTPNPMRegistryClient()}
+	idx, err := buildNPMIOCIndex(npmIOCsJSON)
+	if err != nil {
+		idx = npmIOCIndex{}
+	}
+	return &NPMIOCChecker{client: newHTTPNPMRegistryClient(), index: idx}
 }
 
 func NewNPMIOCCheckerWithMock(packages map[string]npmVersionResponse, queryErr error) *NPMIOCChecker {
+	idx, err := buildNPMIOCIndex(npmIOCsJSON)
+	if err != nil {
+		idx = npmIOCIndex{}
+	}
 	return &NPMIOCChecker{
 		client: &mockNPMRegistryClient{packages: packages, err: queryErr},
+		index:  idx,
 	}
 }
 
@@ -57,47 +96,47 @@ func (c *NPMIOCChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 			continue
 		}
 
-		if issue, ok := buildNPMIOCIssue(tool.Name, dep, meta); ok {
+		if issue, ok := buildNPMIOCIssue(tool.Name, dep, meta, c.index); ok {
 			issues = append(issues, issue)
 		}
 	}
 	return issues, nil
 }
 
-func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionResponse) (model.Issue, bool) {
+func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionResponse, index npmIOCIndex) (model.Issue, bool) {
 	type iocHit struct {
 		name   string
 		source string
-		reason string
+		entry  npmIOCEntry
 	}
 
 	var hit iocHit
 	for name := range meta.Dependencies {
-		if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
-			hit = iocHit{name: name, source: "dependencies", reason: reason}
+		if entry, ok := index[strings.ToLower(name)]; ok {
+			hit = iocHit{name: name, source: "dependencies", entry: entry}
 			break
 		}
 	}
 	if hit.name == "" {
 		for name := range meta.OptionalDependencies {
-			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
-				hit = iocHit{name: name, source: "optionalDependencies", reason: reason}
+			if entry, ok := index[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "optionalDependencies", entry: entry}
 				break
 			}
 		}
 	}
 	if hit.name == "" {
 		for _, name := range meta.BundleDependencies {
-			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
-				hit = iocHit{name: name, source: "bundleDependencies", reason: reason}
+			if entry, ok := index[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "bundleDependencies", entry: entry}
 				break
 			}
 		}
 	}
 	if hit.name == "" {
 		for _, name := range meta.BundledDependencies {
-			if reason, ok := suspiciousNPMIOCPackages[strings.ToLower(name)]; ok {
-				hit = iocHit{name: name, source: "bundledDependencies", reason: reason}
+			if entry, ok := index[strings.ToLower(name)]; ok {
+				hit = iocHit{name: name, source: "bundledDependencies", entry: entry}
 				break
 			}
 		}
@@ -111,7 +150,7 @@ func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionRe
 		ToolName:    toolName,
 		Severity:    model.SeverityCritical,
 		Code:        "NPM_IOC_DEPENDENCY",
-		Description: fmt.Sprintf("npm package %s@%s references suspicious IOC package %s via %s. This IOC is %s.", dep.Name, dep.Version, hit.name, hit.source, hit.reason),
+		Description: fmt.Sprintf("npm package %s@%s references suspicious IOC package %s via %s. This IOC is %s.", dep.Name, dep.Version, hit.name, hit.source, hit.entry.Reason),
 		Location:    fmt.Sprintf("dependency:%s@%s", dep.Name, dep.Version),
 		Evidence: []model.Evidence{
 			{Kind: "package", Value: dep.Name},
@@ -120,6 +159,7 @@ func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionRe
 			{Kind: "dependency_source", Value: dep.Source},
 			{Kind: "ioc_package", Value: hit.name},
 			{Kind: "ioc_source", Value: hit.source},
+			{Kind: "ioc_confidence", Value: hit.entry.Confidence},
 		},
 	}, true
 }
