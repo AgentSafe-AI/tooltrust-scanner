@@ -36,3 +36,14 @@ func BuildNPMIOCIndexForTest(data []byte) (map[string]npmIOCEntry, error) {
 	}
 	return idx.packageNames, nil
 }
+
+// BuildNPMIOCIndexForRuntimeTest exposes the full runtime IOC index for analyzer_test.
+func BuildNPMIOCIndexForRuntimeTest(data []byte) (npmIOCIndex, error) {
+	return buildNPMIOCIndex(data)
+}
+
+// NewNPMIOCCheckerWithIndexForTest overrides the IOC index for analyzer_test.
+func NewNPMIOCCheckerWithIndexForTest(checker *NPMIOCChecker, index npmIOCIndex) *NPMIOCChecker {
+	checker.index = index
+	return checker
+}

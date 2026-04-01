@@ -5,6 +5,8 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
@@ -12,6 +14,8 @@ import (
 
 //go:embed data/npm_iocs.json
 var npmIOCsJSON []byte
+
+var urlPattern = regexp.MustCompile(`https?://[^\s"'()<>]+`)
 
 type npmIOCEntry struct {
 	Ecosystem       string `json:"ecosystem"`
@@ -227,22 +231,108 @@ func buildNPMIOCIssue(toolName string, dep dependencyEvidence, meta npmVersionRe
 
 func matchNPMIOCIndicator(script string, indicators []npmIOCEntry) (npmIOCEntry, bool) {
 	normalizedScript := strings.ToLower(strings.Join(strings.Fields(script), " "))
+	urls := extractURLs(normalizedScript)
+	domains := extractDomains(urls)
 	for i := range indicators {
 		entry := indicators[i]
 		value := strings.ToLower(strings.TrimSpace(entry.Value))
 		if value == "" {
 			continue
 		}
-		switch strings.ToLower(strings.TrimSpace(entry.Match)) {
-		case "exact":
-			if normalizedScript == value {
+		match := strings.ToLower(strings.TrimSpace(entry.Match))
+		switch strings.ToLower(strings.TrimSpace(entry.IOCType)) {
+		case "domain":
+			if matchesDomainIOC(value, match, domains) {
+				return entry, true
+			}
+		case "url":
+			if matchesURLOC(value, match, urls) {
 				return entry, true
 			}
 		default:
-			if strings.Contains(normalizedScript, value) {
+			if matchesStringIOC(value, match, normalizedScript) {
 				return entry, true
 			}
 		}
 	}
 	return npmIOCEntry{}, false
+}
+
+func matchesStringIOC(value, match, haystack string) bool {
+	switch match {
+	case "exact":
+		return haystack == value
+	default:
+		return strings.Contains(haystack, value)
+	}
+}
+
+func matchesURLOC(value, match string, urls []string) bool {
+	for i := range urls {
+		switch match {
+		case "exact":
+			if urls[i] == value {
+				return true
+			}
+		default:
+			if strings.Contains(urls[i], value) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func matchesDomainIOC(value, match string, domains []string) bool {
+	for i := range domains {
+		switch match {
+		case "exact":
+			if domains[i] == value {
+				return true
+			}
+		default:
+			if domains[i] == value || strings.HasSuffix(domains[i], "."+value) || strings.Contains(domains[i], value) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func extractURLs(script string) []string {
+	matches := urlPattern.FindAllString(script, -1)
+	urls := make([]string, 0, len(matches))
+	seen := map[string]bool{}
+	for i := range matches {
+		token := strings.Trim(matches[i], `"'()[]{}<>.,;`)
+		parsed, err := url.Parse(token)
+		if err != nil || parsed.Host == "" {
+			continue
+		}
+		normalized := strings.ToLower(token)
+		if seen[normalized] {
+			continue
+		}
+		seen[normalized] = true
+		urls = append(urls, normalized)
+	}
+	return urls
+}
+
+func extractDomains(urls []string) []string {
+	domains := make([]string, 0, len(urls))
+	seen := map[string]bool{}
+	for i := range urls {
+		parsed, err := url.Parse(urls[i])
+		if err != nil || parsed.Hostname() == "" {
+			continue
+		}
+		host := strings.ToLower(parsed.Hostname())
+		if seen[host] {
+			continue
+		}
+		seen[host] = true
+		domains = append(domains, host)
+	}
+	return domains
 }
