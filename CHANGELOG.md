@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.6] - 2026-04-04
+
+### Fixed
+- **AS-006 false positives**: tools with names like `evaluate_guardrail`,
+  `analyze_code_security`, `resolve-library-id`, `code_context`, and
+  `code_snippet` are no longer falsely flagged as arbitrary code execution.
+  Added safe-name prefixes, safe-name substrings, description-confirms-execution
+  gating, and description negation checks. The `code snippet` keyword is now
+  gated behind execution verbs (`run`/`execute`/`eval`).
+
+### Changed
+- **AS-001 split**: data exfiltration findings are now reported under a separate
+  sub-rule for clearer triage.
+
+---
+
 ## [0.3.4] - 2026-04-02
 
 ### Added
