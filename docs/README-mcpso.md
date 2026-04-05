@@ -1,10 +1,18 @@
 # ToolTrust Scanner
 
-**We scanned 207 MCP servers. 70% have security issues.** Your AI agent trusts them all.
+**Static scanner for MCP tool definitions — trust grades (A–F) before your agent calls a tool.** Coverage is expanding; **skills** and more agent tool formats are on the roadmap.
 
-ToolTrust scans MCP tool definitions for prompt injection, data exfiltration, privilege escalation, and supply-chain attacks — then assigns a trust grade (A–F) so you know the risk before your agent calls anything.
+ToolTrust scans for prompt injection, data exfiltration, privilege escalation, and supply-chain issues — pure static analysis, no LLM calls, no data leaves your machine (except optional CVE lookups).
 
 > Pure static analysis. No LLM calls. No data leaves your machine. Runs in milliseconds.
+
+## Live Directory
+
+Browse trust grades and scan-backed reports first: **[tooltrust.dev](https://www.tooltrust.dev/)**
+
+[![ToolTrust Directory UI](https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/docs/tooltrust-ui.png)](https://www.tooltrust.dev/)
+
+*Then see it in the IDE — MCP demo:*
 
 ![ToolTrust MCP demo](https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/docs/mcp-demo.gif)
 
@@ -39,27 +47,26 @@ It reads your MCP config, connects to each server in parallel, scans every tool,
 | Known malware | Confirmed compromised package versions (LiteLLM, Trivy, Langflow) |
 | Typosquatting | Tool names impersonating legitimate tools |
 | Tool shadowing | Duplicate tool names designed to hijack agent behavior |
-| Secret leakage | API keys or passwords accepted as plaintext parameters |
+| Insecure secret handling | Plaintext-style API keys, tokens, or passwords in tool inputs |
 | Missing rate limits | Tools with no timeout or rate-limit configuration |
+| Dependency visibility | Missing dependency metadata / repo URL limiting supply-chain analysis |
+| Suspicious npm scripts / IOCs | Risky install scripts or known-bad registry indicators |
+| Suspicious exfil wording | Descriptions suggesting forwarding user data externally (AS-017) |
 
-**12** built-in rules run today (AS-001–AS-011, AS-013). **AS-012** is documented as planned, not yet enforced — see [docs/RULES.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/RULES.md). Full catalog · [tooltrust.dev](https://www.tooltrust.dev/)
+**16** built-in rules run in this repo (**AS-001–AS-011**, **AS-013–AS-017**). **AS-012** (tool drift) is assessed in the **[ToolTrust Directory](https://github.com/AgentSafe-AI/tooltrust-directory)** when scans are compared over time. Full catalog: [docs/RULES.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/RULES.md) · [tooltrust.dev](https://www.tooltrust.dev/)
 
-## Key numbers
+## Example snapshot (research cohort)
+
+**[tooltrust.dev](https://www.tooltrust.dev/)** reflects current directory-wide results. One published pass used **207 MCP servers** and **3,235** tools — illustrative, not an exhaustive count of everything scanned today:
 
 | Metric | Count |
 |--------|-------|
-| MCP servers scanned | 207 |
+| MCP servers in cohort | 207 |
 | Individual tools analyzed | 3,235 |
 | Total security findings | 3,613 |
 | Servers with at least one finding | 145 (70%) |
 | Clean Grade A | 22 (10%) |
 | Servers with arbitrary code execution | 16 |
-
-## Live Directory
-
-Browse trust grades for popular MCP servers before you install them: **[tooltrust.dev](https://www.tooltrust.dev/)**
-
-![ToolTrust Directory UI](https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/docs/tooltrust-ui.png)
 
 ## More ways to use ToolTrust
 
