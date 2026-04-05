@@ -30,8 +30,13 @@ func main() {
 func newRootCmd() *cobra.Command {
 	root := &cobra.Command{
 		Use:   "tooltrust-scanner",
-		Short: "Security scanner for AI agent tool definitions",
-		Long:  "ToolTrust Scanner analyses AI agent tool definitions for security risks and produces gateway enforcement policies.",
+		Short: "Scan MCP servers for security risks before your AI agent trusts them",
+		Long: "ToolTrust Scanner checks MCP tool definitions for prompt injection, " +
+			"data exfiltration, privilege escalation, and supply-chain attacks. " +
+			"Each tool gets a trust grade (A–F) and a gateway policy (ALLOW / REQUIRE_APPROVAL / BLOCK).\n\n" +
+			"Quick start:\n" +
+			"  tooltrust-scanner scan --server \"npx -y @modelcontextprotocol/server-filesystem /tmp\"\n\n" +
+			"Learn more: https://github.com/AgentSafe-AI/tooltrust-scanner",
 	}
 	root.AddCommand(newVersionCmd())
 	root.AddCommand(newScanCmd())
@@ -92,7 +97,7 @@ func newScanCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "scan",
-		Short: "Scan tool definitions and generate gateway policies",
+		Short: "Scan an MCP server or tool definition file for security risks",
 		Example: `  tooltrust-scanner scan --input tools.json
   tooltrust-scanner scan --input tools.json --output json
   tooltrust-scanner scan --input tools.json --output json --file report.json

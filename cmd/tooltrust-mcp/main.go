@@ -43,13 +43,17 @@ func main() {
 	flag.BoolVar(rules, "r", false, "List all supported security rules (catalog)")
 	flag.Usage = func() {
 		fmt.Printf("ToolTrust MCP Server (%s)\n\n", version)
-		fmt.Printf("Starts the ToolTrust Scanner as an MCP stdio server.\n\n")
+		fmt.Printf("Starts ToolTrust Scanner as an MCP stdio server so your AI agent\n")
+		fmt.Printf("can scan other MCP servers for prompt injection, data exfiltration,\n")
+		fmt.Printf("privilege escalation, and supply-chain attacks.\n\n")
 		fmt.Printf("Options:\n")
 		fmt.Printf("  -h, --help     Show this help message\n")
 		fmt.Printf("  -v, --version  Show version information\n")
 		fmt.Printf("  -r, --rules    List all supported security rules (catalog)\n\n")
-		fmt.Printf("Configuration for Claude Code:\n")
-		fmt.Printf("  {\"command\": \"npx\", \"args\": [\"-y\", \"@agentsafe/tooltrust-mcp\"]}\n")
+		fmt.Printf("Add to your .mcp.json:\n")
+		fmt.Printf("  {\"command\": \"npx\", \"args\": [\"-y\", \"tooltrust-mcp\"]}\n\n")
+		fmt.Printf("Then ask your agent: \"Run tooltrust_scan_config\"\n")
+		fmt.Printf("Learn more: https://github.com/AgentSafe-AI/tooltrust-scanner\n")
 	}
 	flag.Parse()
 

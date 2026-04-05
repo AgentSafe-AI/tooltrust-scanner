@@ -1,57 +1,58 @@
-<img src="https://github.com/AgentSafe-AI/.github/raw/main/profile/logo.png" alt="AgentSafe AI" width="80" />
-
-# AgentSafe AI
-
-**Making AI agents safe to use.**
-
-AI agents are powerful — but every tool they call is an attack surface. Prompt injection, data exfiltration, privilege escalation, and supply chain attacks hide in tool descriptions that agents blindly trust.
-
-We build open-source tools that let you see the risks before your agent acts on them.
-
----
-
-### ToolTrust Scanner
-
-Static security scanner for MCP server tool definitions. 16 active security rules, plus explicit supply-chain visibility signals for missing dependency data and transitive dependency coverage from common lockfiles. Battle-tested against hundreds of production servers.
-
-```bash
-# Add to your .mcp.json — your agent scans its own tools
-{
-  "mcpServers": {
-    "tooltrust": {
-      "command": "npx",
-      "args": ["-y", "tooltrust-mcp"]
-    }
-  }
-}
-```
-
-Then ask your agent: *"Run tooltrust_scan_config"*
-
-[tooltrust-scanner →](https://github.com/AgentSafe-AI/tooltrust-scanner)
-
-### ToolTrust Directory
-
-Public security registry for MCP servers. Every server gets a trust grade (A–F) based on automated scanning. Browse reports, check grades, and verify servers before you install them.
-
-[www.tooltrust.dev →](https://www.tooltrust.dev)
-
----
-
-### What we detect
-
-| Threat | Example |
-|--------|---------|
-| Prompt injection | Malicious instructions hidden in tool descriptions |
-| Arbitrary code execution | Tools that run `eval()`, `exec()`, or arbitrary scripts |
-| Data exfiltration | Tools that send data to external endpoints |
-| Privilege escalation | Tools requesting admin/sudo/root access |
-| Supply chain CVEs | Known vulnerabilities in server dependencies |
-| Tool shadowing | Duplicate tool names designed to hijack agent behavior |
-
-### Get involved
-
-- Report a vulnerability: [SECURITY.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/SECURITY.md)
-- Contribute: [CONTRIBUTING.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/CONTRIBUTING.md)
-- Contact: **contact@tooltrust.dev**
-- MIT Licensed
+<img src="https://github.com/AgentSafe-AI/.github/raw/main/profile/logo.png" alt="AgentSafe AI" width="80" />
+
+# AgentSafe AI
+
+**Agent tools are an attack surface — we help you see the risk before your agent acts.**
+
+AI agents are powerful — but every tool they call can hide prompt injection, data exfiltration, privilege escalation, and supply-chain backdoors. We build open-source tools that scan production **tool definitions** (today heavily **MCP**; **skills** and more surfaces are on the roadmap) and surface trust grades before anything runs.
+
+---
+
+### ToolTrust Scanner
+
+Static security scanner for MCP server tool definitions. **16** active security rules in this repo, plus explicit supply-chain visibility signals for missing dependency data and transitive dependency coverage from common lockfiles. **AS-012** (tool drift) is surfaced in the **[ToolTrust Directory](https://github.com/AgentSafe-AI/tooltrust-directory)** when new scans are compared to prior results. Battle-tested against hundreds of production servers.
+
+```json
+{
+  "mcpServers": {
+    "tooltrust": {
+      "command": "npx",
+      "args": ["-y", "tooltrust-mcp"]
+    }
+  }
+}
+```
+
+Then ask your agent: *"Run tooltrust_scan_config"*
+
+[tooltrust-scanner →](https://github.com/AgentSafe-AI/tooltrust-scanner)
+
+### ToolTrust Directory
+
+Public trust registry: browse scan-backed grades, compare servers, and verify before you install. **[tooltrust.dev](https://www.tooltrust.dev)** stays current as automated scanning scales beyond any single cohort.
+
+[www.tooltrust.dev →](https://www.tooltrust.dev)
+
+---
+
+### What we detect
+
+| Threat | What happens |
+|--------|-------------|
+| Prompt injection | Malicious instructions hidden in tool descriptions hijack your agent |
+| Arbitrary code execution | Tools run `eval()`, `exec()`, or scripts on your machine |
+| Data exfiltration | Tools send your data to external endpoints |
+| Privilege escalation | Tools grab admin/sudo/root access beyond their stated purpose |
+| Supply-chain attacks | Known compromised packages (LiteLLM, Trivy, Langflow) |
+| Tool shadowing | Duplicate tool names hijack agent behavior |
+
+### Aggregate stats
+
+Directory-wide metrics and trends live on **[tooltrust.dev](https://www.tooltrust.dev)**. One published research snapshot (207 MCP servers, 3,235 tools) found **70%** of servers with at least one finding and **10%** with a clean Grade A — use the live site for numbers that reflect current scanning scope.
+
+### Get involved
+
+- Report a vulnerability: [SECURITY.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/SECURITY.md)
+- Contribute: [CONTRIBUTING.md](https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/CONTRIBUTING.md)
+- Contact: **contact@tooltrust.dev**
+- MIT Licensed

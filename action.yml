@@ -1,5 +1,5 @@
 name: 'ToolTrust MCP Security Scanner'
-description: 'Scan AI Agent MCP tools for prompt injections, risky permissions, and vulnerabilities.'
+description: 'Scan MCP server tools for prompt injection, privilege escalation, and supply-chain attacks. Each tool gets a trust grade (A–F) and a gateway policy (ALLOW / REQUIRE_APPROVAL / BLOCK). Fail your CI if a server exceeds your risk threshold.'
 author: 'AgentSafe-AI'
 branding:
   icon: 'shield'

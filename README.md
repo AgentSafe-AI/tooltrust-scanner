@@ -1,48 +1,38 @@
-# ToolTrust Scanner
+<p align="center">
+  <img src="docs/logo.svg" alt="ToolTrust" width="80" />
+</p>
 
-[![CI](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml/badge.svg)](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml)
-[![Security](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml/badge.svg)](https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml)
-[![GitHub stars](https://img.shields.io/github/stars/AgentSafe-AI/tooltrust-scanner?style=social)](https://github.com/AgentSafe-AI/tooltrust-scanner/stargazers)
-[![Go Report Card](https://goreportcard.com/badge/github.com/AgentSafe-AI/tooltrust-scanner)](https://goreportcard.com/report/github.com/AgentSafe-AI/tooltrust-scanner)
-[![tooltrust-scanner MCP server](https://glama.ai/mcp/servers/AgentSafe-AI/tooltrust-scanner/badges/score.svg)](https://glama.ai/mcp/servers/AgentSafe-AI/tooltrust-scanner)
-[![npm](https://img.shields.io/npm/v/tooltrust-mcp?label=npm&color=blue)](https://www.npmjs.com/package/tooltrust-mcp)
-[![npm downloads](https://img.shields.io/npm/dm/tooltrust-mcp?label=npm%20downloads)](https://www.npmjs.com/package/tooltrust-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+<h1 align="center">ToolTrust Scanner</h1>
 
-**Scan MCP servers for prompt injection, data exfiltration, and privilege escalation before your AI agent blindly trusts them.**
+<p align="center">
+  <strong>Static security scanner for MCP tool definitions</strong><br/>
+  Trust grades (A–F) before your agent calls a tool — run as an <strong>MCP server</strong>, <strong>CLI</strong>, or <strong>CI</strong> check.
+</p>
 
-> **🚨 Supply-Chain Incident Coverage (March 2026)**
-> ToolTrust now detects and blocks confirmed supply-chain incidents including the LiteLLM / TeamPCP compromise and the malicious axios npm publish (`axios@1.14.1`, `axios@0.30.4`). For npm-backed MCP servers, ToolTrust now combines blacklist matches, lifecycle-script review, transitive lockfile recovery, and IOC matching such as `plain-crypto-js` to surface suspicious releases earlier.
+<p align="center">
+  <a href="https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml"><img src="https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml"><img src="https://github.com/AgentSafe-AI/tooltrust-scanner/actions/workflows/security.yml/badge.svg" alt="Security" /></a>
+  <a href="https://goreportcard.com/report/github.com/AgentSafe-AI/tooltrust-scanner"><img src="https://goreportcard.com/badge/github.com/AgentSafe-AI/tooltrust-scanner" alt="Go Report Card" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/AgentSafe-AI/tooltrust-scanner/stargazers"><img src="https://img.shields.io/github/stars/AgentSafe-AI/tooltrust-scanner?style=social" alt="GitHub stars" /></a>
+</p>
+
+---
+
+Every MCP tool your agent calls is an attack surface — prompt injection, data exfiltration, privilege escalation, supply-chain backdoors. ToolTrust scans tool definitions *before* your agent trusts them and assigns a trust grade (A–F) so you know the risk. ToolTrust is an **MCP Server** and a **CLI/CI tool** — not a host, gateway, or runtime proxy. Coverage is expanding beyond today’s MCP-focused workflows; **skills** and additional agent tool formats are on the roadmap.
+
+<p align="center">
+  <strong><a href="https://www.tooltrust.dev/">Browse the live ToolTrust Directory</a></strong> — trust grades and scan-backed reports before you install.<br/><br/>
+  <a href="https://www.tooltrust.dev/"><img src="docs/tooltrust-ui.png" alt="ToolTrust Directory UI" /></a>
+</p>
+
+<p align="center"><em>MCP demo: run a full config scan from your agent.</em></p>
 
 ![ToolTrust MCP demo](docs/mcp-demo.gif)
 
-## Live UI
+## Scan your setup in 30 seconds
 
-![ToolTrust Directory UI](docs/tooltrust-ui.png)
-
-- Browse the public directory: [https://www.tooltrust.dev/](https://www.tooltrust.dev/)
-- Look up historical grades for popular MCP servers
-- Review findings in a browser before installing or trusting a server
-
-## What it looks like
-
-```
-Scan Summary: 14 tools scanned | 13 allowed | 1 need approval | 0 blocked
-Tool Grades: A×13  C×1
-Findings by Severity: HIGH×1  MEDIUM×14  LOW×1 (16 total)
-
-Flagged Tools:
-• search_files  🟡 GRADE C  needs approval
-  [AS-002] High: Network access declared
-  [AS-011] Low: Missing rate-limit or timeout
-  Action now: Keep this tool on manual approval until the risky capabilities are reviewed.
-```
-
-## 🤖 Let your AI agent scan its own tools
-
-Add ToolTrust as an MCP server in your `.mcp.json` and your agent can audit every tool it has access to:
-
-> **Note:** First run downloads a ~10MB Go binary from GitHub Releases. Subsequent runs use the cached binary.
+Add ToolTrust as an MCP server and let your agent audit its own tools (stdio transport — no network listener; your host launches it as a subprocess):
 
 ```json
 {
@@ -55,66 +45,131 @@ Add ToolTrust as an MCP server in your `.mcp.json` and your agent can audit ever
 }
 ```
 
-Then ask your agent to run:
+Then ask your agent: *"Run tooltrust_scan_config"*
 
-- `tooltrust_scan_config` to scan all configured MCP servers
-- `tooltrust_scan_server` to scan one specific server
-- Full MCP tool list: [Usage guide](docs/USAGE.md#mcp-tools)
+It reads your MCP config, connects to each server in parallel, scans every tool, and returns a risk report with grades and enforcement decisions — all in seconds.
 
-## 🔍 What it catches
+Or use the CLI:
 
-- Prompt injection and tool poisoning hidden in descriptions
-- Excessive permissions such as `exec`, `network`, `db`, and `fs`
-- Supply-chain CVEs and known compromised package versions
-- Suspicious npm lifecycle scripts that execute during install
-- Suspicious npm IOC dependencies and indicators such as `plain-crypto-js`, reviewed install-script patterns, malicious domains, and URLs referenced from published package metadata
-- Dependency visibility gaps when an MCP server does not expose enough metadata for supply-chain analysis
-- Privilege escalation and arbitrary code execution patterns
-- Typosquatting, tool shadowing, and insecure secret handling
-- Missing rate-limit, timeout, or retry configuration on risky tools
+```bash
+curl -sfL https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/install.sh | bash
+tooltrust-scanner scan --server "npx -y @modelcontextprotocol/server-filesystem /tmp"
+```
 
-ToolTrust now labels supply-chain coverage in scan output:
+## Example snapshot (research cohort)
 
-- `No dependency data`
-- `Declared by MCP metadata`
-- `Verified from local lockfile`
-- `Verified from remote lockfile`
-- `Repo URL available`
+The public **[ToolTrust Directory](https://www.tooltrust.dev/)** holds **current** grades and aggregates as scanning scales. One published research pass illustrates the shape of the problem — **207 MCP servers**, **3,235** tools — not an exhaustive count of everything we scan today:
 
-For live local scans, ToolTrust will also best-effort inspect common dependency artifacts when it can infer a project root from the launch command:
+| Metric | Count |
+|--------|-------|
+| MCP servers in cohort | 207 |
+| Individual tools analyzed | 3,235 |
+| Total security findings | 3,613 |
+| Servers with at least one finding | 145 (70%) |
+| Servers with a clean Grade A | 22 (10%) |
+| Servers with arbitrary code execution | 16 |
 
-- `package-lock.json` / `npm-shrinkwrap.json`
-- `pnpm-lock.yaml`
-- `yarn.lock`
-- `go.sum`
-- `requirements.txt`
+**Only 10% of servers in that cohort had a clean Grade A.** See **[tooltrust.dev](https://www.tooltrust.dev/)** for up-to-date directory-wide results (and use this table only as a labeled snapshot).
 
-For remote GitHub repos exposed via `repo_url`, ToolTrust also inspects common lockfiles for transitive dependency evidence:
+## What it catches
 
-- `package-lock.json`
-- `pnpm-lock.yaml`
-- `yarn.lock`
-- `go.sum`
-- `requirements.txt`
+ToolTrust runs **16** static analysis rules against every tool definition in this repo (**AS-001–AS-011**, **AS-013–AS-017**). **AS-012** (tool drift) is evaluated in the **[ToolTrust Directory](https://github.com/AgentSafe-AI/tooltrust-directory)** when new scan results are compared to previous runs.
 
-Recent incident coverage includes:
+| Threat | Rule | What it detects |
+|--------|------|-----------------|
+| Prompt injection | AS-001 | Malicious instructions hidden in tool descriptions that hijack agent reasoning |
+| Excessive permissions | AS-002 | Tools requesting `exec`, `network`, `db`, or `fs` access beyond their stated purpose |
+| Scope mismatch | AS-003 | Tool names that contradict their actual permissions |
+| Supply-chain CVEs | AS-004 | Known vulnerabilities via the OSV database |
+| Privilege escalation | AS-005 | Tools requesting `admin`, `root`, or `sudo` scopes |
+| Arbitrary code execution | AS-006 | Tools that can run arbitrary scripts or shell commands on your machine |
+| Missing metadata | AS-007 | Tools with no description or input schema |
+| Known malware | AS-008 | Confirmed compromised package versions (offline blacklist) |
+| Typosquatting | AS-009 | Tool names that impersonate legitimate tools via edit-distance |
+| Insecure secret handling | AS-010 | Tools whose inputs appear designed to accept API keys, tokens, or passwords in plaintext |
+| Missing rate limits | AS-011 | Tools with no timeout or rate-limit configuration |
+| Tool shadowing | AS-013 | Duplicate tool names designed to hijack agent behavior |
+| Dependency inventory gaps | AS-014 | Tools with no dependency metadata and no repo URL, limiting supply-chain analysis |
+| Suspicious npm lifecycle scripts | AS-015 | Dependency versions that run install-time scripts with risky remote-fetch or execution patterns |
+| Suspicious npm IOC dependency | AS-016 | Registry metadata or scripts referencing known malicious IOC patterns |
+| Suspicious data exfil description | AS-017 | Descriptions suggesting forwarding user data to external endpoints (complements AS-001) |
 
-- LiteLLM `1.82.7` / `1.82.8` and related TeamPCP compromise indicators
-- Axios `1.14.1` / `0.30.4` malicious npm publish
-- npm metadata IOC detection for helper packages such as `plain-crypto-js`
+Full rule details: [docs/RULES.md](docs/RULES.md)
 
-Full rule catalog: [docs/RULES.md](docs/RULES.md) · [tooltrust.dev](https://www.tooltrust.dev/)
+## How it works
 
-Threat-intel and IOC promotion flow: [docs/IOC_PIPELINE.md](docs/IOC_PIPELINE.md)
-Scanner scope guardrails: [docs/SCANNER_SCOPE.md](docs/SCANNER_SCOPE.md)
+1. **Parse** — Connects to a live MCP server (or reads a JSON file) and extracts every tool definition
+2. **Analyze** — Runs all 16 rules against each tool's name, description, schema, and permissions
+3. **Grade** — Assigns a numeric risk score and letter grade (A–F) per tool
+4. **Enforce** — Maps each grade to a gateway policy: `ALLOW`, `REQUIRE_APPROVAL`, or `BLOCK`
 
-## More ways to use ToolTrust
+Pure static analysis. No LLM calls. No data leaves your machine (except optional CVE lookups). Runs in milliseconds. Deterministic and reproducible.
 
-- CLI install, examples, and flags: [Usage guide](docs/USAGE.md#cli)
-- Scan-before-install workflow: [Gate docs](docs/USAGE.md#gate)
-- CI / GitHub Actions examples: [CI integration](docs/USAGE.md#github-actions)
-- Pre-commit / alias setup: [Pre-hook integration](docs/USAGE.md#pre-hook-integration)
+## Install
+
+```bash
+# One-line install (macOS / Linux)
+curl -sfL https://raw.githubusercontent.com/AgentSafe-AI/tooltrust-scanner/main/install.sh | bash
+
+# Go
+go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@latest
+
+# npx (no install needed)
+npx -y tooltrust-mcp
+```
+
+## MCP tools
+
+When running as an MCP server, ToolTrust exposes these tools to your agent:
+
+| Tool | What it does | Data access |
+|------|-------------|-------------|
+| `tooltrust_scan_config` | Scan all MCP servers in your `.mcp.json` or `~/.claude.json` | Reads local config; spawns each server as subprocess |
+| `tooltrust_scan_server` | Launch and scan a specific MCP server by command | Runs user-supplied command as subprocess (stdio) |
+| `tooltrust_scanner_scan` | Scan a raw JSON blob of tool definitions | In-memory only; no subprocess or network |
+| `tooltrust_lookup` | Look up a server's trust grade from the ToolTrust Directory | Network request to ToolTrust Directory API |
+| `tooltrust_list_rules` | List all built-in security rules | Local catalog only |
+
+## CI / GitHub Actions
+
+Block risky MCP servers in your pipeline:
+
+```yaml
+- name: Audit MCP Server
+  uses: AgentSafe-AI/tooltrust-scanner@main
+  with:
+    server: "npx -y @modelcontextprotocol/server-filesystem /tmp"
+    fail-on: "approval"
+```
+
+## Scan-before-install gate
+
+Never add an untrusted MCP server to your config again:
+
+```bash
+# Scans the server, then auto-installs if Grade A/B, prompts on C/D, blocks on F
+tooltrust-scanner gate @modelcontextprotocol/server-memory -- /tmp
+
+# Replace `claude mcp add` with a scanned install
+alias mcp-add='tooltrust-scanner gate'
+```
+
+Full gate options and pre-commit hook setup: [docs/USAGE.md](docs/USAGE.md)
+
+## Add a trust badge to your project
+
+If your MCP server passes ToolTrust, let people know:
+
+```markdown
+[![ToolTrust Grade A](https://img.shields.io/badge/ToolTrust-Grade%20A-brightgreen)](https://www.tooltrust.dev/)
+```
+
+> [![ToolTrust Grade A](https://img.shields.io/badge/ToolTrust-Grade%20A-brightgreen)](https://www.tooltrust.dev/)
 
 ---
 
-[Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE) © 2026 AgentSafe-AI
+> **Supply-chain alert:** ToolTrust detects and blocks confirmed compromised packages including LiteLLM v1.82.7/8 (TeamPCP backdoor), Trivy v0.69.4–v0.69.6, and Langflow < 1.9.0. If you encounter a Grade F with rule AS-008, remove the package immediately and rotate all credentials.
+
+---
+
+[Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Deployment & security](docs/DEPLOYMENT.md) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE)
