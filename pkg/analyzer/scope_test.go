@@ -68,3 +68,49 @@ func TestScopeChecker_WriteNameWithNoWritePermission(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotEmpty(t, issues)
 }
+
+func TestScopeChecker_CloudAPIExecExemption(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+	}{
+		{"get_aws_marketplace_solution"},
+		{"list_kubernetes_pods"},
+		{"search_github_repos"},
+		{"get_s3_object"},
+		{"fetch_jira_issues"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tool := model.UnifiedTool{
+				Name:        tc.name,
+				Description: "Retrieves data from external service.",
+				Permissions: []model.Permission{model.PermissionExec},
+			}
+			eng, _ := analyzer.NewEngine(false, "")
+			report := eng.Scan(tool)
+			assert.False(t, report.HasFinding("AS-003"),
+				"%s with exec should NOT trigger AS-003 (cloud API exemption)", tc.name)
+		})
+	}
+}
+
+func TestScopeChecker_NonCloudExecStillTriggers(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+	}{
+		{"get_user_data"},
+		{"read_file"},
+		{"list_directory"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tool := model.UnifiedTool{
+				Name:        tc.name,
+				Description: "Reads local data.",
+				Permissions: []model.Permission{model.PermissionExec},
+			}
+			eng, _ := analyzer.NewEngine(false, "")
+			report := eng.Scan(tool)
+			assert.True(t, report.HasFinding("AS-003"),
+				"%s with exec SHOULD trigger AS-003 (not a cloud API)", tc.name)
+		})
+	}
+}

@@ -47,6 +47,8 @@ var arbitraryCodePatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)inject\w*\s+\w*\s*(script|code)`),
 	// accepts / runs ... python code
 	regexp.MustCompile(`(?i)(accepts|runs|executes?).*python\s+code`),
+	// accepts / runs / executes ... javascript code
+	regexp.MustCompile(`(?i)(accepts|runs|executes?).*(javascript|js)\s+code`),
 	// "run/execute/eval ... code snippet" — but not "returns code snippet"
 	regexp.MustCompile(`(?i)(run|execut\w*|eval\w*)\s+.*code\s+snippet`),
 	// page.evaluate() / frame.evaluate() / window.eval — common in CDP/Puppeteer
@@ -126,8 +128,11 @@ func descriptionConfirmsExecution(desc string) bool {
 		"eval(", "eval (", "run script",
 		"run code", "execute code", "execute script",
 		"execute javascript", "execute js",
+		"run javascript", "run js code",
+		"javascript eval", "javascript execution",
+		"javascript code", "js injection",
 		"arbitrary code", "arbitrary script",
-		"javascript", "browser context",
+		"browser context",
 		"page.evaluate", "frame.evaluate",
 	}
 	for _, sig := range executionSignals {

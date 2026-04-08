@@ -258,6 +258,44 @@ func TestArbitraryCodeChecker_RunCodeSnippet_FalseNegative(t *testing.T) {
 		"'run code snippet' must trigger AS-006")
 }
 
+func TestArbitraryCodeChecker_JavascriptInSearchDescription_NoFP(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		desc string
+	}{
+		{"brave_web_search_code_mode", "Search the web for javascript and code topics with optimized results."},
+		{"brave_local_search_code_mode", "Local search with javascript and code mode enabled."},
+		{"search_code_mode", "Search code repositories for javascript frameworks."},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tool := model.UnifiedTool{Name: tc.name, Description: tc.desc}
+			eng, _ := NewEngine(false, "")
+			report := eng.Scan(tool)
+			assert.False(t, report.HasFinding("AS-006"),
+				"%s must NOT trigger AS-006 when description mentions javascript as search topic", tc.name)
+		})
+	}
+}
+
+func TestArbitraryCodeChecker_JavascriptExecution_StillTriggers(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		desc string
+	}{
+		{"run_tool", "Execute javascript code in the browser context."},
+		{"browser_exec", "Run javascript in a sandboxed iframe."},
+		{"js_runner", "Accepts javascript code and executes it."},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tool := model.UnifiedTool{Name: tc.name, Description: tc.desc}
+			eng, _ := NewEngine(false, "")
+			report := eng.Scan(tool)
+			assert.True(t, report.HasFinding("AS-006"),
+				"%s must still trigger AS-006 for real javascript execution", tc.name)
+		})
+	}
+}
+
 func TestArbitraryCodeChecker_RunCode_Keyword(t *testing.T) {
 	tool := model.UnifiedTool{
 		Name:        "execute",

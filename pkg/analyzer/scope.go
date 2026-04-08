@@ -16,6 +16,19 @@ var writePermissions = []model.Permission{
 	model.PermissionNetwork,
 }
 
+// cloudAPISubstrings identifies tools that wrap external APIs or CLIs where
+// exec permission is expected (e.g. get_aws_marketplace_solution shells out
+// to the AWS CLI).
+var cloudAPISubstrings = []string{
+	"aws", "azure", "gcp", "cloud", "marketplace",
+	"kubernetes", "kubectl", "docker",
+	"terraform", "pulumi",
+	"github", "gitlab", "bitbucket",
+	"slack", "discord", "jira", "linear",
+	"stripe", "twilio", "sendgrid",
+	"s3", "dynamodb", "bigquery", "firestore",
+}
+
 // ScopeChecker detects mismatches between a tool's name semantics and its
 // declared permissions.
 type ScopeChecker struct{}
@@ -46,11 +59,21 @@ func (c *ScopeChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 	}
 
 	if isReadOnlyName {
+		isCloudAPI := false
+		for _, sub := range cloudAPISubstrings {
+			if strings.Contains(nameLower, sub) {
+				isCloudAPI = true
+				break
+			}
+		}
 		for _, perm := range tool.Permissions {
 			for _, wp := range writePermissions {
 				// Exception: 'network' permission is allowed for read-only API tools like get_*, list_*, fetch_*
 				if perm == wp {
 					if perm == model.PermissionNetwork {
+						continue
+					}
+					if perm == model.PermissionExec && isCloudAPI {
 						continue
 					}
 					issues = append(issues, model.Issue{

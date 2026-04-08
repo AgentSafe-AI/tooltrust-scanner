@@ -5,6 +5,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.8] - 2026-04-07
+
+### Fixed
+- **AS-006 false positives (round 3)**: removed bare `"javascript"` from
+  `descriptionConfirmsExecution` escape hatch — search tools whose descriptions
+  mention JavaScript as a topic no longer override safe-name gating. Added
+  execution-context variants (`"javascript code"`, `"run javascript"`, etc.)
+  and a regex for `"accepts/runs/executes javascript code"`.
+- **AS-003 false positives**: cloud API and CLI wrapper tools (`get_aws_*`,
+  `list_kubernetes_*`, `search_github_*`, etc.) with `exec` permission no
+  longer trigger scope mismatch findings. Generic read tools like `read_file`
+  with `exec` still fire correctly.
+
+---
+
 ## [0.3.7] - 2026-04-07
 
 ### Fixed
