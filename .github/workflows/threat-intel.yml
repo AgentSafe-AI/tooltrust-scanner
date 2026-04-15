@@ -16,6 +16,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore state from threat-intel-state branch
+        run: |
+          git fetch origin threat-intel-state 2>/dev/null && \
+          git checkout origin/threat-intel-state -- .github/threat-intel-state.json .github/ioc-candidates 2>/dev/null || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,5 +43,6 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .github/threat-intel-state.json .github/ioc-candidates
-          git diff --staged --quiet || git commit -m "chore: update threat-intel feed state"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: update threat-intel feed state"
+          git push origin HEAD:refs/heads/threat-intel-state
