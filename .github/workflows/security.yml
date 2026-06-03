@@ -49,7 +49,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Install govulncheck
@@ -76,7 +76,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Run gosec
@@ -137,7 +137,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Build tooltrust-scanner

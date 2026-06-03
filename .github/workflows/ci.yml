@@ -40,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        go: ["1.26"]
+        go: ["1.26.4"]
 
     steps:
       - name: Download source tree
@@ -124,7 +124,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Run golangci-lint
@@ -152,7 +152,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Build CLI (tooltrust-scanner)
@@ -180,7 +180,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Build tooltrust-scanner binary
@@ -230,7 +230,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Verify go install (README primary method)
