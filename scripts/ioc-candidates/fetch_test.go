@@ -33,13 +33,45 @@ func TestBuildCandidates_Golden(t *testing.T) {
 	}
 	for i := range want {
 		if candidateKey(got[i]) != candidateKey(want[i]) ||
-			got[i].ID != want[i].ID ||
+			got[i].BlacklistID != want[i].BlacklistID ||
+			got[i].IOCType != want[i].IOCType ||
+			got[i].Confidence != want[i].Confidence ||
+			got[i].Source != want[i].Source ||
+			got[i].FirstSeen != want[i].FirstSeen ||
+			got[i].SuggestedAction != want[i].SuggestedAction ||
+			got[i].PromoteTo != want[i].PromoteTo ||
 			got[i].Severity != want[i].Severity ||
 			got[i].Action != want[i].Action ||
 			got[i].Reason != want[i].Reason ||
-			got[i].Link != want[i].Link {
+			got[i].Notes != want[i].Notes {
 			t.Fatalf("candidate %d mismatch:\n got: %#v\nwant: %#v", i, got[i], want[i])
 		}
+	}
+}
+
+func TestBuildCandidates_SkipsOrdinaryCVEsWithMaliciousUserWording(t *testing.T) {
+	now := time.Date(2026, 6, 2, 0, 0, 0, 0, time.UTC)
+	vulns := []osvVulnerability{
+		{
+			ID:        "GHSA-praison-2026-0001",
+			Summary:   "praisonai-platform: hardcoded JWT signing key allows token forgery by a malicious user.",
+			Published: "2026-06-01T18:00:00Z",
+			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.1"}},
+			Affected: []osvAffected{
+				{
+					Package: struct {
+						Name      string `json:"name"`
+						Ecosystem string `json:"ecosystem"`
+					}{Name: "praisonai-platform", Ecosystem: "PyPI"},
+					Versions: []string{"0.1.0"},
+				},
+			},
+		},
+	}
+
+	got := buildCandidates(vulns, "PyPI", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	if len(got) != 0 {
+		t.Fatalf("ordinary CVE should not produce an IOC review PR candidate, got %#v", got)
 	}
 }
 

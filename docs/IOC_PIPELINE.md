@@ -46,14 +46,21 @@ Supported npm IOC types currently include:
 ## Candidate Flow
 
 1. Threat-intel monitor opens an issue for a new incident or blog post and writes a draft candidate file under `.github/ioc-candidates/`.
-2. Maintainer extracts candidate IOCs into a structured candidate JSON file.
-3. Candidate is reviewed and classified:
+2. The daily OSV monitor may open a review-only PR with candidate JSON under `.github/ioc-candidates/review/`.
+3. Maintainer extracts candidate IOCs into a structured candidate JSON file.
+4. Candidate is reviewed and classified:
    - `promote_to: blacklist`
    - `promote_to: npm_iocs`
    - `promote_to: watch_only`
-4. Maintainer adds the reviewed entry to the scanner data file.
-5. Tests are updated to cover the new signal.
-6. A scanner release/tag is cut so ToolTrust Directory can consume the update.
+5. Maintainer adds the reviewed entry to the scanner data file.
+6. Tests are updated to cover the new signal.
+7. A scanner release/tag is cut so ToolTrust Directory can consume the update.
+
+The daily OSV monitor is intentionally not an automatic promotion path. It
+should not modify `pkg/analyzer/data/blacklist.json` or
+`pkg/analyzer/data/npm_iocs.json` directly. Normal CVEs remain covered by
+AS-004 / OSV and should not be promoted into AS-008 unless independent evidence
+confirms a malicious publish or supply-chain compromise.
 
 ## Promotion Helper
 
@@ -127,6 +134,8 @@ Keep as `watch_only` when:
 - attribution is weak
 - only one unverified report exists
 - the signal is too noisy for scanner enforcement
+- the advisory is a normal CVE/RCE/IDOR/sandbox escape/hardcoded secret without
+  evidence of malicious or compromised package publication
 
 ## What This Does Not Cover Yet
 

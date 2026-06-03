@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   generate-candidates:
-    name: Generate OSV compromise candidates
+    name: Generate OSV review candidates
     runs-on: ubuntu-latest
 
     steps:
@@ -53,15 +53,11 @@ jobs:
           count="$(jq 'length' /tmp/candidates.json)"
           echo "count=$count" >> "$GITHUB_OUTPUT"
 
-      - name: Merge candidates into blacklist
+      - name: Prepare review artifact
         if: steps.candidate_count.outputs.count != '0'
         run: |
-          jq -s '
-            (.[0] + .[1])
-            | unique_by("\(.ecosystem)|\(.component)|\(.affected_versions | join(","))")
-            | sort_by(.ecosystem, .component)
-          ' pkg/analyzer/data/blacklist.json /tmp/candidates.json > /tmp/merged-blacklist.json
-          mv /tmp/merged-blacklist.json pkg/analyzer/data/blacklist.json
+          mkdir -p .github/ioc-candidates/review
+          cp /tmp/candidates.json ".github/ioc-candidates/review/osv-${{ github.run_id }}.json"
 
       - name: Create pull request
         if: steps.candidate_count.outputs.count != '0'
@@ -69,10 +65,17 @@ jobs:
         with:
           token: ${{ secrets.TOOLTRUST_BOT_TOKEN || github.token }}
           branch: ioc-candidates/${{ github.run_id }}
-          title: "ioc: ${{ steps.candidate_count.outputs.count }} new compromise candidate(s)"
-          commit-message: "data(blacklist): auto-append ${{ steps.candidate_count.outputs.count }} OSV compromise candidate(s)"
+          title: "threat-intel: ${{ steps.candidate_count.outputs.count }} OSV candidate(s) for review"
+          commit-message: "threat-intel: add ${{ steps.candidate_count.outputs.count }} OSV candidate(s) for review"
           body: |
-            Automated IOC compromise candidates generated from OSV ecosystem feeds for the last 24 hours.
+            Automated OSV threat-intel candidates generated from ecosystem feeds for the last 24 hours.
+
+            This is a **review-only** PR. It intentionally does not modify:
+
+            - `pkg/analyzer/data/blacklist.json`
+            - `pkg/analyzer/data/npm_iocs.json`
+
+            Normal CVEs should remain covered by AS-004 / OSV and should not be promoted.
 
             Review each entry carefully:
             - Does this read like a real supply-chain compromise or malicious publish, rather than an ordinary CVE?
@@ -80,7 +83,15 @@ jobs:
             - Is `BLOCK` the right action, or should this be downgraded to `WARN`?
             - Is the reason clear enough for someone triaging a finding?
 
-            Close this PR if any candidate looks like a normal vulnerability that should stay in AS-004 / OSV instead of the manual blacklist.
+            If an entry is confirmed supply-chain compromise, copy it into a curated candidate file and run:
+
+            ```bash
+            go run ./cmd/tooltrust-ioc-promote <reviewed-candidate-json>
+            ```
+
+            Close this PR after triage unless it is intentionally converted into a curated data update.
           labels: |
             ioc
             automated
+          add-paths: |
+            .github/ioc-candidates/review/*.json

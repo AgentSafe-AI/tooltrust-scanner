@@ -38,14 +38,21 @@ type config struct {
 }
 
 type blacklistEntry struct {
-	ID               string   `json:"id"`
-	Component        string   `json:"component"`
 	Ecosystem        string   `json:"ecosystem"`
-	AffectedVersions []string `json:"affected_versions"`
-	Action           string   `json:"action"`
-	Severity         string   `json:"severity"`
+	IOCType          string   `json:"ioc_type"`
+	Value            string   `json:"value"`
+	Component        string   `json:"component,omitempty"`
+	Confidence       string   `json:"confidence"`
 	Reason           string   `json:"reason"`
-	Link             string   `json:"link"`
+	Source           string   `json:"source"`
+	FirstSeen        string   `json:"first_seen"`
+	SuggestedAction  string   `json:"suggested_action"`
+	PromoteTo        string   `json:"promote_to"`
+	BlacklistID      string   `json:"blacklist_id,omitempty"`
+	AffectedVersions []string `json:"affected_versions,omitempty"`
+	Action           string   `json:"action,omitempty"`
+	Severity         string   `json:"severity,omitempty"`
+	Notes            string   `json:"notes,omitempty"`
 }
 
 type osvVulnerability struct {
@@ -185,7 +192,7 @@ func fetchCandidatesWithClient(ctx context.Context, cfg config, client httpDoer,
 
 	sort.Slice(allCandidates, func(i, j int) bool {
 		if strings.EqualFold(allCandidates[i].Ecosystem, allCandidates[j].Ecosystem) {
-			return strings.ToLower(allCandidates[i].Component) < strings.ToLower(allCandidates[j].Component)
+			return strings.ToLower(allCandidates[i].Value) < strings.ToLower(allCandidates[j].Value)
 		}
 		return strings.ToLower(allCandidates[i].Ecosystem) < strings.ToLower(allCandidates[j].Ecosystem)
 	})
@@ -314,14 +321,20 @@ func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[st
 			}
 
 			entry := blacklistEntry{
-				ID:               preferredID(*vuln),
-				Component:        component,
 				Ecosystem:        ecosystem,
+				IOCType:          "package_name",
+				Value:            component,
+				Confidence:       candidateConfidence(*vuln),
+				Reason:           truncateReason(firstNonEmpty(strings.TrimSpace(vuln.Summary), strings.TrimSpace(vuln.Details)), 200),
+				Source:           fmt.Sprintf("https://osv.dev/vulnerability/%s", vuln.ID),
+				FirstSeen:        published.Format("2006-01-02"),
+				SuggestedAction:  suggestedActionForCandidate(*vuln),
+				PromoteTo:        "watch_only",
+				BlacklistID:      preferredID(*vuln),
 				AffectedVersions: filtered,
 				Action:           "BLOCK",
 				Severity:         severity,
-				Reason:           truncateReason(firstNonEmpty(strings.TrimSpace(vuln.Summary), strings.TrimSpace(vuln.Details)), 200),
-				Link:             fmt.Sprintf("https://osv.dev/vulnerability/%s", vuln.ID),
+				Notes:            candidateNotes(*vuln),
 			}
 			seenKey := candidateKey(entry)
 			if _, exists := seen[seenKey]; exists {
@@ -335,38 +348,75 @@ func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[st
 }
 
 func looksLikeBlacklistCandidate(vuln osvVulnerability) bool {
+	return hasStrongCompromiseSignal(vuln)
+}
+
+func candidateConfidence(vuln osvVulnerability) string {
+	if hasStrongCompromiseSignal(vuln) {
+		return "high"
+	}
+	return "medium"
+}
+
+func suggestedActionForCandidate(vuln osvVulnerability) string {
+	if hasStrongCompromiseSignal(vuln) {
+		return "block"
+	}
+	return "watch"
+}
+
+func candidateNotes(vuln osvVulnerability) string {
+	if hasStrongCompromiseSignal(vuln) {
+		return "Review before promotion. Promote to blacklist only after confirming malicious or compromised affected versions."
+	}
+	return "Review-only OSV candidate. Do not promote to AS-008 unless independent evidence confirms a malicious publish or supply-chain compromise."
+}
+
+func hasStrongCompromiseSignal(vuln osvVulnerability) bool {
 	text := strings.ToLower(strings.Join([]string{
 		strings.TrimSpace(vuln.Summary),
 		strings.TrimSpace(vuln.Details),
 		strings.Join(vuln.Aliases, " "),
 	}, " "))
-	if text == "" {
-		return false
-	}
 
-	signals := []string{
-		"compromised",
-		"malicious",
-		"supply chain",
-		"supply-chain",
-		"credential exfiltration",
-		"exfiltration routine",
-		"maintainer",
+	strongSignals := []string{
+		"compromised package",
+		"compromised release",
+		"compromised version",
+		"malicious package",
+		"malicious publish",
+		"malicious release",
+		"malicious version",
+		"supply-chain compromise",
+		"supply chain compromise",
 		"account takeover",
-		"hijack",
-		"hijacked",
-		"backdoor",
-		"protestware",
+		"maintainer account",
+		"stolen npm token",
+		"stolen release token",
+		"credential exfiltration",
+		"exfiltrate credentials",
+		"backdoored package",
+		"backdoored release",
 		"dependency confusion",
-		"typosquat",
-		"typosquatting",
 		"poisoned package",
 		"poisoned release",
-		"stolen release token",
-		"malicious dependency",
+		"protestware",
+		"typosquat",
+		"typosquatting",
 	}
-	for _, signal := range signals {
+	for _, signal := range strongSignals {
 		if strings.Contains(text, signal) {
+			return true
+		}
+	}
+	tokenPairs := [][2]string{
+		{"compromised", "package"},
+		{"compromised", "release"},
+		{"malicious", "dependency"},
+		{"malicious", "publish"},
+	}
+	for _, pair := range tokenPairs {
+		if strings.Contains(text, pair[0]) && strings.Contains(text, pair[1]) {
 			return true
 		}
 	}
@@ -386,7 +436,7 @@ func readExistingBlacklist(path string) (map[string]struct{}, error) {
 	for i := range entries {
 		entry := entries[i]
 		for _, version := range entry.AffectedVersions {
-			key := strings.ToLower(entry.Ecosystem) + ":" + strings.ToLower(entry.Component) + "@" + version
+			key := strings.ToLower(entry.Ecosystem) + ":" + strings.ToLower(firstNonEmpty(entry.Value, entry.Component)) + "@" + version
 			seen[key] = struct{}{}
 		}
 	}
@@ -526,7 +576,7 @@ func firstNonEmpty(values ...string) string {
 }
 
 func candidateKey(entry blacklistEntry) string {
-	return strings.ToLower(entry.Ecosystem) + "|" + strings.ToLower(entry.Component) + "|" + strings.Join(entry.AffectedVersions, ",")
+	return strings.ToLower(entry.Ecosystem) + "|" + strings.ToLower(firstNonEmpty(entry.Value, entry.Component)) + "|" + strings.Join(entry.AffectedVersions, ",")
 }
 
 func dedupeCandidates(entries []blacklistEntry) []blacklistEntry {
