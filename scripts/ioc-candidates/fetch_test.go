@@ -75,6 +75,34 @@ func TestBuildCandidates_SkipsOrdinaryCVEsWithMaliciousUserWording(t *testing.T)
 	}
 }
 
+func TestBuildCandidates_SkipsOrdinaryCVEsWithCompromiseAndPackageWording(t *testing.T) {
+	now := time.Date(2026, 6, 6, 0, 0, 0, 0, time.UTC)
+	vulns := []osvVulnerability{
+		{
+			ID:        "GHSA-p462-prxw-mjx4",
+			Summary:   "NASA AMMOS Instrument Toolkit: Path traversal resulting in arbitrary file append.",
+			Details:   "The package can be used by an unauthenticated attacker to compromise application files over the network.",
+			Published: "2026-06-05T18:00:00Z",
+			Aliases:   []string{"CVE-2026-47731"},
+			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.8"}},
+			Affected: []osvAffected{
+				{
+					Package: struct {
+						Name      string `json:"name"`
+						Ecosystem string `json:"ecosystem"`
+					}{Name: "ait-core", Ecosystem: "PyPI"},
+					Versions: []string{"2.5.2"},
+				},
+			},
+		},
+	}
+
+	got := buildCandidates(vulns, "PyPI", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	if len(got) != 0 {
+		t.Fatalf("ordinary CVE should not produce an IOC review PR candidate, got %#v", got)
+	}
+}
+
 func TestFetchCandidatesWithClient_FeedFailureIsWarning(t *testing.T) {
 	cfg := config{
 		Since:       24 * time.Hour,

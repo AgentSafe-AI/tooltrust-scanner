@@ -398,6 +398,7 @@ func hasStrongCompromiseSignal(vuln osvVulnerability) bool {
 		"backdoored package",
 		"backdoored release",
 		"dependency confusion",
+		"malicious dependency",
 		"poisoned package",
 		"poisoned release",
 		"protestware",
@@ -406,17 +407,6 @@ func hasStrongCompromiseSignal(vuln osvVulnerability) bool {
 	}
 	for _, signal := range strongSignals {
 		if strings.Contains(text, signal) {
-			return true
-		}
-	}
-	tokenPairs := [][2]string{
-		{"compromised", "package"},
-		{"compromised", "release"},
-		{"malicious", "dependency"},
-		{"malicious", "publish"},
-	}
-	for _, pair := range tokenPairs {
-		if strings.Contains(text, pair[0]) && strings.Contains(text, pair[1]) {
 			return true
 		}
 	}
