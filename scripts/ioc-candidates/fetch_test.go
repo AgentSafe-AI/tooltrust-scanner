@@ -75,6 +75,15 @@ func TestBuildCandidates_SkipsOrdinaryCVEsWithMaliciousUserWording(t *testing.T)
 	}
 }
 
+func TestHasStrongCompromiseSignal_MaliciousDependencyPhrase(t *testing.T) {
+	vuln := osvVulnerability{
+		Summary: "pkg: ships a malicious dependency that exfiltrates credentials",
+	}
+	if !hasStrongCompromiseSignal(vuln) {
+		t.Fatal("expected 'malicious dependency' phrase to trigger strong compromise signal")
+	}
+}
+
 func TestBuildCandidates_SkipsOrdinaryCVEsWithCompromiseAndPackageWording(t *testing.T) {
 	now := time.Date(2026, 6, 6, 0, 0, 0, 0, time.UTC)
 	vulns := []osvVulnerability{
