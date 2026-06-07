@@ -84,6 +84,59 @@ func TestHasStrongCompromiseSignal_MaliciousDependencyPhrase(t *testing.T) {
 	}
 }
 
+func TestHasStrongCompromiseSignal_MaintainerAccountTakeover(t *testing.T) {
+	cases := []struct {
+		summary string
+	}{
+		{"pkg: maintainer account compromised, malicious version published"},
+		{"Attacker performed maintainer account takeover via stolen credentials"},
+		{"npm package pushed after maintainer account was compromised"},
+	}
+	for _, tc := range cases {
+		vuln := osvVulnerability{Summary: tc.summary}
+		if !hasStrongCompromiseSignal(vuln) {
+			t.Fatalf("expected supply-chain maintainer phrasing to fire: %q", tc.summary)
+		}
+	}
+}
+
+func TestHasStrongCompromiseSignal_OrdinaryAccountTakeoverDoesNotFire(t *testing.T) {
+	cases := []struct {
+		summary string
+	}{
+		{"XSS in login form allows remote account takeover without credentials"},
+		{"Authentication bypass leads to account takeover of any registered user"},
+		{"SSRF chained with CSRF enables account takeover"},
+	}
+	for _, tc := range cases {
+		vuln := osvVulnerability{Summary: tc.summary}
+		if hasStrongCompromiseSignal(vuln) {
+			t.Fatalf("ordinary web-security 'account takeover' phrasing should not fire: %q", tc.summary)
+		}
+	}
+}
+
+// TestHasStrongCompromiseSignal_KnownFalsePositivePatterns documents ordinary CVE
+// phrasings that must NOT trigger IOC candidate generation. Add new cases here
+// whenever a false positive is discovered in the wild.
+func TestHasStrongCompromiseSignal_KnownFalsePositivePatterns(t *testing.T) {
+	cases := []struct {
+		label   string
+		summary string
+	}{
+		{"web XSS account takeover", "XSS in login form allows remote account takeover without credentials"},
+		{"auth bypass account takeover", "Authentication bypass leads to account takeover of any registered user"},
+		{"SSRF chain account takeover", "SSRF chained with CSRF enables account takeover"},
+		{"benign maintainer account mention", "Use your maintainer account to publish packages via npm"},
+	}
+	for _, tc := range cases {
+		vuln := osvVulnerability{Summary: tc.summary}
+		if hasStrongCompromiseSignal(vuln) {
+			t.Fatalf("[%s] ordinary web-security phrasing should not fire: %q", tc.label, tc.summary)
+		}
+	}
+}
+
 func TestBuildCandidates_SkipsOrdinaryCVEsWithCompromiseAndPackageWording(t *testing.T) {
 	now := time.Date(2026, 6, 6, 0, 0, 0, 0, time.UTC)
 	vulns := []osvVulnerability{
