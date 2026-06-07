@@ -52,7 +52,6 @@ func TestBuildCandidates_Golden(t *testing.T) {
 			ID:        "GHSA-generic-2026-0099",
 			Summary:   "Critical RCE in genericpkg via prototype pollution.",
 			Published: "2026-06-06T12:00:00Z",
-			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.8"}},
 			Affected: []osvAffected{
 				{
 					Package: struct {
@@ -65,7 +64,7 @@ func TestBuildCandidates_Golden(t *testing.T) {
 		},
 	}
 
-	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour)
 
 	if len(got) != 1 {
 		t.Fatalf("expected 1 MAL- candidate, got %d: %#v", len(got), got)
@@ -109,7 +108,7 @@ func TestBuildCandidates_EmitsMaliciousPackageRecord(t *testing.T) {
 			},
 		},
 	}
-	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour)
 	if len(got) != 1 {
 		t.Fatalf("expected 1 candidate from MAL- record, got %d", len(got))
 	}
@@ -125,7 +124,6 @@ func TestBuildCandidates_SkipsOrdinaryCVEEvenHighSeverity(t *testing.T) {
 			ID:        "GHSA-generic-2026-0001",
 			Summary:   "Critical SSRF with account takeover and malicious dependency wording.",
 			Published: "2026-06-06T18:00:00Z",
-			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.8"}},
 			Affected: []osvAffected{
 				{
 					Package: struct {
@@ -137,7 +135,7 @@ func TestBuildCandidates_SkipsOrdinaryCVEEvenHighSeverity(t *testing.T) {
 			},
 		},
 	}
-	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour)
 	if len(got) != 0 {
 		t.Fatalf("ordinary CVE (no MAL- id) must never be a candidate, got %#v", got)
 	}
@@ -153,7 +151,6 @@ func TestIsMaliciousPackageRecord_AliasMatch(t *testing.T) {
 func TestFetchCandidatesWithClient_FeedFailureIsWarning(t *testing.T) {
 	cfg := config{
 		Since:       24 * time.Hour,
-		MinSeverity: "HIGH",
 		Ecosystems:  []string{"npm"},
 		FeedBaseURL: "http://127.0.0.1:1",
 		Now:         time.Date(2026, 4, 22, 0, 0, 0, 0, time.UTC),
@@ -168,32 +165,6 @@ func TestFetchCandidatesWithClient_FeedFailureIsWarning(t *testing.T) {
 	}
 	if len(warnings) == 0 {
 		t.Fatalf("expected warning on feed failure")
-	}
-}
-
-func TestBuildCandidates_SkipsOrdinaryHighSeverityCVEs(t *testing.T) {
-	now := time.Date(2026, 4, 22, 0, 0, 0, 0, time.UTC)
-	vulns := []osvVulnerability{
-		{
-			ID:        "GHSA-generic-2026-0001",
-			Summary:   "Generic high severity SSRF vulnerability in admin endpoint.",
-			Published: "2026-04-21T18:00:00Z",
-			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "8.8"}},
-			Affected: []osvAffected{
-				{
-					Package: struct {
-						Name      string `json:"name"`
-						Ecosystem string `json:"ecosystem"`
-					}{Name: "genericpkg", Ecosystem: "npm"},
-					Versions: []string{"1.2.3"},
-				},
-			},
-		},
-	}
-
-	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
-	if len(got) != 0 {
-		t.Fatalf("expected ordinary CVE to be skipped, got %#v", got)
 	}
 }
 

@@ -19,7 +19,6 @@ import (
 
 const (
 	defaultSince       = 24 * time.Hour
-	defaultMinSeverity = "HIGH"
 	defaultEcosystems  = "npm,PyPI,Go"
 	defaultOut         = "candidates.json"
 	defaultExisting    = "pkg/analyzer/data/blacklist.json"
@@ -28,7 +27,6 @@ const (
 
 type config struct {
 	Since       time.Duration
-	MinSeverity string
 	Ecosystems  []string
 	OutPath     string
 	Existing    string
@@ -55,13 +53,12 @@ type blacklistEntry struct {
 }
 
 type osvVulnerability struct {
-	ID               string        `json:"id"`
-	Summary          string        `json:"summary"`
-	Details          string        `json:"details"`
-	Published        string        `json:"published"`
-	Modified         string        `json:"modified"`
-	Aliases          []string      `json:"aliases"`
-	Severity         []osvSeverity `json:"severity"`
+	ID               string   `json:"id"`
+	Summary          string   `json:"summary"`
+	Details          string   `json:"details"`
+	Published        string   `json:"published"`
+	Modified         string   `json:"modified"`
+	Aliases          []string `json:"aliases"`
 	DatabaseSpecific struct {
 		Severity                 string `json:"severity"`
 		MaliciousPackagesOrigins []struct {
@@ -74,11 +71,6 @@ type osvVulnerability struct {
 		Name string `json:"name"`
 	} `json:"credits"`
 	Affected []osvAffected `json:"affected"`
-}
-
-type osvSeverity struct {
-	Type  string `json:"type"`
-	Score string `json:"score"`
 }
 
 type osvAffected struct {
@@ -130,14 +122,12 @@ func parseFlags(args []string) (config, error) {
 
 	var cfg config
 	var ecosystems string
-	var minSeverity string
 	var outPath string
 	var existing string
 	var feedBaseURL string
 	var since time.Duration
 
 	fs.DurationVar(&since, "since", defaultSince, "only include advisories published within this duration")
-	fs.StringVar(&minSeverity, "min-severity", defaultMinSeverity, "minimum severity: CRITICAL | HIGH | MEDIUM | LOW")
 	fs.StringVar(&ecosystems, "ecosystems", defaultEcosystems, "comma-separated OSV ecosystems")
 	fs.StringVar(&outPath, "out", defaultOut, "output JSON path")
 	fs.StringVar(&existing, "existing", defaultExisting, "existing blacklist JSON to de-duplicate against")
@@ -149,7 +139,6 @@ func parseFlags(args []string) (config, error) {
 
 	cfg = config{
 		Since:       since,
-		MinSeverity: strings.ToUpper(strings.TrimSpace(minSeverity)),
 		Ecosystems:  splitCSV(ecosystems),
 		OutPath:     outPath,
 		Existing:    existing,
@@ -157,9 +146,6 @@ func parseFlags(args []string) (config, error) {
 		Now:         time.Now().UTC(),
 	}
 
-	if severityRank(cfg.MinSeverity) == 0 {
-		return cfg, fmt.Errorf("invalid -min-severity %q", cfg.MinSeverity)
-	}
 	if len(cfg.Ecosystems) == 0 {
 		return cfg, errors.New("at least one ecosystem is required")
 	}
@@ -194,7 +180,7 @@ func fetchCandidatesWithClient(ctx context.Context, cfg config, client httpDoer,
 			warnings = append(warnings, fmt.Sprintf("skip %s feed: %v", ecosystem, err))
 			continue
 		}
-		allCandidates = append(allCandidates, buildCandidates(vulns, ecosystem, existing, cfg.Now, cfg.Since, cfg.MinSeverity)...)
+		allCandidates = append(allCandidates, buildCandidates(vulns, ecosystem, existing, cfg.Now, cfg.Since)...)
 	}
 
 	sort.Slice(allCandidates, func(i, j int) bool {
@@ -284,7 +270,7 @@ func parseFeedZip(data []byte) ([]osvVulnerability, error) {
 	return vulns, nil
 }
 
-func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[string]struct{}, now time.Time, since time.Duration, minSeverity string) []blacklistEntry {
+func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[string]struct{}, now time.Time, since time.Duration) []blacklistEntry {
 	var out []blacklistEntry
 	seen := map[string]struct{}{}
 	for i := range vulns {
@@ -448,21 +434,6 @@ func parseTime(value string) (time.Time, bool) {
 		return time.Time{}, false
 	}
 	return t.UTC(), true
-}
-
-func severityRank(severity string) int {
-	switch strings.ToUpper(strings.TrimSpace(severity)) {
-	case "CRITICAL":
-		return 4
-	case "HIGH":
-		return 3
-	case "MEDIUM":
-		return 2
-	case "LOW":
-		return 1
-	default:
-		return 0
-	}
 }
 
 func preferredID(vuln osvVulnerability) string {
