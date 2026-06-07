@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check security blog RSS feeds, create GitHub issues, and draft IOC candidates."""
+"""Check security blog RSS feeds and create GitHub issues for new posts."""
 
 import feedparser
 import json
@@ -10,14 +10,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 STATE_FILE = ".github/threat-intel-state.json"
-CANDIDATE_DIR = Path('.github/ioc-candidates')
 
 FEEDS = [
     {"source": "Embrace The Red", "url": "https://embracethered.com/blog/index.xml"},
     {"source": "Trail of Bits",   "url": "https://blog.trailofbits.com/index.xml"},
 ]
-
-PACKAGE_NAME_RE = re.compile(r"\b[a-z0-9][a-z0-9._-]*[a-z0-9]\b", re.IGNORECASE)
 
 state = {}
 if Path(STATE_FILE).exists():
@@ -26,36 +23,12 @@ if Path(STATE_FILE).exists():
 new_state = dict(state)
 issues_created = 0
 repo = os.environ["REPO"]
-CANDIDATE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def slugify(value: str) -> str:
     value = value.lower()
     value = re.sub(r"[^a-z0-9]+", "-", value)
     return value.strip("-") or "candidate"
-
-
-def build_candidate_template(source: str, title: str, link: str, date: str):
-    title_lower = title.lower()
-    candidates = []
-    hints = []
-    for token in PACKAGE_NAME_RE.findall(title_lower):
-        if token in {"axios", "npm", "supply-chain", "supply", "chain", "attack"}:
-            hints.append(token)
-    if "axios" in hints:
-        candidates.append({
-            "ecosystem": "npm",
-            "ioc_type": "package_name",
-            "value": "plain-crypto-js",
-            "confidence": "medium",
-            "reason": f"Candidate IOC from {source} post: {title}",
-            "source": link,
-            "first_seen": date,
-            "suggested_action": "flag",
-            "promote_to": "npm_iocs",
-            "notes": "Auto-drafted candidate. Human review required before promotion."
-        })
-    return candidates
 
 
 for feed_info in FEEDS:
@@ -87,23 +60,18 @@ for feed_info in FEEDS:
         link = entry.get("link", url)
         date = entry_dt.strftime("%Y-%m-%d")
 
-        candidate_path = CANDIDATE_DIR / f"{date}-{slugify(source)}-{slugify(title)}.json"
-        if not candidate_path.exists():
-            candidate_path.write_text(json.dumps(build_candidate_template(source, title, link, date), indent=2) + "\n")
-
         body = (
             f"**Source:** {source}\n"
             f"**URL:** {link}\n"
             f"**Date:** {date}\n"
             f"**Attack pattern:** *(fill in after reading)*\n\n"
-            f"**Candidate IOC file:** `{candidate_path}`\n\n"
             f"### ToolTrust coverage\n"
             f"- [ ] Existing rule covers this\n"
             f"- [ ] Rule needs pattern update\n"
             f"- [ ] New rule needed\n"
             f"- [ ] Needs source-code analysis (not coverable today)\n\n"
             f"### Candidate handling\n"
-            f"- [ ] Candidate IOC file reviewed\n"
+            f"Read the post, then add confirmed malicious packages via the OSV MAL- digest PR or manual blacklist edit.\n\n"
             f"- [ ] Promoted to `npm_iocs.json`\n"
             f"- [ ] Promoted to `blacklist.json`\n"
             f"- [ ] Left as watch-only\n\n"

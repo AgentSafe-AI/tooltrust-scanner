@@ -1,44 +1,47 @@
 # IOC Blacklist Auto-Candidate Pipeline
 
-This workflow adds a daily review loop for likely compromise-oriented blacklist entries without silently editing the live scanner data.
+This workflow adds a daily review loop for OSV-confirmed malicious packages without silently editing the live scanner data.
 
 ## What it does
 
-- pulls recent OSV ecosystem advisories for `npm`, `PyPI`, and `Go`
-- filters to advisories published in the last 24 hours
-- keeps only `HIGH` and `CRITICAL` candidates
-- keeps only advisories whose summary/details read like a supply-chain compromise, malicious publish, or similarly high-confidence blacklist event
-- skips package versions already present in [`pkg/analyzer/data/blacklist.json`](/Users/brian93512/projects/tooltrust-scanner/pkg/analyzer/data/blacklist.json)
-- opens one review PR with candidate blacklist entries
+- pulls the per-ecosystem OSV feed for `npm`, `PyPI`, and `Go`
+- filters to records published in the last 24 hours
+- keeps only `MAL-` records — OSV's namespace for confirmed malicious packages (sourced from OpenSSF malicious-packages, Amazon Inspector, GitHub Advisory, and similar)
+- skips package versions already present in `pkg/analyzer/data/blacklist.json`
+- opens one review-only digest PR per day with the new confirmed malicious packages
 
-The workflow never auto-merges. A human still decides whether a candidate belongs in the enforced blacklist.
+The workflow never auto-merges. A human still decides whether a candidate belongs in the enforced AS-008 blacklist.
 
 ## Why this exists
 
-Our blacklist is strong once an entry exists, but hand-editing it means we can lag major supply-chain events by hours. This pipeline narrows that gap by surfacing review-ready compromise candidates quickly after OSV publishes an advisory, without turning every ordinary CVE into a hard block.
+The daily digest surfaces newly confirmed malicious packages (typosquats, hijacked releases, protestware) shortly after OSV indexes them. It separates the intelligence-gathering step from scanner enforcement:
+
+- **Ordinary CVEs** (RCE, SSRF, etc.) are already covered by AS-004 real-time OSV lookup and must not flow through this pipeline.
+- **Confirmed malicious packages** (`MAL-` records) are what this pipeline collects; humans pick the high-value ones (e.g. known popular packages) to promote into AS-008.
+
+The old keyword-based approach incorrectly gated on CVSS severity, which `MAL-` records do not carry, so it could never surface a real malicious package.
 
 ## Review checklist
 
 When the workflow opens a PR:
 
-1. confirm the affected versions are exact and narrow enough
-2. confirm the advisory really belongs in the compromise blacklist rather than ordinary OSV/CVE triage
-3. confirm `BLOCK` is the correct action
+1. check the `notes` field for source attribution (amazon-inspector, ossf-package-analysis, etc.)
+2. confirm the affected version range is exact and narrow enough
+3. decide whether the package is high-value enough to add to AS-008, or whether AS-004 real-time OSV coverage is sufficient
 4. rewrite the reason if the current summary is too vague for triage
-5. close the PR if the advisory is too broad, too noisy, or otherwise not suitable for blacklist enforcement
+5. close the PR after triage unless it is being converted into a curated data update
 
 ## Local dry run
 
 ```bash
 go run ./scripts/ioc-candidates \
   -since 720h \
-  -min-severity HIGH \
   -ecosystems npm,PyPI,Go \
   -out /tmp/candidates.json \
   -existing pkg/analyzer/data/blacklist.json
 ```
 
-That gives us a 30-day sample so we can inspect candidate quality before relying on the scheduled workflow.
+That gives a 30-day sample so you can inspect candidate quality before relying on the scheduled workflow.
 
 ## Failure behavior
 

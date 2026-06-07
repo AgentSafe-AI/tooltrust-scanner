@@ -45,22 +45,27 @@ Supported npm IOC types currently include:
 
 ## Candidate Flow
 
-1. Threat-intel monitor opens an issue for a new incident or blog post and writes a draft candidate file under `.github/ioc-candidates/`.
-2. The daily OSV monitor may open a review-only PR with candidate JSON under `.github/ioc-candidates/review/`.
-3. Maintainer extracts candidate IOCs into a structured candidate JSON file.
-4. Candidate is reviewed and classified:
-   - `promote_to: blacklist`
-   - `promote_to: npm_iocs`
-   - `promote_to: watch_only`
+1. Threat-intel monitor opens an issue for a new incident or blog post.
+2. The daily OSV `MAL-` monitor opens a review-only digest PR under `.github/ioc-candidates/review/`.
+   - These are **OSV `MAL-` records** — confirmed malicious packages from OpenSSF malicious-packages,
+     Amazon Inspector, GitHub Advisory, and similar sources — not ordinary CVEs.
+   - Ordinary CVEs are covered by AS-004 real-time OSV lookup and must not flow through this path.
+3. Maintainer reviews the digest PR and picks high-value entries to promote.
+4. Candidate is classified:
+   - `promote_to: blacklist` — for confirmed malicious versions worth adding to AS-008
+   - `promote_to: npm_iocs` — for suspicious package name indicators
+   - `promote_to: watch_only` — when attribution is weak or AS-004 coverage is sufficient
 5. Maintainer adds the reviewed entry to the scanner data file.
 6. Tests are updated to cover the new signal.
 7. A scanner release/tag is cut so ToolTrust Directory can consume the update.
 
 The daily OSV monitor is intentionally not an automatic promotion path. It
 should not modify `pkg/analyzer/data/blacklist.json` or
-`pkg/analyzer/data/npm_iocs.json` directly. Normal CVEs remain covered by
-AS-004 / OSV and should not be promoted into AS-008 unless independent evidence
-confirms a malicious publish or supply-chain compromise.
+`pkg/analyzer/data/npm_iocs.json` directly.
+
+Division of responsibility:
+- **Ordinary CVEs** (RCE, SSRF, IDOR, hardcoded secrets, etc.) → AS-004 real-time OSV lookup
+- **Confirmed malicious packages** (`MAL-` records) → this pipeline collects + human promotes → AS-008
 
 ## Promotion Helper
 

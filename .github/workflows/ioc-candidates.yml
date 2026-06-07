@@ -9,10 +9,6 @@ on:
         description: "Published-within window (for example 24h or 720h)"
         required: false
         default: "24h"
-      min_severity:
-        description: "Minimum severity to include"
-        required: false
-        default: "HIGH"
       ecosystems:
         description: "Comma-separated OSV ecosystems"
         required: false
@@ -24,7 +20,7 @@ permissions:
 
 jobs:
   generate-candidates:
-    name: Generate OSV review candidates
+    name: Generate OSV MAL- review candidates
     runs-on: ubuntu-latest
 
     steps:
@@ -38,11 +34,9 @@ jobs:
       - name: Fetch IOC candidates
         run: |
           SINCE="${{ github.event.inputs.since || '24h' }}"
-          MIN_SEVERITY="${{ github.event.inputs.min_severity || 'HIGH' }}"
           ECOSYSTEMS="${{ github.event.inputs.ecosystems || 'npm,PyPI,Go' }}"
           go run ./scripts/ioc-candidates \
             -since "$SINCE" \
-            -min-severity "$MIN_SEVERITY" \
             -ecosystems "$ECOSYSTEMS" \
             -out /tmp/candidates.json \
             -existing pkg/analyzer/data/blacklist.json
@@ -65,25 +59,27 @@ jobs:
         with:
           token: ${{ secrets.TOOLTRUST_BOT_TOKEN || github.token }}
           branch: ioc-candidates/${{ github.run_id }}
-          title: "threat-intel: ${{ steps.candidate_count.outputs.count }} OSV candidate(s) for review"
-          commit-message: "threat-intel: add ${{ steps.candidate_count.outputs.count }} OSV candidate(s) for review"
+          title: "threat-intel: ${{ steps.candidate_count.outputs.count }} OSV-confirmed malicious package(s) for review"
+          commit-message: "threat-intel: add ${{ steps.candidate_count.outputs.count }} OSV-confirmed malicious package(s) for review"
           body: |
-            Automated OSV threat-intel candidates generated from ecosystem feeds for the last 24 hours.
+            OSV-confirmed malicious packages from ecosystem feeds for the last 24 hours.
+
+            These entries are **OSV `MAL-` records** — confirmed malicious packages sourced from
+            OpenSSF malicious-packages, Amazon Inspector, GitHub Advisory, and similar reporters.
+            They are **not** ordinary CVEs.
 
             This is a **review-only** PR. It intentionally does not modify:
 
             - `pkg/analyzer/data/blacklist.json`
             - `pkg/analyzer/data/npm_iocs.json`
 
-            Normal CVEs should remain covered by AS-004 / OSV and should not be promoted.
+            Review each entry:
+            - Check the affected version range: is it exact and narrow enough?
+            - Is this package high-value enough to add to the AS-008 offline blacklist, or is
+              AS-004 (real-time OSV lookup) sufficient coverage?
+            - Review the `notes` field for source attribution (e.g. amazon-inspector, ossf-package-analysis).
 
-            Review each entry carefully:
-            - Does this read like a real supply-chain compromise or malicious publish, rather than an ordinary CVE?
-            - Is the version pinning exact and narrow enough?
-            - Is `BLOCK` the right action, or should this be downgraded to `WARN`?
-            - Is the reason clear enough for someone triaging a finding?
-
-            If an entry is confirmed supply-chain compromise, copy it into a curated candidate file and run:
+            To promote a confirmed entry into AS-008:
 
             ```bash
             go run ./cmd/tooltrust-ioc-promote <reviewed-candidate-json>

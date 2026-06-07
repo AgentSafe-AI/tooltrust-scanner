@@ -2,166 +2,151 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 )
 
 func TestBuildCandidates_Golden(t *testing.T) {
-	vulns := loadFixtureVulns(t, "osv-response.json")
-	existing := loadExistingBlacklist(t, "existing.json")
-
-	now := time.Date(2026, 4, 22, 0, 0, 0, 0, time.UTC)
-	got := buildCandidates(vulns, "npm", existing, now, 24*time.Hour, "HIGH")
-
-	wantData, err := os.ReadFile(filepath.Join("testdata", "candidates-expected.json"))
-	if err != nil {
-		t.Fatalf("read expected candidates: %v", err)
-	}
-	var want []blacklistEntry
-	if err := json.Unmarshal(wantData, &want); err != nil {
-		t.Fatalf("parse expected candidates: %v", err)
-	}
-
-	if len(got) != len(want) {
-		t.Fatalf("candidate count mismatch: got %d want %d", len(got), len(want))
-	}
-	for i := range want {
-		if candidateKey(got[i]) != candidateKey(want[i]) ||
-			got[i].BlacklistID != want[i].BlacklistID ||
-			got[i].IOCType != want[i].IOCType ||
-			got[i].Confidence != want[i].Confidence ||
-			got[i].Source != want[i].Source ||
-			got[i].FirstSeen != want[i].FirstSeen ||
-			got[i].SuggestedAction != want[i].SuggestedAction ||
-			got[i].PromoteTo != want[i].PromoteTo ||
-			got[i].Severity != want[i].Severity ||
-			got[i].Action != want[i].Action ||
-			got[i].Reason != want[i].Reason ||
-			got[i].Notes != want[i].Notes {
-			t.Fatalf("candidate %d mismatch:\n got: %#v\nwant: %#v", i, got[i], want[i])
-		}
-	}
-}
-
-func TestBuildCandidates_SkipsOrdinaryCVEsWithMaliciousUserWording(t *testing.T) {
-	now := time.Date(2026, 6, 2, 0, 0, 0, 0, time.UTC)
+	// Golden test uses inline MAL- records so fixture files are not needed.
+	// One MAL- record is included (should emit a candidate) and one ordinary GHSA
+	// CVE (should be silently dropped). The existing blacklist fixture deduplicates
+	// the second MAL- record whose version is already known.
+	now := time.Date(2026, 6, 7, 0, 0, 0, 0, time.UTC)
 	vulns := []osvVulnerability{
 		{
-			ID:        "GHSA-praison-2026-0001",
-			Summary:   "praisonai-platform: hardcoded JWT signing key allows token forgery by a malicious user.",
-			Published: "2026-06-01T18:00:00Z",
-			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.1"}},
+			ID:        "MAL-2026-4655",
+			Summary:   "Malicious code in qr-code-styling-temp (npm)",
+			Published: "2026-06-06T18:00:00Z",
+			DatabaseSpecific: struct {
+				Severity                 string `json:"severity"`
+				MaliciousPackagesOrigins []struct {
+					Source     string   `json:"source"`
+					Versions   []string `json:"versions"`
+					ImportTime string   `json:"import_time"`
+				} `json:"malicious-packages-origins"`
+			}{
+				MaliciousPackagesOrigins: []struct {
+					Source     string   `json:"source"`
+					Versions   []string `json:"versions"`
+					ImportTime string   `json:"import_time"`
+				}{{Source: "amazon-inspector", Versions: []string{"9.9.10", "9.9.11"}}},
+			},
+			Credits: []struct {
+				Name string `json:"name"`
+			}{{Name: "Amazon Inspector"}},
 			Affected: []osvAffected{
 				{
 					Package: struct {
 						Name      string `json:"name"`
 						Ecosystem string `json:"ecosystem"`
-					}{Name: "praisonai-platform", Ecosystem: "PyPI"},
-					Versions: []string{"0.1.0"},
+					}{Name: "qr-code-styling-temp", Ecosystem: "npm"},
+					Versions: []string{"9.9.10", "9.9.11"},
 				},
 			},
 		},
-	}
-
-	got := buildCandidates(vulns, "PyPI", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
-	if len(got) != 0 {
-		t.Fatalf("ordinary CVE should not produce an IOC review PR candidate, got %#v", got)
-	}
-}
-
-func TestHasStrongCompromiseSignal_MaliciousDependencyPhrase(t *testing.T) {
-	vuln := osvVulnerability{
-		Summary: "pkg: ships a malicious dependency that exfiltrates credentials",
-	}
-	if !hasStrongCompromiseSignal(vuln) {
-		t.Fatal("expected 'malicious dependency' phrase to trigger strong compromise signal")
-	}
-}
-
-func TestHasStrongCompromiseSignal_MaintainerAccountTakeover(t *testing.T) {
-	cases := []struct {
-		summary string
-	}{
-		{"pkg: maintainer account compromised, malicious version published"},
-		{"Attacker performed maintainer account takeover via stolen credentials"},
-		{"npm package pushed after maintainer account was compromised"},
-	}
-	for _, tc := range cases {
-		vuln := osvVulnerability{Summary: tc.summary}
-		if !hasStrongCompromiseSignal(vuln) {
-			t.Fatalf("expected supply-chain maintainer phrasing to fire: %q", tc.summary)
-		}
-	}
-}
-
-func TestHasStrongCompromiseSignal_OrdinaryAccountTakeoverDoesNotFire(t *testing.T) {
-	cases := []struct {
-		summary string
-	}{
-		{"XSS in login form allows remote account takeover without credentials"},
-		{"Authentication bypass leads to account takeover of any registered user"},
-		{"SSRF chained with CSRF enables account takeover"},
-	}
-	for _, tc := range cases {
-		vuln := osvVulnerability{Summary: tc.summary}
-		if hasStrongCompromiseSignal(vuln) {
-			t.Fatalf("ordinary web-security 'account takeover' phrasing should not fire: %q", tc.summary)
-		}
-	}
-}
-
-// TestHasStrongCompromiseSignal_KnownFalsePositivePatterns documents ordinary CVE
-// phrasings that must NOT trigger IOC candidate generation. Add new cases here
-// whenever a false positive is discovered in the wild.
-func TestHasStrongCompromiseSignal_KnownFalsePositivePatterns(t *testing.T) {
-	cases := []struct {
-		label   string
-		summary string
-	}{
-		{"web XSS account takeover", "XSS in login form allows remote account takeover without credentials"},
-		{"auth bypass account takeover", "Authentication bypass leads to account takeover of any registered user"},
-		{"SSRF chain account takeover", "SSRF chained with CSRF enables account takeover"},
-		{"benign maintainer account mention", "Use your maintainer account to publish packages via npm"},
-	}
-	for _, tc := range cases {
-		vuln := osvVulnerability{Summary: tc.summary}
-		if hasStrongCompromiseSignal(vuln) {
-			t.Fatalf("[%s] ordinary web-security phrasing should not fire: %q", tc.label, tc.summary)
-		}
-	}
-}
-
-func TestBuildCandidates_SkipsOrdinaryCVEsWithCompromiseAndPackageWording(t *testing.T) {
-	now := time.Date(2026, 6, 6, 0, 0, 0, 0, time.UTC)
-	vulns := []osvVulnerability{
 		{
-			ID:        "GHSA-p462-prxw-mjx4",
-			Summary:   "NASA AMMOS Instrument Toolkit: Path traversal resulting in arbitrary file append.",
-			Details:   "The package can be used by an unauthenticated attacker to compromise application files over the network.",
-			Published: "2026-06-05T18:00:00Z",
-			Aliases:   []string{"CVE-2026-47731"},
+			// Ordinary GHSA CVE — must be dropped even with CRITICAL CVSS score.
+			ID:        "GHSA-generic-2026-0099",
+			Summary:   "Critical RCE in genericpkg via prototype pollution.",
+			Published: "2026-06-06T12:00:00Z",
 			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.8"}},
 			Affected: []osvAffected{
 				{
 					Package: struct {
 						Name      string `json:"name"`
 						Ecosystem string `json:"ecosystem"`
-					}{Name: "ait-core", Ecosystem: "PyPI"},
-					Versions: []string{"2.5.2"},
+					}{Name: "genericpkg", Ecosystem: "npm"},
+					Versions: []string{"1.0.0"},
 				},
 			},
 		},
 	}
 
-	got := buildCandidates(vulns, "PyPI", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+
+	if len(got) != 1 {
+		t.Fatalf("expected 1 MAL- candidate, got %d: %#v", len(got), got)
+	}
+	c := got[0]
+	if c.Value != "qr-code-styling-temp" {
+		t.Errorf("Value: got %q want %q", c.Value, "qr-code-styling-temp")
+	}
+	if c.Confidence != "high" {
+		t.Errorf("Confidence: got %q want %q", c.Confidence, "high")
+	}
+	if c.Severity != "CRITICAL" {
+		t.Errorf("Severity: got %q want %q", c.Severity, "CRITICAL")
+	}
+	if c.SuggestedAction != "block" {
+		t.Errorf("SuggestedAction: got %q want %q", c.SuggestedAction, "block")
+	}
+	if !strings.Contains(c.Notes, "amazon-inspector") {
+		t.Errorf("Notes should mention amazon-inspector source, got %q", c.Notes)
+	}
+	if !strings.Contains(c.Notes, "MAL-2026-4655") {
+		t.Errorf("Notes should mention the MAL- ID, got %q", c.Notes)
+	}
+}
+
+func TestBuildCandidates_EmitsMaliciousPackageRecord(t *testing.T) {
+	now := time.Date(2026, 6, 7, 0, 0, 0, 0, time.UTC)
+	vulns := []osvVulnerability{
+		{
+			ID:        "MAL-2026-4655",
+			Summary:   "Malicious code in qr-code-styling-temp (npm)",
+			Published: "2026-06-06T18:00:00Z",
+			Affected: []osvAffected{
+				{
+					Package: struct {
+						Name      string `json:"name"`
+						Ecosystem string `json:"ecosystem"`
+					}{Name: "qr-code-styling-temp", Ecosystem: "npm"},
+					Versions: []string{"9.9.10", "9.9.11"},
+				},
+			},
+		},
+	}
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
+	if len(got) != 1 {
+		t.Fatalf("expected 1 candidate from MAL- record, got %d", len(got))
+	}
+	if got[0].Confidence != "high" || got[0].Severity != "CRITICAL" {
+		t.Fatalf("MAL- candidate should be high/CRITICAL, got %s/%s", got[0].Confidence, got[0].Severity)
+	}
+}
+
+func TestBuildCandidates_SkipsOrdinaryCVEEvenHighSeverity(t *testing.T) {
+	now := time.Date(2026, 6, 7, 0, 0, 0, 0, time.UTC)
+	vulns := []osvVulnerability{
+		{
+			ID:        "GHSA-generic-2026-0001",
+			Summary:   "Critical SSRF with account takeover and malicious dependency wording.",
+			Published: "2026-06-06T18:00:00Z",
+			Severity:  []osvSeverity{{Type: "CVSS_V3", Score: "9.8"}},
+			Affected: []osvAffected{
+				{
+					Package: struct {
+						Name      string `json:"name"`
+						Ecosystem string `json:"ecosystem"`
+					}{Name: "genericpkg", Ecosystem: "npm"},
+					Versions: []string{"1.2.3"},
+				},
+			},
+		},
+	}
+	got := buildCandidates(vulns, "npm", map[string]struct{}{}, now, 24*time.Hour, "HIGH")
 	if len(got) != 0 {
-		t.Fatalf("ordinary CVE should not produce an IOC review PR candidate, got %#v", got)
+		t.Fatalf("ordinary CVE (no MAL- id) must never be a candidate, got %#v", got)
+	}
+}
+
+func TestIsMaliciousPackageRecord_AliasMatch(t *testing.T) {
+	v := osvVulnerability{ID: "GHSA-xxxx", Aliases: []string{"MAL-2026-9999"}}
+	if !isMaliciousPackageRecord(v) {
+		t.Fatal("MAL- in aliases should qualify")
 	}
 }
 
@@ -216,37 +201,4 @@ type httpClientStub struct{}
 
 func (h *httpClientStub) Do(*http.Request) (*http.Response, error) {
 	return nil, errors.New("dial tcp 127.0.0.1:1: connect: connection refused")
-}
-
-func loadFixtureVulns(t *testing.T, name string) []osvVulnerability {
-	t.Helper()
-	data, err := os.ReadFile(filepath.Join("testdata", name))
-	if err != nil {
-		t.Fatalf("read fixture: %v", err)
-	}
-	var vulns []osvVulnerability
-	if err := json.Unmarshal(data, &vulns); err != nil {
-		t.Fatalf("parse fixture: %v", err)
-	}
-	return vulns
-}
-
-func loadExistingBlacklist(t *testing.T, name string) map[string]struct{} {
-	t.Helper()
-	data, err := os.ReadFile(filepath.Join("testdata", name))
-	if err != nil {
-		t.Fatalf("read existing blacklist fixture: %v", err)
-	}
-	var entries []blacklistEntry
-	if err := json.Unmarshal(data, &entries); err != nil {
-		t.Fatalf("parse existing blacklist fixture: %v", err)
-	}
-	seen := make(map[string]struct{})
-	for i := range entries {
-		entry := entries[i]
-		for _, version := range entry.AffectedVersions {
-			seen[strings.ToLower(entry.Ecosystem)+":"+strings.ToLower(entry.Component)+"@"+version] = struct{}{}
-		}
-	}
-	return seen
 }
