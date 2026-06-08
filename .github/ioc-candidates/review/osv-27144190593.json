@@ -1,0 +1,180 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "consumerweb-authflow",
+    "confidence": "high",
+    "reason": "Malicious code in consumerweb-authflow (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5297",
+    "first_seen": "2026-06-07",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5297",
+    "affected_versions": [
+      "4.1.1",
+      "4.1.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5297). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bittensor-burn-monitor",
+    "confidence": "high",
+    "reason": "Malicious code in bittensor-burn-monitor (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5311",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5311",
+    "affected_versions": [
+      "1.5.0",
+      "1.5.3",
+      "1.5.5",
+      "1.6.0",
+      "1.6.3",
+      "1.6.5",
+      "1.7.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5311). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bt-burn-watch",
+    "confidence": "high",
+    "reason": "Malicious code in bt-burn-watch (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5312",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5312",
+    "affected_versions": [
+      "1.4.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5312). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "nhmpy",
+    "confidence": "high",
+    "reason": "Malicious code in nhmpy (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5302",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5302",
+    "affected_versions": [
+      "2.4.6",
+      "2.4.7"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5302). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "openai-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in openai-mcp (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5320",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5320",
+    "affected_versions": [
+      "2.41.1",
+      "2.41.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5320). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "rlask",
+    "confidence": "high",
+    "reason": "Malicious code in rlask (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5303",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5303",
+    "affected_versions": [
+      "3.1.3",
+      "3.1.4",
+      "3.1.5",
+      "3.1.6",
+      "3.1.7"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5303). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "rsquests",
+    "confidence": "high",
+    "reason": "Malicious code in rsquests (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5304",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5304",
+    "affected_versions": [
+      "2.34.2",
+      "2.34.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5304). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "tiktoken-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in tiktoken-mcp (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5326",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5326",
+    "affected_versions": [
+      "0.13.1",
+      "0.13.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5326). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "tlask",
+    "confidence": "high",
+    "reason": "Malicious code in tlask (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5305",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5305",
+    "affected_versions": [
+      "3.1.3",
+      "3.1.4"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5305). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  }
+]
