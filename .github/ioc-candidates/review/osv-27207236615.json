@@ -1,0 +1,354 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@bancolonbia/menu-filter-widget-web",
+    "confidence": "high",
+    "reason": "Malicious code in @bancolonbia/menu-filter-widget-web (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5344",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5344",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5344). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@listings/energy-labels",
+    "confidence": "high",
+    "reason": "Malicious code in @listings/energy-labels (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5327",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5327",
+    "affected_versions": [
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5327). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@zimmo/last_search",
+    "confidence": "high",
+    "reason": "Malicious code in @zimmo/last_search (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5328",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5328",
+    "affected_versions": [
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5328). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "solana-core-4",
+    "confidence": "high",
+    "reason": "Malicious code in solana-core-4 (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5358",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5358",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5358). Reported by: ossf-package-analysis, OpenSSF: Package Analysis, SafeDep. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "web3-tools-9",
+    "confidence": "high",
+    "reason": "Malicious code in web3-tools-9 (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5361",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5361",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5361). Reported by: ossf-package-analysis, OpenSSF: Package Analysis, SafeDep. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bittensor-burn",
+    "confidence": "high",
+    "reason": "Malicious code in bittensor-burn (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5331",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5331",
+    "affected_versions": [
+      "1.8.0",
+      "1.8.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5331). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bittensor-burn-alert",
+    "confidence": "high",
+    "reason": "Malicious code in bittensor-burn-alert (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5330",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5330",
+    "affected_versions": [
+      "1.7.3",
+      "1.7.4",
+      "1.7.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5330). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "dstill",
+    "confidence": "high",
+    "reason": "Malicious code in dstill (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5345",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5345",
+    "affected_versions": [
+      "0.3.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5345). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "nerfstudio-gs",
+    "confidence": "high",
+    "reason": "Malicious code in nerfstudio-gs (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5333",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5333",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1",
+      "99.0.2",
+      "99.0.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5333). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "odoo-addon-spp-base",
+    "confidence": "high",
+    "reason": "Malicious code in odoo-addon-spp-base (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5367",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5367",
+    "affected_versions": [
+      "99.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5367). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "solana-cli-py",
+    "confidence": "high",
+    "reason": "Malicious code in solana-cli-py (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5336",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5336",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5336). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "solana-web3",
+    "confidence": "high",
+    "reason": "Malicious code in solana-web3 (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5337",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5337",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5337). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "solana-web3-py",
+    "confidence": "high",
+    "reason": "Malicious code in solana-web3-py (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5338",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5338",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5338). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "spaysdatarbx",
+    "confidence": "high",
+    "reason": "Malicious code in spaysdatarbx (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5329",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5329",
+    "affected_versions": [
+      "0.1.3",
+      "0.1.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5329). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "spaysrbx",
+    "confidence": "high",
+    "reason": "Malicious code in spaysrbx (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5334",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5334",
+    "affected_versions": [
+      "0.3.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5334). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "spl-token-py",
+    "confidence": "high",
+    "reason": "Malicious code in spl-token-py (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5339",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5339",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5339). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "xfoobar",
+    "confidence": "high",
+    "reason": "Malicious code in xfoobar (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5335",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5335",
+    "affected_versions": [
+      "0.0.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5335). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "xfoofoox",
+    "confidence": "high",
+    "reason": "Malicious code in xfoofoox (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5340",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5340",
+    "affected_versions": [
+      "0.0.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5340). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "xforpy",
+    "confidence": "high",
+    "reason": "Malicious code in xforpy (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5332",
+    "first_seen": "2026-06-08",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5332",
+    "affected_versions": [
+      "0.0.1",
+      "0.0.2",
+      "0.0.3",
+      "0.0.4"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5332). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  }
+]
