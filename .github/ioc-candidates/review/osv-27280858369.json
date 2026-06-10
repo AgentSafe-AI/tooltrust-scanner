@@ -1,0 +1,2180 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/clerk-auth",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/clerk-auth (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5385",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5385",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5385). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/prisma-client-js",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/prisma-client-js (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5386",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5386",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5386). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/sentry-web",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/sentry-web (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5387",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5387",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5387). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/stripe-checkout-js",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/stripe-checkout-js (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5388",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5388",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5388). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/stripe-frontend",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/stripe-frontend (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5389",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5389",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5389). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/supabase-db",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/supabase-db (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5390",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5390",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5390). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@0xlr/vercel-analytics",
+    "confidence": "high",
+    "reason": "Malicious code in @0xlr/vercel-analytics (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5391",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5391",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5391). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@builder.io/dev-tools",
+    "confidence": "high",
+    "reason": "Malicious code in @builder.io/dev-tools (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5493",
+    "first_seen": "2026-06-10",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-4fm3-j964-p869",
+    "affected_versions": [
+      "1.64.2-dev.202606082025.8ce823363"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5493). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@card-pci-data/store",
+    "confidence": "high",
+    "reason": "Malicious code in @card-pci-data/store (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5407",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5407",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5407). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@dktunited/anly-tracker-v2",
+    "confidence": "high",
+    "reason": "Malicious code in @dktunited/anly-tracker-v2 (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5459",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5459",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5459). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/auth",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/auth (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5369",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-5cwj-c46v-mpmf",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5369). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/eventemitter",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/eventemitter (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5370",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-926j-qqmq-889c",
+    "affected_versions": [
+      "9.9.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5370). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/examples",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/examples (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5372",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-3hg6-5qgp-v676",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5372). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/http",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/http (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5373",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-cpf3-vrxh-mv98",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5373). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/mapstore",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/mapstore (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5374",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-6mxf-8m2v-f345",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5374). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/pay",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/pay (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5375",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-55rv-c39c-944m",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5375). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/rrweb-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/rrweb-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5376",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-j6f2-qf2j-5mh5",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5376). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/shared",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/shared (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5377",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-5784-q7wq-ch43",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5377). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/signalhub",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/signalhub (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5378",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-gq53-mvg2-fxjf",
+    "affected_versions": [
+      "9.9.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5378). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/storage",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/storage (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5379",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-v89r-6g3x-gjjv",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5379). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/systeminformation",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/systeminformation (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5381",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-xj3m-q8rc-3f5j",
+    "affected_versions": [
+      "9.9.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5381). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/types",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/types (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5382",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-m5q9-qwgm-wvqx",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5382). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@doaction/wasm-loader",
+    "confidence": "high",
+    "reason": "Malicious code in @doaction/wasm-loader (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5383",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-54mr-v524-rmw6",
+    "affected_versions": [
+      "9.9.9",
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5383). Reported by: ghsa-malware, amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@easy-entry/landing-routes",
+    "confidence": "high",
+    "reason": "Malicious code in @easy-entry/landing-routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5408",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5408",
+    "affected_versions": [
+      "99.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5408). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@easy-entry/outside-registration-fop-navigator",
+    "confidence": "high",
+    "reason": "Malicious code in @easy-entry/outside-registration-fop-navigator (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5409",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5409",
+    "affected_versions": [
+      "99.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5409). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@easy-entry/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @easy-entry/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5410",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5410",
+    "affected_versions": [
+      "99.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5410). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-about/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-about/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5411",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5411",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1",
+      "99.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5411). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-kyc/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-kyc/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5412",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5412",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5412). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-login-platform/native-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-login-platform/native-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5413",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5413",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5413). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-login-platform/oidc",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-login-platform/oidc (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5414",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5414",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5414). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-login-platform/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-login-platform/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5415",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5415",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5415). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-otp/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-otp/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5416",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5416",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5416). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@klapp-sca/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @klapp-sca/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5417",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5417",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5417). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/api-client",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/api-client (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5418",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5418",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5418). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/auth",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/auth (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5419",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5419",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5419). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/ixel",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/ixel (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5420",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5420",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5420). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/sdk",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5421",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5421",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5421). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/shared-components",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/shared-components (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5422",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5422",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5422). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@nstrlabs/utils",
+    "confidence": "high",
+    "reason": "Malicious code in @nstrlabs/utils (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5423",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5423",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5423). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@open-banking/cabinet-providers",
+    "confidence": "high",
+    "reason": "Malicious code in @open-banking/cabinet-providers (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5392",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5392",
+    "affected_versions": [
+      "999.9.2",
+      "999.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5392). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@oplus/obus-core",
+    "confidence": "high",
+    "reason": "Malicious code in @oplus/obus-core (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5424",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5424",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5424). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@oplus/obus-web-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in @oplus/obus-web-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5425",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5425",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5425). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@oplus/obus-web-sdk-plugin-recovery",
+    "confidence": "high",
+    "reason": "Malicious code in @oplus/obus-web-sdk-plugin-recovery (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5426",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5426",
+    "affected_versions": [
+      "99.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5426). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@payment-review/store",
+    "confidence": "high",
+    "reason": "Malicious code in @payment-review/store (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5427",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5427",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5427). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@rockawayx/utils",
+    "confidence": "high",
+    "reason": "Malicious code in @rockawayx/utils (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5462",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5462",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5462). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@sflyinc-knapsack/shutterfly-react",
+    "confidence": "high",
+    "reason": "Malicious code in @sflyinc-knapsack/shutterfly-react (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5393",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5393",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5393). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@shell-cabinet/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @shell-cabinet/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5428",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5428",
+    "affected_versions": [
+      "99.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5428). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@shell-landing/routes",
+    "confidence": "high",
+    "reason": "Malicious code in @shell-landing/routes (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5429",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5429",
+    "affected_versions": [
+      "99.9.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5429). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@sourceflow-uk/sourceflow-tracker",
+    "confidence": "high",
+    "reason": "Malicious code in @sourceflow-uk/sourceflow-tracker (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5430",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5430",
+    "affected_versions": [
+      "99.91.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5430). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@sql-access/nodesql",
+    "confidence": "high",
+    "reason": "Malicious code in @sql-access/nodesql (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5394",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5394",
+    "affected_versions": [
+      "1.0.7"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5394). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@sql-trigger/nodesql",
+    "confidence": "high",
+    "reason": "Malicious code in @sql-trigger/nodesql (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5395",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5395",
+    "affected_versions": [
+      "1.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5395). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@sqlite-node/createsql",
+    "confidence": "high",
+    "reason": "Malicious code in @sqlite-node/createsql (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5396",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5396",
+    "affected_versions": [
+      "1.0.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5396). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@webd-infra/query-designer-domain",
+    "confidence": "high",
+    "reason": "Malicious code in @webd-infra/query-designer-domain (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5431",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5431",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5431). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@webda-features/dashboard",
+    "confidence": "high",
+    "reason": "Malicious code in @webda-features/dashboard (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5432",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5432",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5432). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@webda-infra/search",
+    "confidence": "high",
+    "reason": "Malicious code in @webda-infra/search (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5433",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5433",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5433). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "ac_calendar_ts",
+    "confidence": "high",
+    "reason": "Malicious code in ac_calendar_ts (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5434",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5434",
+    "affected_versions": [
+      "99.99.100"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5434). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "ac_semantic-ui_ts",
+    "confidence": "high",
+    "reason": "Malicious code in ac_semantic-ui_ts (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5435",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5435",
+    "affected_versions": [
+      "99.99.100"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5435). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "checkout-signer",
+    "confidence": "high",
+    "reason": "Malicious code in checkout-signer (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5436",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5436",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5436). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "commons-ui-styles",
+    "confidence": "high",
+    "reason": "Malicious code in commons-ui-styles (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5437",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5437",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5437). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "corporate-front-vue",
+    "confidence": "high",
+    "reason": "Malicious code in corporate-front-vue (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5438",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5438",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5438). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "create-docs-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in create-docs-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5397",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5397",
+    "affected_versions": [
+      "9999.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5397). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "db-dx-connector",
+    "confidence": "high",
+    "reason": "Malicious code in db-dx-connector (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5463",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5463",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5463). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "db-xorma",
+    "confidence": "high",
+    "reason": "Malicious code in db-xorma (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5464",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5464",
+    "affected_versions": [
+      "1.0.0",
+      "1.0.1",
+      "1.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5464). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "exodus-checkout-signer",
+    "confidence": "high",
+    "reason": "Malicious code in exodus-checkout-signer (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5439",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5439",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5439). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "exodus-ethereum-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in exodus-ethereum-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5440",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5440",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5440). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "exodus-secure-container",
+    "confidence": "high",
+    "reason": "Malicious code in exodus-secure-container (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5441",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5441",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5441). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "exodus-solana-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in exodus-solana-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5442",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5442",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5442). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "exodus-wallet-core",
+    "confidence": "high",
+    "reason": "Malicious code in exodus-wallet-core (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5443",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5443",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5443). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "fhirproxy",
+    "confidence": "high",
+    "reason": "Malicious code in fhirproxy (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5460",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5460",
+    "affected_versions": [
+      "90.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5460). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "fhirproxy-utils",
+    "confidence": "high",
+    "reason": "Malicious code in fhirproxy-utils (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5461",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5461",
+    "affected_versions": [
+      "1.0.8"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5461). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-content-management",
+    "confidence": "high",
+    "reason": "Malicious code in getd-content-management (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5465",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5465",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5465). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-eslint-rules",
+    "confidence": "high",
+    "reason": "Malicious code in getd-eslint-rules (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5466",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5466",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5466). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-handler-api",
+    "confidence": "high",
+    "reason": "Malicious code in getd-handler-api (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5467",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5467",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5467). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-pantallas-cliente",
+    "confidence": "high",
+    "reason": "Malicious code in getd-pantallas-cliente (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5468",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5468",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5468). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-transactional-web",
+    "confidence": "high",
+    "reason": "Malicious code in getd-transactional-web (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5469",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5469",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5469). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-typescript-eslint-rules",
+    "confidence": "high",
+    "reason": "Malicious code in getd-typescript-eslint-rules (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5470",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5470",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5470). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-ui-library",
+    "confidence": "high",
+    "reason": "Malicious code in getd-ui-library (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5471",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5471",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5471). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getd-web-corporativa",
+    "confidence": "high",
+    "reason": "Malicious code in getd-web-corporativa (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5472",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5472",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5472). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "gethandler-api",
+    "confidence": "high",
+    "reason": "Malicious code in gethandler-api (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5473",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5473",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5473). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "getui-library",
+    "confidence": "high",
+    "reason": "Malicious code in getui-library (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5474",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5474",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5474). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "grateful-checkout",
+    "confidence": "high",
+    "reason": "Malicious code in grateful-checkout (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5444",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5444",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5444). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "grateful-payments",
+    "confidence": "high",
+    "reason": "Malicious code in grateful-payments (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5445",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5445",
+    "affected_versions": [
+      "99.0.0-canary.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5445). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "hey-base32",
+    "confidence": "high",
+    "reason": "Malicious code in hey-base32 (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5398",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5398",
+    "affected_versions": [
+      "1.1.2",
+      "1.1.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5398). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "housecall-ui",
+    "confidence": "high",
+    "reason": "Malicious code in housecall-ui (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5446",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5446",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5446). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "ipy-rev-proxy",
+    "confidence": "high",
+    "reason": "Malicious code in ipy-rev-proxy (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5475",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5475",
+    "affected_versions": [
+      "9.3.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5475). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "kraken-ui",
+    "confidence": "high",
+    "reason": "Malicious code in kraken-ui (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5399",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5399",
+    "affected_versions": [
+      "999.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5399). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "localization-lib",
+    "confidence": "high",
+    "reason": "Malicious code in localization-lib (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5447",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5447",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5447). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mazemap",
+    "confidence": "high",
+    "reason": "Malicious code in mazemap (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5448",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5448",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5448). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-fetch",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-fetch (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5476",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5476",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5476). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-figma",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-figma (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5477",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5477",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5477). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-git",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-git (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5478",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5478",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5478). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-github",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-github (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5479",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5479",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5479). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-notion",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-notion (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5480",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5480",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5480). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-postgres",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-postgres (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5481",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5481",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5481). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-redis",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-redis (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5482",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5482",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5482). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-sentry",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-sentry (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5483",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5483",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5483). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-sequential-thinking",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-sequential-thinking (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5484",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5484",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5484). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-server-supabase",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-server-supabase (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5485",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5485",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5485). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "menu-filter-widget-web",
+    "confidence": "high",
+    "reason": "Malicious code in menu-filter-widget-web (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5486",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5486",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5486). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "morningstar-design-system",
+    "confidence": "high",
+    "reason": "Malicious code in morningstar-design-system (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5449",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5449",
+    "affected_versions": [
+      "99.0.0",
+      "99.0.1",
+      "99.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5449). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "multica",
+    "confidence": "high",
+    "reason": "Malicious code in multica (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5400",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5400",
+    "affected_versions": [
+      "9999.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5400). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "o3forms",
+    "confidence": "high",
+    "reason": "Malicious code in o3forms (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5450",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5450",
+    "affected_versions": [
+      "90.0.0",
+      "99.1.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5450). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "privacy-sdk",
+    "confidence": "high",
+    "reason": "Malicious code in privacy-sdk (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5451",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5451",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5451). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "react-pinojs",
+    "confidence": "high",
+    "reason": "Malicious code in react-pinojs (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5488",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5488",
+    "affected_versions": [
+      "1.0.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5488). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "savant-listing",
+    "confidence": "high",
+    "reason": "Malicious code in savant-listing (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5401",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5401",
+    "affected_versions": [
+      "999.9.10",
+      "999.9.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5401). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "sb-original",
+    "confidence": "high",
+    "reason": "Malicious code in sb-original (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5490",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5490",
+    "affected_versions": [
+      "9999.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5490). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "screenpipe-mcp-http",
+    "confidence": "high",
+    "reason": "Malicious code in screenpipe-mcp-http (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5402",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5402",
+    "affected_versions": [
+      "9999.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5402). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "shopify-app-bridge-internal",
+    "confidence": "high",
+    "reason": "Malicious code in shopify-app-bridge-internal (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5452",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5452",
+    "affected_versions": [
+      "99.9.9"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5452). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "t-invest-mcp-server",
+    "confidence": "high",
+    "reason": "Malicious code in t-invest-mcp-server (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5403",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5403",
+    "affected_versions": [
+      "9999.99.99"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5403). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "tailwind-form",
+    "confidence": "high",
+    "reason": "Malicious code in tailwind-form (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5487",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5487",
+    "affected_versions": [
+      "0.5.12"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5487). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "tivo-codelib-a",
+    "confidence": "high",
+    "reason": "Malicious code in tivo-codelib-a (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5453",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5453",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5453). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "ui-ng-components",
+    "confidence": "high",
+    "reason": "Malicious code in ui-ng-components (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5454",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5454",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5454). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "uipath-sugar-sell",
+    "confidence": "high",
+    "reason": "Malicious code in uipath-sugar-sell (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5455",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5455",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5455). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "via-city-tools-m-particle",
+    "confidence": "high",
+    "reason": "Malicious code in via-city-tools-m-particle (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5456",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5456",
+    "affected_versions": [
+      "99.9.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5456). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bittensor-emission-tracker",
+    "confidence": "high",
+    "reason": "Malicious code in bittensor-emission-tracker (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5489",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5489",
+    "affected_versions": [
+      "1.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5489). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "cubifyanything",
+    "confidence": "high",
+    "reason": "Malicious code in cubifyanything (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5404",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5404",
+    "affected_versions": [
+      "1.0.0",
+      "1.0.1",
+      "1.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5404). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "durabletask",
+    "confidence": "high",
+    "reason": "durabletask 1.4.1, 1.4.2, and 1.4.3 contain malicious code distributed via a compromised maintainer account",
+    "source": "https://osv.dev/vulnerability/PYSEC-2026-207",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-4174",
+    "affected_versions": [
+      "1.4.1",
+      "1.4.2",
+      "1.4.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (PYSEC-2026-207). Reported by: Vipyr Security, Mike Fiedler. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "tao-subnet-metrics",
+    "confidence": "high",
+    "reason": "Malicious code in tao-subnet-metrics (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5457",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5457",
+    "affected_versions": [
+      "1.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5457). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "ultimate-ai-power",
+    "confidence": "high",
+    "reason": "Malicious code in ultimate-ai-power (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5458",
+    "first_seen": "2026-06-09",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5458",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5458). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  }
+]
