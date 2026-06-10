@@ -50,6 +50,12 @@ Supported npm IOC types currently include:
    - These are **OSV `MAL-` records** — confirmed malicious packages from OpenSSF malicious-packages,
      Amazon Inspector, GitHub Advisory, and similar sources — not ordinary CVEs.
    - Ordinary CVEs are covered by AS-004 real-time OSV lookup and must not flow through this path.
+   - An **MCP/AI relevance filter** is applied before emitting candidates: only packages whose name
+     or description contains MCP/AI-tooling domain markers are included (`mcp`, `openai`,
+     `anthropic`, `claude`, `langchain`, `tiktoken`, `ollama`, etc.). Unrelated malicious packages
+     — crypto typosquats (`solana-core-4`, `bittensor-burn`, …), banking malware, etc. — are
+     intentionally excluded. Those packages are genuinely malicious but outside ToolTrust's MCP
+     scope; AS-004 real-time OSV lookup already covers them for any scan that queries OSV.
 3. Maintainer reviews the digest PR and picks high-value entries to promote.
 4. Candidate is classified:
    - `promote_to: blacklist` — for confirmed malicious versions worth adding to AS-008

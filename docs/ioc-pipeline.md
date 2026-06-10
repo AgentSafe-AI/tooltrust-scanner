@@ -7,8 +7,13 @@ This workflow adds a daily review loop for OSV-confirmed malicious packages with
 - pulls the per-ecosystem OSV feed for `npm`, `PyPI`, and `Go`
 - filters to records published in the last 24 hours
 - keeps only `MAL-` records — OSV's namespace for confirmed malicious packages (sourced from OpenSSF malicious-packages, Amazon Inspector, GitHub Advisory, and similar)
+- applies an **MCP/AI relevance filter**: only packages whose name or description contains
+  MCP/AI-tooling domain markers are kept (`mcp`, `openai`, `anthropic`, `claude`, `langchain`,
+  `tiktoken`, `ollama`, etc.). Unrelated malicious packages (crypto typosquats, banking malware,
+  etc.) are excluded — they are already covered by AS-004 real-time OSV lookup and do not belong
+  in the AS-008 MCP-focused blacklist.
 - skips package versions already present in `pkg/analyzer/data/blacklist.json`
-- opens one review-only digest PR per day with the new confirmed malicious packages
+- opens one review-only digest PR per day with the new MCP/AI-relevant confirmed malicious packages
 
 The workflow never auto-merges. A human still decides whether a candidate belongs in the enforced AS-008 blacklist.
 

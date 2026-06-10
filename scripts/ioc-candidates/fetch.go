@@ -167,8 +167,10 @@ type httpDoer interface {
 
 func fetchCandidatesWithClient(ctx context.Context, cfg config, client httpDoer, existing map[string]struct{}) ([]blacklistEntry, []string, error) {
 	var (
-		allCandidates []blacklistEntry
-		warnings      []string
+		allCandidates  []blacklistEntry
+		warnings       []string
+		totalMalicious int
+		totalRelevant  int
 	)
 
 	for _, ecosystem := range cfg.Ecosystems {
@@ -180,7 +182,16 @@ func fetchCandidatesWithClient(ctx context.Context, cfg config, client httpDoer,
 			warnings = append(warnings, fmt.Sprintf("skip %s feed: %v", ecosystem, err))
 			continue
 		}
-		allCandidates = append(allCandidates, buildCandidates(vulns, ecosystem, existing, cfg.Now, cfg.Since)...)
+		candidates, stats := buildCandidates(vulns, ecosystem, existing, cfg.Now, cfg.Since)
+		allCandidates = append(allCandidates, candidates...)
+		totalMalicious += stats.MaliciousSeen
+		totalRelevant += stats.MCPRelevant
+	}
+	if totalMalicious > 0 {
+		warnings = append(warnings, fmt.Sprintf(
+			"MCP/AI relevance filter: %d MCP-relevant of %d malicious MAL- records seen",
+			totalRelevant, totalMalicious,
+		))
 	}
 
 	sort.Slice(allCandidates, func(i, j int) bool {
@@ -270,8 +281,15 @@ func parseFeedZip(data []byte) ([]osvVulnerability, error) {
 	return vulns, nil
 }
 
-func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[string]struct{}, now time.Time, since time.Duration) []blacklistEntry {
+// candidateStats holds per-ecosystem counters for observability.
+type candidateStats struct {
+	MaliciousSeen int
+	MCPRelevant   int
+}
+
+func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[string]struct{}, now time.Time, since time.Duration) ([]blacklistEntry, candidateStats) {
 	var out []blacklistEntry
+	var stats candidateStats
 	seen := map[string]struct{}{}
 	for i := range vulns {
 		vuln := &vulns[i]
@@ -283,6 +301,11 @@ func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[st
 		if !looksLikeBlacklistCandidate(*vuln) {
 			continue
 		}
+		stats.MaliciousSeen++
+		if !isMCPRelevant(*vuln) {
+			continue
+		}
+		stats.MCPRelevant++
 		severity := maliciousPackageSeverity(*vuln)
 
 		for _, affected := range vuln.Affected {
@@ -334,13 +357,52 @@ func buildCandidates(vulns []osvVulnerability, ecosystem string, existing map[st
 			out = append(out, entry)
 		}
 	}
-	return out
+	return out, stats
 }
 
 // maliciousPackageSeverity returns CRITICAL for all confirmed MAL- records.
 // MAL- records carry no CVSS. A confirmed malicious package is always block-worthy.
 func maliciousPackageSeverity(_ osvVulnerability) string {
 	return "CRITICAL"
+}
+
+// mcpRelevanceKeywords are high-precision domain markers for the MCP / LLM
+// tooling ecosystem. Intentionally narrow: every entry should almost never
+// appear in an unrelated package name. Broad words (agent, prompt, vector,
+// embedding, rag) are deliberately excluded to avoid false matches — add them
+// only with a negative-test case proving they don't over-match.
+var mcpRelevanceKeywords = []string{
+	"mcp",
+	"model-context-protocol",
+	"modelcontextprotocol",
+	"openai",
+	"anthropic",
+	"claude",
+	"langchain",
+	"langgraph",
+	"llamaindex",
+	"llama-index",
+	"tiktoken",
+	"huggingface",
+	"ollama",
+	"llm",
+}
+
+// isMCPRelevant reports whether a confirmed-malicious record targets the
+// MCP / LLM tooling ecosystem (ToolTrust's scope), as opposed to unrelated
+// malware (crypto typosquats, etc.) that AS-004's live OSV lookup already
+// covers. Matches on package name first, then summary/details text.
+func isMCPRelevant(vuln osvVulnerability) bool {
+	hay := strings.ToLower(vuln.Summary + " " + vuln.Details)
+	for _, aff := range vuln.Affected {
+		hay += " " + strings.ToLower(aff.Package.Name)
+	}
+	for _, kw := range mcpRelevanceKeywords {
+		if strings.Contains(hay, kw) {
+			return true
+		}
+	}
+	return false
 }
 
 // isMaliciousPackageRecord reports whether an OSV record is a confirmed

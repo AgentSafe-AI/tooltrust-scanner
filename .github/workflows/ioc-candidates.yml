@@ -59,14 +59,20 @@ jobs:
         with:
           token: ${{ secrets.TOOLTRUST_BOT_TOKEN || github.token }}
           branch: ioc-candidates/${{ github.run_id }}
-          title: "threat-intel: ${{ steps.candidate_count.outputs.count }} OSV-confirmed malicious package(s) for review"
-          commit-message: "threat-intel: add ${{ steps.candidate_count.outputs.count }} OSV-confirmed malicious package(s) for review"
+          title: "threat-intel: ${{ steps.candidate_count.outputs.count }} MCP/AI-relevant OSV-confirmed malicious package(s) for review"
+          commit-message: "threat-intel: add ${{ steps.candidate_count.outputs.count }} MCP/AI-relevant OSV-confirmed malicious package(s) for review"
           body: |
-            OSV-confirmed malicious packages from ecosystem feeds for the last 24 hours.
+            **MCP/AI-relevant** OSV-confirmed malicious packages from ecosystem feeds for the last 24 hours.
 
             These entries are **OSV `MAL-` records** — confirmed malicious packages sourced from
             OpenSSF malicious-packages, Amazon Inspector, GitHub Advisory, and similar reporters.
             They are **not** ordinary CVEs.
+
+            A **MCP/AI relevance filter** has been applied: only packages whose name or description
+            contains MCP/AI-tooling domain markers (`mcp`, `openai`, `anthropic`, `claude`,
+            `langchain`, `tiktoken`, `ollama`, etc.) are included here. Unrelated malicious packages
+            (crypto typosquats, banking malware, etc.) are excluded — they are already covered by
+            AS-004 real-time OSV lookup and do not belong in the AS-008 MCP-focused blacklist.
 
             This is a **review-only** PR. It intentionally does not modify:
 
@@ -74,6 +80,7 @@ jobs:
             - `pkg/analyzer/data/npm_iocs.json`
 
             Review each entry:
+            - Confirm the package is genuinely MCP/AI-tooling related.
             - Check the affected version range: is it exact and narrow enough?
             - Is this package high-value enough to add to the AS-008 offline blacklist, or is
               AS-004 (real-time OSV lookup) sufficient coverage?
