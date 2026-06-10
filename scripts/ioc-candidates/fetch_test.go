@@ -239,6 +239,59 @@ func TestIsMCPRelevant_PositiveAndNegative(t *testing.T) {
 			t.Errorf("crypto/unrelated package should not match MCP filter: %q", name)
 		}
 	}
+
+	// Prose mentioning llm/openai as attack DESCRIPTION must NOT pull in a
+	// non-MCP package. These are real false-match patterns from the PyPI feed:
+	// biomedical packages and credential stealers whose details happen to say
+	// "llm-based scanners" or "steals openai sk- keys".
+	proseFalseMatches := []struct{ name, summary, details string }{
+		{"embiggen", "Malicious code in embiggen (PyPI)", "tries to trigger ai safety refusals in llm-based security scanners"},
+		{"phenopacket-store-toolkit", "Malicious code in phenopacket-store-toolkit (PyPI)", "evades llm-based scanners during review"},
+		{"data-pipeline-check", "Malicious code in data-pipeline-check (PyPI)", "steals private keys, bip-39 mnemonics, openai sk- keys, github ghp- tokens"},
+	}
+	for _, tc := range proseFalseMatches {
+		v := osvVulnerability{
+			ID: "MAL-2026-0003", Summary: tc.summary, Details: tc.details,
+			Affected: []osvAffected{{Package: struct {
+				Name      string `json:"name"`
+				Ecosystem string `json:"ecosystem"`
+			}{Name: tc.name, Ecosystem: "PyPI"}}},
+		}
+		if isMCPRelevant(v) {
+			t.Errorf("attack-description prose must not match MCP filter: %q (%q)", tc.name, tc.details)
+		}
+	}
+
+	// Substring boundary: ordinary English words containing "llm" / "mcp" as a
+	// substring (fulfillment, mcpherson) must NOT match on the package name.
+	boundary := []string{"fulfillment-tracker", "mcpherson-utils"}
+	for _, name := range boundary {
+		v := osvVulnerability{
+			ID: "MAL-2026-0004", Summary: "Malicious code in " + name,
+			Affected: []osvAffected{{Package: struct {
+				Name      string `json:"name"`
+				Ecosystem string `json:"ecosystem"`
+			}{Name: name, Ecosystem: "PyPI"}}},
+		}
+		if isMCPRelevant(v) {
+			t.Errorf("substring false match on package name: %q", name)
+		}
+	}
+
+	// Prose with a strong multi-word MCP phrase SHOULD match even when the
+	// package name itself is not obviously MCP (malware masquerading as MCP).
+	masquerade := osvVulnerability{
+		ID:      "MAL-2026-0005",
+		Summary: "Malicious code in defi-env-auditor (PyPI)",
+		Details: "package masquerades as an MCP server to harvest credentials",
+		Affected: []osvAffected{{Package: struct {
+			Name      string `json:"name"`
+			Ecosystem string `json:"ecosystem"`
+		}{Name: "defi-env-auditor", Ecosystem: "PyPI"}}},
+	}
+	if !isMCPRelevant(masquerade) {
+		t.Error("prose with strong phrase 'mcp server' should match")
+	}
 }
 
 // TestBuildCandidates_NonMCPMaliciousIsFiltered verifies that a confirmed

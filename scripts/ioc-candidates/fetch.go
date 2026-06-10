@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const (
@@ -388,21 +389,74 @@ var mcpRelevanceKeywords = []string{
 	"llm",
 }
 
+// strongMCPPhrases are multi-word markers that, when present in an OSV record's
+// prose (summary/details), reliably indicate the package itself targets the
+// MCP/LLM tooling ecosystem — e.g. malware that masquerades as an MCP server or
+// poisons a Claude config. Single words are deliberately NOT matched against
+// prose: attack descriptions routinely mention "llm" or "openai" for packages
+// that are not MCP tools at all ("steals openai sk- keys", "evades llm-based
+// scanners"), which over-matches unrelated malware. Domain membership is judged
+// from what the package IS (its name), not what the attack DOES (its prose).
+var strongMCPPhrases = []string{
+	"mcp server",
+	"mcp tool",
+	"model context protocol",
+	"model-context-protocol",
+	"claude desktop",
+	"claude code",
+	".claude/",
+	"claude_desktop_config",
+}
+
 // isMCPRelevant reports whether a confirmed-malicious record targets the
 // MCP / LLM tooling ecosystem (ToolTrust's scope), as opposed to unrelated
 // malware (crypto typosquats, etc.) that AS-004's live OSV lookup already
-// covers. Matches on package name first, then summary/details text.
+// covers. Primary signal is the package NAME; prose only matches strong
+// multi-word MCP phrases (never single words — see strongMCPPhrases).
 func isMCPRelevant(vuln osvVulnerability) bool {
-	hay := strings.ToLower(vuln.Summary + " " + vuln.Details)
 	for _, aff := range vuln.Affected {
-		hay += " " + strings.ToLower(aff.Package.Name)
+		name := strings.ToLower(aff.Package.Name)
+		for _, kw := range mcpRelevanceKeywords {
+			if containsWord(name, kw) {
+				return true
+			}
+		}
 	}
-	for _, kw := range mcpRelevanceKeywords {
-		if strings.Contains(hay, kw) {
+	prose := strings.ToLower(vuln.Summary + " " + vuln.Details)
+	for _, ph := range strongMCPPhrases {
+		if strings.Contains(prose, ph) {
 			return true
 		}
 	}
 	return false
+}
+
+// containsWord reports whether word appears in s bounded by non-alphanumeric
+// characters (or the string edges) on both sides — so "mcp" matches "openai-mcp"
+// and "mcp-server" but not "mcpherson", and "llm" matches "llm-client" but not
+// "fulfillment". word is assumed already lowercase; s must be lowercased by the
+// caller. Hyphenated keywords (e.g. "llama-index") are matched as whole units.
+func containsWord(s, word string) bool {
+	from := 0
+	for {
+		i := strings.Index(s[from:], word)
+		if i < 0 {
+			return false
+		}
+		i += from
+		j := i + len(word)
+		beforeOK := i == 0 || !isAlphanumericByte(s[i-1])
+		afterOK := j == len(s) || !isAlphanumericByte(s[j])
+		if beforeOK && afterOK {
+			return true
+		}
+		from = i + 1
+	}
+}
+
+func isAlphanumericByte(b byte) bool {
+	r := rune(b)
+	return unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
 // isMaliciousPackageRecord reports whether an OSV record is a confirmed
