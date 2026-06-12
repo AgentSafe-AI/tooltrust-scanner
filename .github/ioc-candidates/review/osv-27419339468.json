@@ -1,0 +1,129 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "coral-wraith",
+    "confidence": "high",
+    "reason": "Malicious code in coral-wraith (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5682",
+    "first_seen": "2026-06-12",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5682",
+    "affected_versions": [
+      "6.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5682). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "internallib_v557",
+    "confidence": "high",
+    "reason": "Malicious code in internallib_v557 (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5678",
+    "first_seen": "2026-06-11",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5678",
+    "affected_versions": [
+      "1.0.10"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5678). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "worker-build",
+    "confidence": "high",
+    "reason": "Malicious code in worker-build (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5677",
+    "first_seen": "2026-06-11",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5677",
+    "affected_versions": [
+      "9.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5677). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "bittensor-burn-message",
+    "confidence": "high",
+    "reason": "Malicious code in bittensor-burn-message (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5680",
+    "first_seen": "2026-06-11",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5680",
+    "affected_versions": [
+      "1.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5680). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "pylogxo",
+    "confidence": "high",
+    "reason": "Malicious code in pylogxo (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5679",
+    "first_seen": "2026-06-11",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5679",
+    "affected_versions": [
+      "1.0.3",
+      "1.0.4"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5679). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "trongap",
+    "confidence": "high",
+    "reason": "Malicious code in trongap (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5681",
+    "first_seen": "2026-06-11",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5681",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5681). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "trongapy",
+    "confidence": "high",
+    "reason": "Malicious code in trongapy (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5683",
+    "first_seen": "2026-06-12",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5683",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5683). Reported by: kam193, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  }
+]
