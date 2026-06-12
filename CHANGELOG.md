@@ -5,6 +5,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.14] - 2026-06-12
+
+### Added
+- **AS-008 blacklist: `openai-mcp` and `tiktoken-mcp` (PyPI)** — confirmed
+  malicious packages impersonating an official OpenAI MCP server
+  (`MAL-2026-5320`) and a tiktoken MCP tool (`MAL-2026-5326`), both
+  OSV-confirmed and reported by Kamil Mankowski. A developer who installs
+  these instead of the legitimate MCP integration is compromised. Marked
+  `BLOCK` / `CRITICAL`.
+
+### Changed
+- **IOC candidate pipeline rebuilt to read OSV `MAL-` records** instead of
+  guessing supply-chain compromise from CVE description keywords. The pipeline
+  now pulls confirmed malicious packages (OpenSSF malicious-packages, Amazon
+  Inspector, GitHub Advisory) from the per-ecosystem OSV feed and opens a
+  review-only daily digest PR. This is CI/threat-intel tooling and does not
+  change scanner runtime behavior.
+- **Removed loose IOC compromise signals** that fired on ordinary
+  web-security CVEs, eliminating a large source of false-positive candidates.
+
+## [0.3.13] - 2026-05-29
+
+### Added
+- **AS-008 blacklist: `@cap-js/db-service`, `@cap-js/postgres`,
+  `@cap-js/sqlite` (npm)** — confirmed npm supply-chain compromise
+  (`CVE-2026-46421`): malicious `@cap-js` package versions were published as
+  part of a coordinated compromise across the three packages. Marked
+  `BLOCK` / `CRITICAL`.
+
 ## [0.3.12] - 2026-04-22
 
 ### Fixed
