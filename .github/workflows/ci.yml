@@ -31,16 +31,12 @@ jobs:
 
   # ── 1. Test ────────────────────────────────────────────────────────────────
   test:
-    name: Test (Go ${{ matrix.go }})
+    name: Test
     runs-on: ubuntu-latest
     needs: [source]
     permissions:
       id-token: write
       contents: read
-
-    strategy:
-      matrix:
-        go: ["1.26.4"]
 
     steps:
       - name: Download source tree
@@ -55,7 +51,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ matrix.go }}
+          go-version: "1.26.4"
           cache: true
 
       - name: Download modules
