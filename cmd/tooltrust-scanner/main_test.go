@@ -86,75 +86,85 @@ func TestFormatToolLabel_KeepsGradeForApproval(t *testing.T) {
 }
 
 func TestFormatIssueLabel_HidesRedundantEvidenceForAllowGradeA(t *testing.T) {
+	// AS-002 CAPABILITY_SURFACE is always redundant (capabilities listed in description).
+	// For Grade A / Allow tools, shouldSuppressIssueDetail hides evidence and hint.
 	label := formatIssueLabel(model.Issue{
 		RuleID:      "AS-002",
-		Severity:    model.SeverityMedium,
-		Description: "tool declares fs permission",
+		Severity:    model.SeverityInfo,
+		Code:        "CAPABILITY_SURFACE",
+		Description: "declared capabilities: filesystem access",
 		Evidence: []model.Evidence{
-			{Kind: "permission", Value: "fs"},
+			{Kind: "capability", Value: "fs"},
 		},
 	}, model.GatewayPolicy{
 		Action: model.ActionAllow,
 		Score:  model.RiskScore{Grade: model.GradeA},
 	}, true)
 
-	assert.Contains(t, label, "• [AS-002] MEDIUM:")
-	assert.NotContains(t, label, "(+8)")
+	assert.Contains(t, label, "• [AS-002] INFO:")
 	assert.NotContains(t, label, "Evidence:")
 	assert.NotContains(t, label, "Tool requests broad permissions")
 }
 
 func TestFormatIssueLabel_HidesRedundantSingleEvidenceForFlaggedTools(t *testing.T) {
+	// AS-002 CAPABILITY_SURFACE is always considered redundant (evidence is
+	// already stated in the description). For flagged tools, evidence is hidden
+	// but the AS-002 hint is still shown.
 	label := formatIssueLabel(model.Issue{
 		RuleID:      "AS-002",
-		Severity:    model.SeverityHigh,
-		Description: "tool declares network permission",
+		Severity:    model.SeverityInfo,
+		Code:        "CAPABILITY_SURFACE",
+		Description: "declared capabilities: network access",
 		Evidence: []model.Evidence{
-			{Kind: "permission", Value: "network"},
+			{Kind: "capability", Value: "network"},
 		},
 	}, model.GatewayPolicy{
 		Action: model.ActionRequireApproval,
 		Score:  model.RiskScore{Grade: model.GradeC},
 	}, true)
 
-	assert.Contains(t, label, "• [AS-002] HIGH:")
+	assert.Contains(t, label, "• [AS-002] INFO:")
 	assert.NotContains(t, label, "Evidence:")
 	assert.Contains(t, label, "Tool requests broad permissions")
 }
 
 func TestFormatIssueLabel_KeepsCompactEvidenceForNonRedundantFlaggedTools(t *testing.T) {
+	// LARGE_INPUT_SURFACE (AS-002, Low) is not redundant — the first evidence item
+	// (schema_property_count) is shown; additional items are compacted.
 	label := formatIssueLabel(model.Issue{
 		RuleID:      "AS-002",
-		Severity:    model.SeverityHigh,
-		Description: "tool declares network permission",
+		Severity:    model.SeverityLow,
+		Code:        "LARGE_INPUT_SURFACE",
+		Description: "input schema exposes 15 properties (threshold: 10)",
 		Evidence: []model.Evidence{
-			{Kind: "permission", Value: "network"},
-			{Kind: "schema_property_count", Value: "12"},
+			{Kind: "schema_property_count", Value: "15"},
+			{Kind: "schema_property_threshold", Value: "10"},
 		},
 	}, model.GatewayPolicy{
 		Action: model.ActionRequireApproval,
 		Score:  model.RiskScore{Grade: model.GradeC},
 	}, true)
 
-	assert.Contains(t, label, "Evidence: permission=network")
+	assert.Contains(t, label, "Evidence: schema_property_count=15")
 	assert.Contains(t, label, "… 1 more evidence item(s)")
-	assert.NotContains(t, label, "schema_property_count=12")
+	assert.NotContains(t, label, "schema_property_threshold=10")
 }
 
 func TestFormatIssueLabel_HidesHintWhenAlreadyShownForRule(t *testing.T) {
 	label := formatIssueLabel(model.Issue{
 		RuleID:      "AS-002",
-		Severity:    model.SeverityHigh,
-		Description: "tool declares network permission",
+		Severity:    model.SeverityInfo,
+		Code:        "CAPABILITY_SURFACE",
+		Description: "declared capabilities: network access",
 		Evidence: []model.Evidence{
-			{Kind: "permission", Value: "network"},
+			{Kind: "capability", Value: "network"},
 		},
 	}, model.GatewayPolicy{
 		Action: model.ActionRequireApproval,
 		Score:  model.RiskScore{Grade: model.GradeC},
 	}, false)
 
-	assert.Contains(t, label, "• [AS-002] HIGH:")
+	assert.Contains(t, label, "• [AS-002] INFO:")
 	assert.NotContains(t, label, "Tool requests broad permissions")
 }
 
@@ -183,8 +193,9 @@ func TestSummarizeToolReason_EmptyForAllow(t *testing.T) {
 			Issues: []model.Issue{
 				{
 					RuleID:      "AS-002",
-					Description: "tool declares fs permission",
-					Evidence:    []model.Evidence{{Kind: "permission", Value: "fs"}},
+					Code:        "CAPABILITY_SURFACE",
+					Description: "declared capabilities: filesystem access",
+					Evidence:    []model.Evidence{{Kind: "capability", Value: "fs"}},
 				},
 			},
 		},
@@ -194,6 +205,8 @@ func TestSummarizeToolReason_EmptyForAllow(t *testing.T) {
 }
 
 func TestSummarizeToolReason_ForApproval(t *testing.T) {
+	// AS-002 now emits a single CAPABILITY_SURFACE summary.
+	// summarizeIssueReason for CAPABILITY_SURFACE strips the "declared capabilities: " prefix.
 	reason := summarizeToolReason(model.GatewayPolicy{
 		Action: model.ActionRequireApproval,
 		Score: model.RiskScore{
@@ -201,13 +214,12 @@ func TestSummarizeToolReason_ForApproval(t *testing.T) {
 			Issues: []model.Issue{
 				{
 					RuleID:      "AS-002",
-					Description: "tool declares fs permission",
-					Evidence:    []model.Evidence{{Kind: "permission", Value: "fs"}},
-				},
-				{
-					RuleID:      "AS-002",
-					Description: "tool declares network permission",
-					Evidence:    []model.Evidence{{Kind: "permission", Value: "network"}},
+					Code:        "CAPABILITY_SURFACE",
+					Description: "declared capabilities: filesystem access, network access",
+					Evidence: []model.Evidence{
+						{Kind: "capability", Value: "fs"},
+						{Kind: "capability", Value: "network"},
+					},
 				},
 				{
 					RuleID:      "AS-011",
@@ -217,7 +229,7 @@ func TestSummarizeToolReason_ForApproval(t *testing.T) {
 		},
 	})
 
-	assert.Equal(t, "fs permission + network permission + missing rate-limit/timeout", reason)
+	assert.Equal(t, "filesystem access, network access + missing rate-limit/timeout", reason)
 }
 
 func TestToolReasonLabel_ForApproval(t *testing.T) {

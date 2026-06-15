@@ -8,10 +8,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.3.17] - 2026-06-15
 
 ### Fixed
-- **AS-002 permission over-scoring**: a single expected permission no longer tanks a tool's grade.
-  Network/HTTP → Info (weight 0, kept for transparency), Exec → Medium, FS/DB/Env → Low.
-  Ordinary networked tools are no longer pushed to B/C just for needing the network; 79% of the
-  previous High findings from `network` declarations are now Info.
+- **AS-002 capability-disclosure collapse**: AS-002 now emits a single Info-level capability-disclosure
+  summary per tool (`declared capabilities: network access, filesystem access, …`) instead of one risk
+  finding per permission; it no longer contributes to the risk score. Having a permission is not a risk
+  in itself — it is inventory. Permission-vs-purpose mismatches remain scored by AS-003 (Scope Mismatch).
 - **AS-006 expression-input false positive**: `hasCodeExecutionCapability` no longer treats an
   `expression` input property (used by safe math evaluators such as cyanheads-calculator-mcp and
   ethanhenrickson-math-mcp) as code-execution corroboration. The new `isCodeExecPropName` helper

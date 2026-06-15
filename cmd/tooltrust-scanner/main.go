@@ -624,6 +624,12 @@ func toolReasonLabel(policy model.GatewayPolicy) string {
 func summarizeIssueReason(issue model.Issue) string {
 	switch issue.RuleID {
 	case "AS-002":
+		// New capability-surface summary: return the description as-is (it already
+		// contains "declared capabilities: …"). Legacy per-permission findings
+		// (Code=HIGH_RISK_PERMISSION) fall through to the evidence loop below.
+		if issue.Code == "CAPABILITY_SURFACE" {
+			return strings.TrimPrefix(issue.Description, "declared capabilities: ")
+		}
 		for _, evidence := range issue.Evidence {
 			if evidence.Kind == "permission" {
 				return evidence.Value + " permission"
@@ -829,7 +835,16 @@ func shouldShowIssueEvidence(issue model.Issue, policy model.GatewayPolicy) bool
 }
 
 func isRedundantPermissionEvidence(issue model.Issue) bool {
-	if issue.RuleID != "AS-002" || len(issue.Evidence) != 1 {
+	if issue.RuleID != "AS-002" {
+		return false
+	}
+	// New capability-surface summary: evidence lists raw permission names that are
+	// already spelled out in the human-readable description — always redundant.
+	if issue.Code == "CAPABILITY_SURFACE" {
+		return true
+	}
+	// Legacy single-permission evidence (Code=HIGH_RISK_PERMISSION).
+	if len(issue.Evidence) != 1 {
 		return false
 	}
 	evidence := issue.Evidence[0]

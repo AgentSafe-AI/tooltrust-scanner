@@ -33,9 +33,11 @@ func TestHandleScanJSON_ValidInput(t *testing.T) {
 	assert.Contains(t, text, "Scan Summary:")
 	assert.Contains(t, text, "Tool Grades:")
 	assert.Contains(t, text, "Findings by Severity:")
-	// AS-002 rescore: FS permission was MEDIUM, now LOW; network/HTTP are INFO.
-	// read_file with a "path" property infers FS (→ LOW) plus one INFO finding.
-	assert.Contains(t, text, "LOW×1")
+	// AS-002 now emits a single Info CAPABILITY_SURFACE summary (weight 0).
+	// read_file with a "path" property infers FS permission → one AS-002 Info.
+	// AS-014 also emits one Info (no dependency metadata on this JSON-only tool).
+	// Both are Info (weight 0) → score 0 → Grade A.
+	assert.Contains(t, text, "INFO×2")
 	assert.Contains(t, text, "2 total")
 	assert.NotContains(t, text, "Flagged Tools:")
 	assert.Contains(t, text, "All tools are ✅ GRADE A and allowed.")

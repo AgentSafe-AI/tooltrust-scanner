@@ -30,7 +30,7 @@ func sampleRecord(id string) storage.ScanRecord {
 		Grade:     model.GradeD,
 		Findings: []model.Issue{
 			{RuleID: "AS-001", Severity: model.SeverityCritical, Code: "TOOL_POISONING", Description: "prompt injection", Location: "description"},
-			{RuleID: "AS-002", Severity: model.SeverityHigh, Code: "HIGH_RISK_PERMISSION", Description: "exec permission", Location: "permissions"},
+			{RuleID: "AS-002", Severity: model.SeverityInfo, Code: "CAPABILITY_SURFACE", Description: "declared capabilities: code/command execution", Location: "permissions"},
 		},
 		ScannedAt: time.Now().UTC().Truncate(time.Second),
 	}
