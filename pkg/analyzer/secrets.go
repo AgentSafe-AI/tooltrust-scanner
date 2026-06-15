@@ -82,9 +82,9 @@ func (c *SecretHandlingChecker) Check(tool model.UnifiedTool) ([]model.Issue, er
 				issues = append(issues, model.Issue{
 					RuleID:      "AS-010",
 					ToolName:    tool.Name,
-					Severity:    model.SeverityHigh,
+					Severity:    model.SeverityInfo,
 					Code:        "SECRET_IN_INPUT",
-					Description: fmt.Sprintf("input parameter %q appears to accept a secret or credential", propName),
+					Description: fmt.Sprintf("input parameter %q accepts a credential (informational; not evidence of insecure handling)", propName),
 					Location:    fmt.Sprintf("inputSchema.properties.%s", propName),
 				})
 				break

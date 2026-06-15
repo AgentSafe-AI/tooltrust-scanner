@@ -564,20 +564,38 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 }
 
 // buildSupplyChainIssue constructs a single AS-004 finding.
-//   - MAL-* advisories get Critical severity and code MALICIOUS_PACKAGE.
+//   - MAL-* advisories get Critical severity and code MALICIOUS_PACKAGE regardless
+//     of dep.Source — malware anywhere in the dependency tree is a true positive.
+//   - Lockfile-sourced (transitive) non-MAL CVEs are downgraded to Info with code
+//     SUPPLY_CHAIN_CVE_TRANSITIVE; reachability is unconfirmed so they must not
+//     contribute to the risk score.
+//   - Metadata-sourced (tool-declared) non-MAL CVEs keep their OSV-derived severity
+//     and code SUPPLY_CHAIN_CVE.
 //   - Fix version from OSV is appended when available.
 func buildSupplyChainIssue(v osvVuln, dep dependencyEvidence, toolName string) model.Issue {
-	sev := osvSeverityToModel(v)
-	code := "SUPPLY_CHAIN_CVE"
+	isMalicious := strings.HasPrefix(v.ID, "MAL-")
 
-	if strings.HasPrefix(v.ID, "MAL-") {
+	var sev model.Severity
+	var code string
+
+	switch {
+	case isMalicious:
 		sev = model.SeverityCritical
 		code = "MALICIOUS_PACKAGE"
+	case dep.Source == "lockfile":
+		sev = model.SeverityInfo
+		code = "SUPPLY_CHAIN_CVE_TRANSITIVE"
+	default:
+		sev = osvSeverityToModel(v)
+		code = "SUPPLY_CHAIN_CVE"
 	}
 
 	desc := fmt.Sprintf("%s in %s@%s: %s", v.ID, dep.Name, dep.Version, v.Summary)
 	if fix := extractFixVersion(v); fix != "" {
 		desc += fmt.Sprintf(" (upgrade to %s)", fix)
+	}
+	if dep.Source == "lockfile" && !isMalicious {
+		desc += " (transitive dependency — reachability unconfirmed)"
 	}
 
 	return model.Issue{

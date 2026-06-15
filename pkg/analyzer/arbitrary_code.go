@@ -185,7 +185,7 @@ func (c *ArbitraryCodeChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 			if descMatch {
 				evidence = append(evidence, model.Evidence{Kind: "description_keyword", Value: kw})
 			}
-			return emitArbitraryCodeFinding(tool.Name, evidence), nil
+			return emitArbitraryCodeFinding(tool.Name, evidence, hasCodeExecutionCapability(tool)), nil
 		}
 	}
 
@@ -216,7 +216,7 @@ func (c *ArbitraryCodeChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 			}
 			return emitArbitraryCodeFinding(tool.Name, []model.Evidence{
 				{Kind: "tool_name_suffix", Value: suffix},
-			}), nil
+			}, hasCodeExecutionCapability(tool)), nil
 		}
 	}
 
@@ -252,19 +252,52 @@ func (c *ArbitraryCodeChecker) Check(tool model.UnifiedTool) ([]model.Issue, err
 		return emitArbitraryCodeFinding(tool.Name, []model.Evidence{
 			{Kind: "pattern", Value: re.String()},
 			{Kind: "match", Value: matched},
-		}), nil
+		}, hasCodeExecutionCapability(tool)), nil
 	}
 
 	return nil, nil
 }
 
-func emitArbitraryCodeFinding(toolName string, evidence []model.Evidence) []model.Issue {
+// hasCodeExecutionCapability reports an independent signal that the tool can
+// actually execute code/scripts (not just mention it in name/description).
+func hasCodeExecutionCapability(tool model.UnifiedTool) bool {
+	if tool.HasPermission(model.PermissionExec) {
+		return true
+	}
+	for propName := range tool.InputSchema.Properties {
+		p := strings.ToLower(propName)
+		for _, h := range []string{"code", "script", "expression", "eval"} {
+			if strings.Contains(p, h) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// emitArbitraryCodeFinding emits an AS-006 finding.
+// When confirmed is true (exec permission OR code/script/expression/eval input
+// property present), the finding is Critical/ARBITRARY_CODE_EXECUTION and
+// contributes to the risk score.  When false (name/description heuristic only),
+// it is Info/POSSIBLE_ARBITRARY_CODE_EXECUTION so it does not inflate the grade.
+func emitArbitraryCodeFinding(toolName string, evidence []model.Evidence, confirmed bool) []model.Issue {
+	if confirmed {
+		return []model.Issue{{
+			RuleID:      "AS-006",
+			ToolName:    toolName,
+			Severity:    model.SeverityCritical,
+			Code:        "ARBITRARY_CODE_EXECUTION",
+			Description: "tool name or description implies arbitrary script/code execution (evaluate_script, execute javascript, etc.)",
+			Location:    "name,description",
+			Evidence:    evidence,
+		}}
+	}
 	return []model.Issue{{
 		RuleID:      "AS-006",
 		ToolName:    toolName,
-		Severity:    model.SeverityCritical,
-		Code:        "ARBITRARY_CODE_EXECUTION",
-		Description: "tool name or description implies arbitrary script/code execution (evaluate_script, execute javascript, etc.)",
+		Severity:    model.SeverityInfo,
+		Code:        "POSSIBLE_ARBITRARY_CODE_EXECUTION",
+		Description: "tool name or description implies arbitrary script/code execution — capability unconfirmed (no exec permission or code/script/eval input property found)",
 		Location:    "name,description",
 		Evidence:    evidence,
 	}}

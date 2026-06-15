@@ -5,6 +5,45 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.15] - 2026-06-15
+
+Zero-false-positive tuning pass. Guiding principle: **accept false negatives, never
+produce false positives** — a finding that rests only on a heuristic (text keyword,
+transitive-dependency presence, secret-named parameter) must not inflate a tool's grade.
+Heuristic-only findings are kept for transparency at `INFO` (weight 0) and high-confidence
+findings keep their scoring severity. `MAL-*` malicious packages and the AS-008 blacklist
+are untouched.
+
+### Fixed
+- **Over-broad exec-permission inference (`pkg/adapter/mcp`)**: `inferPermissions`
+  matched the bare substring `"eval"` with `strings.Contains`, so read-only/analytic
+  tools (`lichess_cloud_eval`, `evaluate_position`, and even `document_retrieval` — which
+  literally contains `eval`) were assigned `PermissionExec`. That false exec both inflated
+  AS-002 and circularly corroborated AS-006, pinning legitimate tools at Critical/grade C.
+  Removed bare `"eval"` from the exec rule's keyword lists and added word-boundary regex
+  matching (`\beval\b`, `eval\(`) via a new `matchAny` field; genuine signals (command/
+  shell/script params, `evaluate_script`, `execute javascript`, standalone `eval`) are
+  preserved. Verified live: `lichess_cloud_eval` C/42→A/0 (ALLOW); `codex` stays D/65.
+  Regression fixture at `pkg/adapter/mcp/testdata/exec-cases.json`.
+- **AS-004 transitive-CVE over-attribution**: lockfile-sourced (transitive) non-malicious
+  CVEs were scored as if directly reachable, attributing e.g. a `golang.org/x/sys` CVE to
+  nearly every Go tool. Transitive non-`MAL-*` CVEs now emit `SUPPLY_CHAIN_CVE_TRANSITIVE`
+  at `INFO`; directly-declared CVEs keep their OSV severity; `MAL-*` stays Critical
+  regardless of source.
+- **AS-006 arbitrary-code over-flagging**: a name/description keyword match alone now emits
+  `POSSIBLE_ARBITRARY_CODE_EXECUTION` at `INFO`. `Critical`/`ARBITRARY_CODE_EXECUTION` now
+  requires corroboration — an exec permission or a `code`/`script`/`expression`/`eval`
+  input property.
+- **AS-010 secret-in-input**: accepting an `api_key`/`token` parameter is normal for API
+  proxy tools and is no longer evidence of leakage — `SECRET_IN_INPUT` downgraded from
+  `HIGH` to `INFO`. Explicit insecure-handling language ("log the api key", etc.) still
+  scores at `INSECURE_SECRET_HANDLING`/`MEDIUM`.
+
+### Changed
+- **Issue-level dedup before scoring (`pkg/analyzer`)**: exact-duplicate findings
+  (same rule, code, location, description) are collapsed so a repeated finding is counted
+  once. Distinct CVEs on the same package are preserved.
+
 ## [0.3.14] - 2026-06-12
 
 ### Added

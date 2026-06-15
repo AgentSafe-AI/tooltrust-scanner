@@ -2,6 +2,8 @@
 // analyzer_test package without polluting the public API.
 package analyzer
 
+import "github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
+
 // ParsePackageLockJSONForTest exposes parsePackageLockJSON for unit tests.
 func ParsePackageLockJSONForTest(data []byte) ([]Dependency, error) {
 	return parsePackageLockJSON(data)
@@ -21,4 +23,9 @@ func ParseRequirementsTxtForTest(data []byte) ([]Dependency, error) {
 // JSON for unit tests, bypassing the embedded blacklist.json.
 func NewBlacklistCheckerWithDataForTest(data []byte) (*BlacklistChecker, error) {
 	return newBlacklistCheckerWithData(data)
+}
+
+// DedupeIssuesForTest exposes dedupeIssues for unit tests.
+func DedupeIssuesForTest(issues []model.Issue) []model.Issue {
+	return dedupeIssues(issues)
 }

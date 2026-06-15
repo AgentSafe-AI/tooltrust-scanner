@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/AgentSafe-AI/tooltrust-scanner/internal/jsonschema"
 	"github.com/AgentSafe-AI/tooltrust-scanner/pkg/model"
 )
 
@@ -21,8 +22,9 @@ func TestArbitraryCodeChecker_EvaluateScriptInName(t *testing.T) {
 	eng_56f048, _ := NewEngine(false, "")
 	report := eng_56f048.Scan(tool)
 	assert.True(t, report.HasFinding("AS-006"), "evaluate_script in name must trigger AS-006")
-	assert.GreaterOrEqual(t, report.RiskScore, 25, "must score >= 25 (CRITICAL) to prevent A/S grade")
+	// No exec permission or code/script/eval input property: finding is Info (score 0).
 	require.Len(t, report.Findings, 1)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", report.Findings[0].Code)
 	assert.Equal(t, "tool_name_keyword", report.Findings[0].Evidence[0].Kind)
 	assert.Equal(t, "evaluate_script", report.Findings[0].Evidence[0].Value)
 }
@@ -89,7 +91,8 @@ func TestArbitraryCodeChecker_Retrieval_NoFalsePositive(t *testing.T) {
 }
 
 func TestArbitraryCodeChecker_GradeCOrWorse(t *testing.T) {
-	// chrome-devtools-mcp style: evaluate_script should get at least Grade C.
+	// Without exec permission or code/script/eval input, the finding is Info (score 0)
+	// so the tool gets Grade A. The finding is still emitted for visibility.
 	tool := model.UnifiedTool{
 		Name:        "evaluate_script",
 		Description: "Evaluates JavaScript expression in the browser.",
@@ -97,8 +100,8 @@ func TestArbitraryCodeChecker_GradeCOrWorse(t *testing.T) {
 	eng_dd96c3, _ := NewEngine(false, "")
 	report := eng_dd96c3.Scan(tool)
 	assert.True(t, report.HasFinding("AS-006"))
-	assert.Contains(t, []model.Grade{model.GradeC, model.GradeD, model.GradeF}, report.Grade,
-		"evaluate_script must not get A or B; got %s", report.Grade)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", report.Findings[0].Code,
+		"no exec perm or code/eval input: must be POSSIBLE_ARBITRARY_CODE_EXECUTION")
 }
 
 // ---------------------------------------------------------------------------
@@ -107,6 +110,7 @@ func TestArbitraryCodeChecker_GradeCOrWorse(t *testing.T) {
 
 func TestArbitraryCodeChecker_ChromeEvaluate_NameSuffix(t *testing.T) {
 	// chrome_evaluate, cdp_evaluate — real tool names from chrome-devtools-mcp.
+	// Without exec permission or code/script/eval input, finding is Info (score 0).
 	for _, name := range []string{"chrome_evaluate", "cdp_evaluate", "devtools_evaluate"} {
 		tool := model.UnifiedTool{
 			Name:        name,
@@ -116,8 +120,8 @@ func TestArbitraryCodeChecker_ChromeEvaluate_NameSuffix(t *testing.T) {
 		report := eng_f9a951.Scan(tool)
 		assert.True(t, report.HasFinding("AS-006"),
 			"%q: _evaluate name suffix must trigger AS-006", name)
-		assert.GreaterOrEqual(t, report.RiskScore, 25,
-			"%q: must score >= 25 to prevent A/B grade", name)
+		assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", report.Findings[0].Code,
+			"%q: no exec perm/code param → must be POSSIBLE_ARBITRARY_CODE_EXECUTION", name)
 	}
 }
 
@@ -332,7 +336,10 @@ func TestArbitraryCodeChecker_PythonExecute_NameSuffix(t *testing.T) {
 }
 
 func TestArbitraryCodeChecker_PuppeteerEvaluate_NameSuffix(t *testing.T) {
-	// puppeteer_evaluate — name ends with _evaluate.
+	// puppeteer_evaluate — name ends with _evaluate, description contains page.evaluate().
+	// The description triggers the pattern match which also sets confirmed via
+	// hasCodeExecutionCapability. Without exec perm or code/eval input prop the
+	// finding is Info, so grade is A.
 	tool := model.UnifiedTool{
 		Name:        "puppeteer_evaluate",
 		Description: "Runs page.evaluate() to execute JavaScript in browser context.",
@@ -340,8 +347,8 @@ func TestArbitraryCodeChecker_PuppeteerEvaluate_NameSuffix(t *testing.T) {
 	eng_728c55, _ := NewEngine(false, "")
 	report := eng_728c55.Scan(tool)
 	assert.True(t, report.HasFinding("AS-006"))
-	assert.Contains(t, []model.Grade{model.GradeC, model.GradeD, model.GradeF}, report.Grade,
-		"puppeteer_evaluate must not get A or B; got %s", report.Grade)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", report.Findings[0].Code,
+		"no exec perm/code param → must be POSSIBLE_ARBITRARY_CODE_EXECUTION")
 }
 
 func TestArbitraryCodeChecker_EvaluateGuardrail_NoFalsePositive(t *testing.T) {
@@ -493,4 +500,60 @@ func TestArbitraryCodeChecker_SafePrefixOverriddenByRealExecution(t *testing.T) 
 	report := eng.Scan(tool)
 	assert.True(t, report.HasFinding("AS-006"),
 		"analyze_code with eval() in description must still trigger AS-006")
+}
+
+// ---------------------------------------------------------------------------
+// Capability-gate tests (Change 3)
+// ---------------------------------------------------------------------------
+
+func TestArbitraryCodeChecker_NameOnly_NoCap_PossibleCode(t *testing.T) {
+	// Tool named "codex" matches nothing in our keyword/suffix/pattern lists — no finding.
+	// Use a name that does match but has no capability signals.
+	tool := model.UnifiedTool{
+		Name:        "run_code",
+		Description: "Run code in the sandbox.",
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"name/description match only → POSSIBLE_ARBITRARY_CODE_EXECUTION (Info)")
+	assert.Equal(t, model.SeverityInfo, issues[0].Severity)
+}
+
+func TestArbitraryCodeChecker_ExecPermission_ConfirmedCritical(t *testing.T) {
+	// PermissionExec corroborates the name/description match → Critical.
+	tool := model.UnifiedTool{
+		Name:        "run_code",
+		Description: "Run code in the sandbox.",
+		Permissions: []model.Permission{model.PermissionExec},
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"exec permission present → ARBITRARY_CODE_EXECUTION (Critical)")
+	assert.Equal(t, model.SeverityCritical, issues[0].Severity)
+}
+
+func TestArbitraryCodeChecker_ScriptInputProp_ConfirmedCritical(t *testing.T) {
+	// Input property named "script" corroborates the match → Critical.
+	tool := model.UnifiedTool{
+		Name:        "run_code",
+		Description: "Run code in the sandbox.",
+		InputSchema: jsonschema.Schema{
+			Properties: map[string]jsonschema.Property{
+				"script": {Type: "string"},
+			},
+		},
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"'script' input property → ARBITRARY_CODE_EXECUTION (Critical)")
+	assert.Equal(t, model.SeverityCritical, issues[0].Severity)
 }

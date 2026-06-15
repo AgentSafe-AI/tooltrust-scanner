@@ -3,6 +3,8 @@ package mcp_test
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -245,6 +247,43 @@ func TestAdapter_Parse_ExecuteJavascriptInDescInfersExec(t *testing.T) {
 	assert.Contains(t, tools[0].Permissions, model.PermissionExec)
 }
 
+// TestAdapter_Parse_ExecCasesFixture is the load-bearing regression guard for the
+// exec-permission inference fix: it scans testdata/exec-cases.json (also usable for a
+// manual differential scan via `tooltrust-scanner scan --input`) and asserts that
+// ambiguous "eval" substrings (lichess_cloud_eval, evaluate_position, document_retrieval)
+// no longer infer exec, while genuine execution signals (command param, evaluate_script
+// name keyword, standalone "eval" in prose) still do.
+func TestAdapter_Parse_ExecCasesFixture(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join("testdata", "exec-cases.json"))
+	require.NoError(t, err)
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), data)
+	require.NoError(t, err)
+
+	wantExec := map[string]bool{
+		"lichess_cloud_eval": false, // "eval" substring, read-only — must NOT infer exec
+		"evaluate_position":  false, // "evaluate" prose — must NOT infer exec
+		"document_retrieval": false, // "retrieval" contains "eval" — must NOT infer exec
+		"run_command":        true,  // command input param — genuine exec
+		"evaluate_script":    true,  // name keyword — genuine exec
+		"js_runner":          true,  // standalone "eval" in prose (\beval\b) — genuine exec
+	}
+	require.Len(t, tools, len(wantExec))
+
+	for _, tool := range tools {
+		want, ok := wantExec[tool.Name]
+		require.True(t, ok, "unexpected tool in fixture: %q", tool.Name)
+		hasExec := false
+		for _, p := range tool.Permissions {
+			if p == model.PermissionExec {
+				hasExec = true
+				break
+			}
+		}
+		assert.Equal(t, want, hasExec, "tool %q exec inference", tool.Name)
+	}
+}
+
 func TestAdapter_Parse_DBTool(t *testing.T) {
 	payload := mustMarshal(mcp.ListToolsResponse{
 		Tools: []mcp.Tool{
@@ -290,6 +329,97 @@ func TestAdapter_Parse_ArrayTypeField(t *testing.T) {
 	assert.Equal(t, "GOOGLESHEETS_ADD_SHEET", tools[0].Name)
 	assert.Equal(t, "string", tools[0].InputSchema.Properties["title"].Type)
 	assert.Equal(t, "boolean", tools[0].InputSchema.Properties["hidden"].Type)
+}
+
+// TestAdapter_Parse_LichessCloudEvalDoesNotInferExec verifies that a read-only chess
+// evaluation tool whose name contains "eval" as a suffix (lichess_cloud_eval) is NOT
+// incorrectly assigned PermissionExec. The underscore before "eval" means \beval\b
+// does not match (word boundary requires a non-word character, but "_" is \w).
+func TestAdapter_Parse_LichessCloudEvalDoesNotInferExec(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "lichess_cloud_eval",
+				Description: "Get Lichess cloud evaluation for a position.",
+				InputSchema: mcp.InputSchema{
+					Type: "object",
+					Properties: map[string]mcp.SchemaProperty{
+						"fen": {Type: "string", Description: "FEN string for the position"},
+					},
+				},
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+	assert.NotContains(t, tools[0].Permissions, model.PermissionExec,
+		"lichess_cloud_eval is read-only and must NOT infer exec permission")
+}
+
+// TestAdapter_Parse_EvaluateProseDoesNotInferExec verifies that a tool whose name
+// and description contain "evaluate" / "evaluation" (but no exec signals) is NOT
+// assigned PermissionExec.
+func TestAdapter_Parse_EvaluateProseDoesNotInferExec(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "evaluate_position",
+				Description: "Evaluate the chess position and return a score.",
+				InputSchema: mcp.InputSchema{
+					Type: "object",
+					Properties: map[string]mcp.SchemaProperty{
+						"fen": {Type: "string", Description: "FEN string"},
+					},
+				},
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+	assert.NotContains(t, tools[0].Permissions, model.PermissionExec,
+		"evaluate_position with prose description must NOT infer exec permission")
+}
+
+// TestAdapter_Parse_RetrievalSubstringDoesNotInferExec is a regression guard: the
+// substring "eval" appears inside "retrieval", which must NOT trigger exec inference.
+func TestAdapter_Parse_RetrievalSubstringDoesNotInferExec(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "document_retrieval",
+				Description: "Retrieval of documents by query.",
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+	assert.NotContains(t, tools[0].Permissions, model.PermissionExec,
+		"document_retrieval must NOT infer exec permission — 'eval' substring inside 'retrieval' is a false positive")
+}
+
+// TestAdapter_Parse_StandaloneEvalInfersExec verifies that a genuine standalone
+// "eval" word in the description (matched via \beval\b) DOES infer PermissionExec.
+func TestAdapter_Parse_StandaloneEvalInfersExec(t *testing.T) {
+	payload := mustMarshal(mcp.ListToolsResponse{
+		Tools: []mcp.Tool{
+			{
+				Name:        "js_runner",
+				Description: "Runs eval on user-provided input.",
+			},
+		},
+	})
+
+	tools, err := mcp.NewAdapter().Parse(context.Background(), payload)
+	require.NoError(t, err)
+	require.Len(t, tools, 1)
+	assert.Contains(t, tools[0].Permissions, model.PermissionExec,
+		"js_runner with 'eval' as a standalone word must infer exec permission via \\beval\\b")
 }
 
 func mustMarshal(v any) []byte {

@@ -33,7 +33,7 @@ func TestSecretChecker_ApiKeyParam_Finding(t *testing.T) {
 	require.NotEmpty(t, issues)
 	assert.Equal(t, "AS-010", issues[0].RuleID)
 	assert.Equal(t, "SECRET_IN_INPUT", issues[0].Code)
-	assert.Equal(t, model.SeverityHigh, issues[0].Severity)
+	assert.Equal(t, model.SeverityInfo, issues[0].Severity) // downgraded: accepting a secret param is informational, not High
 }
 
 func TestSecretChecker_PasswordParam_Finding(t *testing.T) {
@@ -142,4 +142,42 @@ func TestEngine_AS010_SecretParam(t *testing.T) {
 	eng_936989, _ := analyzer.NewEngine(false, "")
 	report := eng_936989.Scan(tool)
 	assert.True(t, report.HasFinding("AS-010"))
+}
+
+// ---------------------------------------------------------------------------
+// Severity-downgrade tests (Change 2)
+// ---------------------------------------------------------------------------
+
+func TestSecretChecker_ApiKeyParam_Info(t *testing.T) {
+	// Accepting a secret param is informational — it is not insecure by itself.
+	tool := model.UnifiedTool{
+		Name: "api_caller",
+		InputSchema: jsonschema.Schema{
+			Properties: map[string]jsonschema.Property{
+				"api_key": {Type: "string"},
+			},
+		},
+	}
+	issues, err := analyzer.NewSecretHandlingChecker().Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "SECRET_IN_INPUT", issues[0].Code)
+	assert.Equal(t, model.SeverityInfo, issues[0].Severity,
+		"SECRET_IN_INPUT must be Info (no score contribution)")
+	assert.Contains(t, issues[0].Description, "informational",
+		"description must note this is informational")
+}
+
+func TestSecretChecker_InsecureHandlingDescription_MediumUnchanged(t *testing.T) {
+	// Explicit insecure-handling language stays at Medium.
+	tool := model.UnifiedTool{
+		Name:        "leaky_tool",
+		Description: "This tool will log the api key for debugging.",
+	}
+	issues, err := analyzer.NewSecretHandlingChecker().Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "INSECURE_SECRET_HANDLING", issues[0].Code)
+	assert.Equal(t, model.SeverityMedium, issues[0].Severity,
+		"INSECURE_SECRET_HANDLING must remain Medium")
 }

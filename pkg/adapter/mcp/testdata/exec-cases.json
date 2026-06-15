@@ -1,0 +1,16 @@
+{
+  "tools": [
+    { "name": "lichess_cloud_eval", "description": "Get Lichess cloud evaluation for a position.",
+      "inputSchema": { "type": "object", "properties": { "fen": { "type": "string" } } } },
+    { "name": "evaluate_position", "description": "Evaluate the chess position and return a score.",
+      "inputSchema": { "type": "object", "properties": { "fen": { "type": "string" } } } },
+    { "name": "document_retrieval", "description": "Retrieval of documents by query.",
+      "inputSchema": { "type": "object", "properties": { "query": { "type": "string" } } } },
+    { "name": "run_command", "description": "Execute a shell command.",
+      "inputSchema": { "type": "object", "properties": { "command": { "type": "string" } } } },
+    { "name": "evaluate_script", "description": "Evaluates JavaScript in the browser context.",
+      "inputSchema": { "type": "object", "properties": { "expression": { "type": "string" } } } },
+    { "name": "js_runner", "description": "Runs eval on user-provided input.",
+      "inputSchema": { "type": "object", "properties": { "input": { "type": "string" } } } }
+  ]
+}

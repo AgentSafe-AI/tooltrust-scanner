@@ -79,3 +79,56 @@ func TestScanner_CancelledContext(t *testing.T) {
 	_, err = s.Scan(ctx, tool)
 	assert.Error(t, err)
 }
+
+// ---------------------------------------------------------------------------
+// Dedup tests (Change 4)
+// ---------------------------------------------------------------------------
+
+func TestDedupeIssues_ExactDuplicatesCollapsedToOne(t *testing.T) {
+	// Two identical issues must collapse to one and be scored once.
+	dup := model.Issue{
+		RuleID:      "AS-004",
+		Code:        "SUPPLY_CHAIN_CVE",
+		Location:    "dependency:lodash",
+		Description: "CVE-2024-1234 in lodash@4.17.15: RCE",
+		Severity:    model.SeverityCritical,
+	}
+	issues := []model.Issue{dup, dup}
+	deduped := analyzer.DedupeIssuesForTest(issues)
+	assert.Len(t, deduped, 1, "two identical issues must collapse to one")
+}
+
+func TestDedupeIssues_DistinctDescriptions_BothKept(t *testing.T) {
+	// Two CVEs on the same package but different descriptions must both be kept.
+	base := model.Issue{
+		RuleID:   "AS-004",
+		Code:     "SUPPLY_CHAIN_CVE",
+		Location: "dependency:lodash",
+		Severity: model.SeverityCritical,
+	}
+	a := base
+	a.Description = "CVE-2024-0001 in lodash@4.17.15: XSS"
+	b := base
+	b.Description = "CVE-2024-0002 in lodash@4.17.15: RCE"
+	deduped := analyzer.DedupeIssuesForTest([]model.Issue{a, b})
+	assert.Len(t, deduped, 2, "distinct CVE descriptions must both be preserved")
+}
+
+func TestDedupeIssues_ScannedOnce(t *testing.T) {
+	// When Scanner.Scan encounters a tool that would produce duplicate issues,
+	// dedup ensures they are counted only once in the final score.
+	// We test this by verifying the issue count does not double when the same
+	// finding would be emitted twice.
+	issues := make([]model.Issue, 3)
+	for i := range issues {
+		issues[i] = model.Issue{
+			RuleID:      "AS-009",
+			Code:        "TYPOSQUATTING",
+			Location:    "name",
+			Description: "tool name resembles known package",
+			Severity:    model.SeverityHigh,
+		}
+	}
+	deduped := analyzer.DedupeIssuesForTest(issues)
+	assert.Len(t, deduped, 1, "three identical issues must collapse to one")
+}

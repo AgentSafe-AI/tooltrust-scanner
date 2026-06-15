@@ -103,9 +103,28 @@ func (s *Scanner) Scan(ctx context.Context, tool model.UnifiedTool) (model.RiskS
 		allIssues = append(allIssues, issues...)
 	}
 
+	allIssues = dedupeIssues(allIssues)
+
 	for _, issue := range allIssues {
 		totalScore += severityWeight[issue.Severity]
 	}
 
 	return model.NewRiskScore(totalScore, allIssues), nil
+}
+
+// dedupeIssues removes exact-duplicate findings so a repeated issue is counted
+// once in the risk score.  The key includes Description so distinct CVEs on the
+// same package are preserved.
+func dedupeIssues(issues []model.Issue) []model.Issue {
+	seen := make(map[string]bool, len(issues))
+	out := make([]model.Issue, 0, len(issues))
+	for _, is := range issues {
+		key := is.RuleID + "|" + is.Code + "|" + is.Location + "|" + is.Description
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		out = append(out, is)
+	}
+	return out
 }

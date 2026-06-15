@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/AgentSafe-AI/tooltrust-scanner/internal/jsonschema"
@@ -101,9 +102,11 @@ func convertSchema(s InputSchema) jsonschema.Schema {
 
 // permissionRule maps keyword signals to a Permission.
 type permissionRule struct {
-	propKeys     []string // property names that imply this permission
-	descKeywords []string // description substrings (lowercased) that imply it
-	nameKeywords []string // tool name substrings (lowercased) that imply it
+	propKeys     []string         // property names that imply this permission
+	descKeywords []string         // description substrings (lowercased) that imply it
+	nameKeywords []string         // tool name substrings (lowercased) that imply it
+	matchAny     []*regexp.Regexp // precise (word-boundary) patterns matched against
+	// the lowercased "name + " " + description" combined string
 }
 
 var permissionRules = []struct {
@@ -131,9 +134,13 @@ var permissionRules = []struct {
 		permissionRule{
 			propKeys: []string{"command", "cmd", "shell", "script"},
 			descKeywords: []string{"execute", "run command", "shell", "subprocess", "exec", "terminal",
-				"evaluate_script", "execute javascript", "eval", "run script", "execute script", "browser injection"},
+				"evaluate_script", "execute javascript", "run script", "execute script", "browser injection"},
 			nameKeywords: []string{"evaluate_script", "execute_javascript", "evaluatescript", "executejavascript",
-				"eval", "run_script", "runscript", "execute_script", "executescript", "browser_injection", "browserinjection"},
+				"run_script", "runscript", "execute_script", "executescript", "browser_injection", "browserinjection"},
+			matchAny: []*regexp.Regexp{
+				regexp.MustCompile(`(?i)\beval\b`), // standalone "eval" word — NOT evaluate/retrieval/cloud_eval
+				regexp.MustCompile(`(?i)eval\(`),   // eval( call syntax
+			},
 		},
 	},
 	{
@@ -164,6 +171,7 @@ var permissionRules = []struct {
 func inferPermissions(t Tool) []model.Permission {
 	descLower := strings.ToLower(t.Description)
 	nameLower := strings.ToLower(t.Name)
+	combined := nameLower + " " + descLower
 
 	seen := map[model.Permission]bool{}
 	var perms []model.Permission
@@ -194,6 +202,12 @@ func inferPermissions(t Tool) []model.Permission {
 		// Check tool name keywords
 		for _, kw := range entry.rule.nameKeywords {
 			if strings.Contains(nameLower, kw) {
+				add(entry.permission)
+			}
+		}
+		// Check precise word-boundary / call-syntax patterns
+		for _, re := range entry.rule.matchAny {
+			if re.MatchString(combined) {
 				add(entry.permission)
 			}
 		}
