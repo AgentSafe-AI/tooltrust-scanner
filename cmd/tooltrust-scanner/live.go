@@ -313,9 +313,6 @@ func parseNodeLockfile(path string) ([]nodeDependency, error) {
 
 func detectLocalProjectRoot(args []string) string {
 	candidates := []string{}
-	if cwd, err := os.Getwd(); err == nil {
-		candidates = append(candidates, cwd)
-	}
 	for _, arg := range args {
 		if arg == "" || strings.HasPrefix(arg, "-") {
 			continue

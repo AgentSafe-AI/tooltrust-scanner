@@ -36,6 +36,7 @@ type Dependency struct {
 	Name      string `json:"name"`
 	Version   string `json:"version"`
 	Ecosystem string `json:"ecosystem"` // e.g. "npm", "Go", "PyPI"
+	Source    string `json:"source,omitempty"`
 }
 
 type dependencyEvidence struct {
@@ -563,6 +564,13 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 	return allIssues, nil
 }
 
+// isTransitiveSource reports whether a dependency was discovered from a lockfile
+// (repo or local) rather than declared in tool metadata. Transitive deps have
+// unconfirmed reachability, so their non-malicious CVEs must not score.
+func isTransitiveSource(source string) bool {
+	return source == "lockfile" || source == "local_lockfile"
+}
+
 // buildSupplyChainIssue constructs a single AS-004 finding.
 //   - MAL-* advisories get Critical severity and code MALICIOUS_PACKAGE regardless
 //     of dep.Source — malware anywhere in the dependency tree is a true positive.
@@ -582,7 +590,7 @@ func buildSupplyChainIssue(v osvVuln, dep dependencyEvidence, toolName string) m
 	case isMalicious:
 		sev = model.SeverityCritical
 		code = "MALICIOUS_PACKAGE"
-	case dep.Source == "lockfile":
+	case isTransitiveSource(dep.Source):
 		sev = model.SeverityInfo
 		code = "SUPPLY_CHAIN_CVE_TRANSITIVE"
 	default:
@@ -594,7 +602,7 @@ func buildSupplyChainIssue(v osvVuln, dep dependencyEvidence, toolName string) m
 	if fix := extractFixVersion(v); fix != "" {
 		desc += fmt.Sprintf(" (upgrade to %s)", fix)
 	}
-	if dep.Source == "lockfile" && !isMalicious {
+	if isTransitiveSource(dep.Source) && !isMalicious {
 		desc += " (transitive dependency — reachability unconfirmed)"
 	}
 
@@ -660,9 +668,13 @@ func collectDependencies(tool model.UnifiedTool) ([]dependencyEvidence, error) {
 			continue
 		}
 		seen[k] = true
+		source := dep.Source
+		if source == "" {
+			source = "metadata"
+		}
 		result = append(result, dependencyEvidence{
 			Dependency: dep,
-			Source:     "metadata",
+			Source:     source,
 		})
 	}
 

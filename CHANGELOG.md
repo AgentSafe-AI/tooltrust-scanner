@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.16] - 2026-06-15
+
+### Fixed
+- **AS-004 host-repo false positives**: `detectLocalProjectRoot` no longer seeds candidate
+  paths with `os.Getwd()`, so scanning a published package (`npx -y <pkg>`) no longer
+  picks up the scanner host project's own lockfiles (`go.sum`, `package-lock.json`, etc.)
+  and attributes their transitive CVEs to every scanned tool. Local project detection now
+  only triggers when the launch command explicitly references a local path or script.
+- **AS-004 local-lockfile severity bypass**: the `Dependency` struct now carries a `source`
+  field through JSON unmarshal. `collectDependencies` respects an explicit `source` value
+  instead of hardcoding `"metadata"`. `local_lockfile`-sourced non-malicious CVEs are now
+  downgraded to `Info` (`SUPPLY_CHAIN_CVE_TRANSITIVE`), consistent with repo-lockfile
+  transitives. `MAL-*` advisories remain `Critical` regardless of source.
+
+---
+
 ## [0.3.15] - 2026-06-15
 
 Zero-false-positive tuning pass. Guiding principle: **accept false negatives, never

@@ -316,6 +316,8 @@ func TestFormatIssueLabel_HidesAS014NoiseForAllowGradeA(t *testing.T) {
 }
 
 func TestEnrichLiveToolsWithLocalNodeDependencies(t *testing.T) {
+	// Use a path-based arg (node ./server.js) so detectLocalProjectRoot finds the
+	// local project via arg-based detection (CWD-seeding was removed in 0.3.16).
 	tmp := t.TempDir()
 	require.NoError(t, os.WriteFile(filepath.Join(tmp, "package.json"), []byte(`{"name":"demo"}`), 0o644))
 	require.NoError(t, os.WriteFile(filepath.Join(tmp, "package-lock.json"), []byte(`{
@@ -324,6 +326,8 @@ func TestEnrichLiveToolsWithLocalNodeDependencies(t *testing.T) {
     "node_modules/axios": {"version": "1.14.1"}
   }
 }`), 0o644))
+	// server.js must exist so os.Stat succeeds during arg-based path resolution.
+	require.NoError(t, os.WriteFile(filepath.Join(tmp, "server.js"), []byte("// stub"), 0o644))
 
 	prevWD, err := os.Getwd()
 	require.NoError(t, err)
@@ -332,7 +336,9 @@ func TestEnrichLiveToolsWithLocalNodeDependencies(t *testing.T) {
 		_ = os.Chdir(prevWD)
 	})
 
-	tools := enrichLiveToolsWithLocalNodeDependencies([]string{"npm", "run", "dev"}, []model.UnifiedTool{{
+	// OLD behaviour (before 0.3.16): ["npm", "run", "dev"] would pick up the CWD.
+	// NEW behaviour: only path-based args trigger local project detection.
+	tools := enrichLiveToolsWithLocalNodeDependencies([]string{"node", "./server.js"}, []model.UnifiedTool{{
 		Name: "deploy_site",
 	}})
 	require.Len(t, tools, 1)
