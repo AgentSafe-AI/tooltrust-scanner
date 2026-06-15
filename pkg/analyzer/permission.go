@@ -9,13 +9,17 @@ import (
 const largeSchemaPropThreshold = 10
 
 // permissionRiskLevel maps each Permission to a base issue severity.
+// Graded-downgrade scheme: a single expected permission must not tank the grade.
+// exec stays a visible scoring signal (Medium); network/HTTP are ubiquitous and
+// expected for most tools (Info, weight 0 — kept for transparency); FS/DB/Env
+// are unusual but not high-confidence enough to score High (Low).
 var permissionRiskLevel = map[model.Permission]model.Severity{
-	model.PermissionExec:    model.SeverityHigh,
-	model.PermissionNetwork: model.SeverityHigh,
-	model.PermissionFS:      model.SeverityMedium,
-	model.PermissionDB:      model.SeverityMedium,
-	model.PermissionEnv:     model.SeverityMedium,
-	model.PermissionHTTP:    model.SeverityLow,
+	model.PermissionExec:    model.SeverityMedium, // was High — genuinely risky but over-inferred
+	model.PermissionNetwork: model.SeverityInfo,   // was High — ubiquitous, expected for most tools
+	model.PermissionFS:      model.SeverityLow,    // was Medium
+	model.PermissionDB:      model.SeverityLow,    // was Medium
+	model.PermissionEnv:     model.SeverityLow,    // was Medium
+	model.PermissionHTTP:    model.SeverityInfo,   // was Low
 }
 
 // PermissionChecker analyses the declared permissions of a tool.

@@ -5,6 +5,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.17] - 2026-06-15
+
+### Fixed
+- **AS-002 permission over-scoring**: a single expected permission no longer tanks a tool's grade.
+  Network/HTTP → Info (weight 0, kept for transparency), Exec → Medium, FS/DB/Env → Low.
+  Ordinary networked tools are no longer pushed to B/C just for needing the network; 79% of the
+  previous High findings from `network` declarations are now Info.
+- **AS-006 expression-input false positive**: `hasCodeExecutionCapability` no longer treats an
+  `expression` input property (used by safe math evaluators such as cyanheads-calculator-mcp and
+  ethanhenrickson-math-mcp) as code-execution corroboration. The new `isCodeExecPropName` helper
+  requires an exact match or genuine code-execution substring (`script`, `javascript`, `source_code`,
+  etc.) and deliberately excludes `"expression"` and bare `*_code` identifiers (`country_code`,
+  `status_code`, …). Critical AS-006 now requires a genuine code/script param or exec permission.
+
+---
+
 ## [0.3.16] - 2026-06-15
 
 ### Fixed

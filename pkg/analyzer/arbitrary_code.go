@@ -265,21 +265,36 @@ func hasCodeExecutionCapability(tool model.UnifiedTool) bool {
 		return true
 	}
 	for propName := range tool.InputSchema.Properties {
-		p := strings.ToLower(propName)
-		for _, h := range []string{"code", "script", "expression", "eval"} {
-			if strings.Contains(p, h) {
-				return true
-			}
+		if isCodeExecPropName(strings.ToLower(propName)) {
+			return true
+		}
+	}
+	return false
+}
+
+// isCodeExecPropName reports whether an input property name denotes a
+// block of code/script to execute. Deliberately excludes "expression" (math
+// expressions) and bare "*_code" identifiers (country_code, status_code, …).
+func isCodeExecPropName(p string) bool {
+	switch p {
+	case "code", "script", "source", "eval", "command", "cmd", "shell", "snippet":
+		return true
+	}
+	for _, h := range []string{"script", "javascript", "sourcecode", "source_code",
+		"code_snippet", "code_to_run", "shellcode", "python_code", "js_code"} {
+		if strings.Contains(p, h) {
+			return true
 		}
 	}
 	return false
 }
 
 // emitArbitraryCodeFinding emits an AS-006 finding.
-// When confirmed is true (exec permission OR code/script/expression/eval input
-// property present), the finding is Critical/ARBITRARY_CODE_EXECUTION and
-// contributes to the risk score.  When false (name/description heuristic only),
-// it is Info/POSSIBLE_ARBITRARY_CODE_EXECUTION so it does not inflate the grade.
+// When confirmed is true (exec permission OR a genuine code/script input
+// property detected by isCodeExecPropName), the finding is
+// Critical/ARBITRARY_CODE_EXECUTION and contributes to the risk score.
+// When false (name/description heuristic only), it is
+// Info/POSSIBLE_ARBITRARY_CODE_EXECUTION so it does not inflate the grade.
 func emitArbitraryCodeFinding(toolName string, evidence []model.Evidence, confirmed bool) []model.Issue {
 	if confirmed {
 		return []model.Issue{{

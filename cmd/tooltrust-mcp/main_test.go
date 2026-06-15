@@ -33,7 +33,9 @@ func TestHandleScanJSON_ValidInput(t *testing.T) {
 	assert.Contains(t, text, "Scan Summary:")
 	assert.Contains(t, text, "Tool Grades:")
 	assert.Contains(t, text, "Findings by Severity:")
-	assert.Contains(t, text, "MEDIUM×1")
+	// AS-002 rescore: FS permission was MEDIUM, now LOW; network/HTTP are INFO.
+	// read_file with a "path" property infers FS (→ LOW) plus one INFO finding.
+	assert.Contains(t, text, "LOW×1")
 	assert.Contains(t, text, "2 total")
 	assert.NotContains(t, text, "Flagged Tools:")
 	assert.Contains(t, text, "All tools are ✅ GRADE A and allowed.")

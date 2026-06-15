@@ -557,3 +557,111 @@ func TestArbitraryCodeChecker_ScriptInputProp_ConfirmedCritical(t *testing.T) {
 		"'script' input property → ARBITRARY_CODE_EXECUTION (Critical)")
 	assert.Equal(t, model.SeverityCritical, issues[0].Severity)
 }
+
+// ---------------------------------------------------------------------------
+// Regression tests: AS-006 expression-input FP fix (Change 2)
+// ---------------------------------------------------------------------------
+
+func TestArbitraryCodeChecker_ExpressionInput_NotConfirmed(t *testing.T) {
+	// cyanheads-calculator-mcp / ethanhenrickson-math-mcp: tool names that match
+	// an AS-006 keyword ("evaluate script", etc.) via name/description but whose
+	// only input property is "expression" (a math expression, not code).
+	// Before Change 2, hasCodeExecutionCapability returned true for "expression"
+	// (substring match on "expression"), promoting the finding to Critical.
+	// After Change 2, "expression" is deliberately excluded from isCodeExecPropName
+	// so the finding remains Info/POSSIBLE_ARBITRARY_CODE_EXECUTION.
+	for _, tc := range []struct {
+		name string
+		desc string
+	}{
+		{"calculate", "Evaluates a mathematical expression and returns the result."},
+		{"evaluate", "Evaluates a math expression using safe arithmetic rules."},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			tool := model.UnifiedTool{
+				Name:        tc.name,
+				Description: tc.desc,
+				InputSchema: jsonschema.Schema{
+					Properties: map[string]jsonschema.Property{
+						"expression": {Type: "string"},
+					},
+				},
+			}
+			checker := NewArbitraryCodeChecker()
+			issues, err := checker.Check(tool)
+			require.NoError(t, err)
+			// May or may not fire depending on whether name/desc matches a keyword;
+			// if it fires, it must NOT be Critical.
+			for _, iss := range issues {
+				assert.NotEqual(t, model.SeverityCritical, iss.Severity,
+					"%s: 'expression' input must not promote AS-006 to Critical", tc.name)
+				assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", iss.Code,
+					"%s: 'expression' input must leave finding as POSSIBLE (Info)", tc.name)
+			}
+		})
+	}
+}
+
+func TestArbitraryCodeChecker_ExpressionInput_MathEvaluator_NoFP(t *testing.T) {
+	// Regression: safe math evaluator with name matching keyword and only an
+	// "expression" param must NOT become Critical.
+	// Name "evaluate_script" matches keyword → fires, but "expression" input
+	// must not confirm capability → stays Info.
+	tool := model.UnifiedTool{
+		Name:        "evaluate_script",
+		Description: "Evaluates a mathematical expression.",
+		InputSchema: jsonschema.Schema{
+			Properties: map[string]jsonschema.Property{
+				"expression": {Type: "string"},
+			},
+		},
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"'expression' input must not confirm capability — must stay POSSIBLE (Info)")
+	assert.Equal(t, model.SeverityInfo, issues[0].Severity)
+}
+
+func TestArbitraryCodeChecker_CodeInput_ConfirmedCritical(t *testing.T) {
+	// A tool with a bare "code" input prop (exact match) IS confirmed → Critical.
+	tool := model.UnifiedTool{
+		Name:        "run_code",
+		Description: "Run code in the sandbox.",
+		InputSchema: jsonschema.Schema{
+			Properties: map[string]jsonschema.Property{
+				"code": {Type: "string"},
+			},
+		},
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"bare 'code' input → ARBITRARY_CODE_EXECUTION (Critical)")
+	assert.Equal(t, model.SeverityCritical, issues[0].Severity)
+}
+
+func TestArbitraryCodeChecker_StatusCodeInput_NotConfirmed(t *testing.T) {
+	// "status_code" is a bare *_code identifier — NOT code execution.
+	// It must not promote an AS-006 finding to Critical.
+	tool := model.UnifiedTool{
+		Name:        "run_code",
+		Description: "Run code in the sandbox.",
+		InputSchema: jsonschema.Schema{
+			Properties: map[string]jsonschema.Property{
+				"status_code": {Type: "integer"},
+			},
+		},
+	}
+	checker := NewArbitraryCodeChecker()
+	issues, err := checker.Check(tool)
+	require.NoError(t, err)
+	require.Len(t, issues, 1)
+	assert.Equal(t, "POSSIBLE_ARBITRARY_CODE_EXECUTION", issues[0].Code,
+		"'status_code' input must not confirm capability — must stay POSSIBLE (Info)")
+	assert.Equal(t, model.SeverityInfo, issues[0].Severity)
+}
