@@ -660,6 +660,22 @@
     "link": "https://github.com/axios/axios"
   },
   {
+    "id": "MAL-2026-5717",
+    "component": "claudechor",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.0.1",
+      "1.0.2",
+      "1.0.3",
+      "1.0.4",
+      "1.0.5"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in claudechor (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-5717"
+  },
+  {
     "id": "MINI-SHAI-HULUD-2026-05-11",
     "component": "guardrails-ai",
     "ecosystem": "PyPI",

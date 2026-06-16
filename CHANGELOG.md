@@ -5,6 +5,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.18] - 2026-06-16
+
+### Added
+- **AS-008 blacklist: `claudechor` (npm)** — OSV-confirmed malicious package
+  (`MAL-2026-5717`, reported by Amazon Inspector), a Claude typosquat targeting
+  the MCP/AI tooling ecosystem. Versions 1.0.1–1.0.5 marked `BLOCK` / `CRITICAL`.
+  Promoted from the threat-intel review digest; the unrelated `beamz` candidate
+  was triaged out as not MCP/AI-relevant (already covered by AS-004 real-time OSV).
+
 ## [0.3.17] - 2026-06-15
 
 ### Fixed
