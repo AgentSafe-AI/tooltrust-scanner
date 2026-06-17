@@ -1,0 +1,128 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/claude",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/claude (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6006",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-jp56-69xj-c3rq",
+    "affected_versions": [
+      "1.0.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6006). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/mcp",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5955",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-wfr8-6x4q-hpr3",
+    "affected_versions": [
+      "1.10.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5955). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/mcp-docs-server",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/mcp-docs-server (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5956",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-wxp6-9hmr-928g",
+    "affected_versions": [
+      "1.1.47"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5956). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/mcp-registry-registry",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/mcp-registry-registry (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6027",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-5w62-p653-57mf",
+    "affected_versions": [
+      "1.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6027). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/voice-openai",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/voice-openai (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6048",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-8p42-82r4-mf65",
+    "affected_versions": [
+      "0.12.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6048). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@mastra/voice-openai-realtime",
+    "confidence": "high",
+    "reason": "Malicious code in @mastra/voice-openai-realtime (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6049",
+    "first_seen": "2026-06-17",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-4rfq-w3x8-rrx3",
+    "affected_versions": [
+      "0.12.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6049). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "claude-jar",
+    "confidence": "high",
+    "reason": "Malicious code in claude-jar (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-5893",
+    "first_seen": "2026-06-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-5893",
+    "affected_versions": [
+      "0.2.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-5893). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  }
+]
