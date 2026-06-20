@@ -1,0 +1,39 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "base_parts_ai",
+    "confidence": "high",
+    "reason": "Malicious code in base_parts_ai (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6228",
+    "first_seen": "2026-06-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-6228",
+    "affected_versions": [
+      "1.0.50",
+      "1.0.52"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6228). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "free-claude",
+    "confidence": "high",
+    "reason": "Malicious code in free-claude (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6232",
+    "first_seen": "2026-06-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-6232",
+    "affected_versions": [
+      "1.1.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6232). Reported by: ossf-package-analysis, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  }
+]
