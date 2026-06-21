@@ -86,6 +86,78 @@
     "link": "https://osv.dev/vulnerability/GHSA-pvw4-cvr4-97p8"
   },
   {
+    "id": "GHSA-jp56-69xj-c3rq",
+    "component": "@mastra/claude",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.0.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/claude (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-6006"
+  },
+  {
+    "id": "GHSA-wfr8-6x4q-hpr3",
+    "component": "@mastra/mcp",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.10.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/mcp (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-5955"
+  },
+  {
+    "id": "GHSA-wxp6-9hmr-928g",
+    "component": "@mastra/mcp-docs-server",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.1.47"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/mcp-docs-server (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-5956"
+  },
+  {
+    "id": "GHSA-5w62-p653-57mf",
+    "component": "@mastra/mcp-registry-registry",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/mcp-registry-registry (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-6027"
+  },
+  {
+    "id": "GHSA-8p42-82r4-mf65",
+    "component": "@mastra/voice-openai",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "0.12.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/voice-openai (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-6048"
+  },
+  {
+    "id": "GHSA-4rfq-w3x8-rrx3",
+    "component": "@mastra/voice-openai-realtime",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "0.12.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in @mastra/voice-openai-realtime (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-6049"
+  },
+  {
     "id": "MINI-SHAI-HULUD-2026-05-11",
     "component": "@opensearch-project/opensearch",
     "ecosystem": "npm",
@@ -660,6 +732,43 @@
     "link": "https://github.com/axios/axios"
   },
   {
+    "id": "MAL-2026-5789",
+    "component": "claude-cup",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "0.2.0",
+      "0.2.2",
+      "0.2.3",
+      "0.2.4",
+      "0.3.0",
+      "0.3.1",
+      "0.4.0",
+      "0.4.1",
+      "0.7.0",
+      "0.7.2",
+      "0.7.3",
+      "0.7.4",
+      "0.7.5",
+      "0.7.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in claude-cup (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-5789"
+  },
+  {
+    "id": "MAL-2026-5893",
+    "component": "claude-jar",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "0.2.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in claude-jar (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-5893"
+  },
+  {
     "id": "MAL-2026-5717",
     "component": "claudechor",
     "ecosystem": "npm",
@@ -674,6 +783,18 @@
     "severity": "CRITICAL",
     "reason": "Malicious code in claudechor (npm)",
     "link": "https://osv.dev/vulnerability/MAL-2026-5717"
+  },
+  {
+    "id": "MAL-2026-6232",
+    "component": "free-claude",
+    "ecosystem": "npm",
+    "affected_versions": [
+      "1.1.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "reason": "Malicious code in free-claude (npm)",
+    "link": "https://osv.dev/vulnerability/MAL-2026-6232"
   },
   {
     "id": "MINI-SHAI-HULUD-2026-05-11",

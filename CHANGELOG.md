@@ -5,6 +5,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.3.19] - 2026-06-20
+
+### Added
+- **AS-008 blacklist: 9 MCP/AI malicious npm packages** triaged from the
+  threat-intel review digests (#72–#75), all marked `BLOCK` / `CRITICAL`:
+  - **Claude typosquats**: `claude-cup` (`MAL-2026-5789`), `claude-jar`
+    (`MAL-2026-5893`), `free-claude` (`MAL-2026-6232`).
+  - **`@mastra/*` AI-framework compromise** (GitHub Advisory–confirmed malicious
+    versions): `@mastra/claude`, `@mastra/mcp`, `@mastra/mcp-docs-server`,
+    `@mastra/mcp-registry-registry`, `@mastra/voice-openai`,
+    `@mastra/voice-openai-realtime`.
+  - Triaged out as not MCP/AI-relevant (already covered by AS-004 real-time OSV):
+    `panrouter`, `panrouter-admin`, `base_parts_ai`.
+
 ## [0.3.18] - 2026-06-16
 
 ### Added
