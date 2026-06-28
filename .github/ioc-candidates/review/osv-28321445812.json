@@ -1,0 +1,22 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "anthropic-internal-tools",
+    "confidence": "high",
+    "reason": "Malicious code in anthropic-internal-tools (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6551",
+    "first_seen": "2026-06-28",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-6551",
+    "affected_versions": [
+      "1.0.0",
+      "1.0.1",
+      "1.0.2"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6551). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  }
+]
