@@ -1,0 +1,116 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@funny-booth/agent-core",
+    "confidence": "high",
+    "reason": "Malicious code in @funny-booth/agent-core (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10711",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10711",
+    "affected_versions": [
+      "0.1.1",
+      "0.1.2",
+      "0.1.3",
+      "0.1.4",
+      "0.1.5",
+      "0.1.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10711). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@yeaft/webchat-agent",
+    "confidence": "high",
+    "reason": "Malicious code in @yeaft/webchat-agent (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10723",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10723",
+    "affected_versions": [
+      "1.0.171"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10723). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "codeam-cli",
+    "confidence": "high",
+    "reason": "Malicious code in codeam-cli (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10730",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10730",
+    "affected_versions": [
+      "2.61.1",
+      "2.61.3"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10730). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "memtry-cli",
+    "confidence": "high",
+    "reason": "Malicious code in memtry-cli (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10736",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10736",
+    "affected_versions": [
+      "1.0.4"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10736). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mmagrt",
+    "confidence": "high",
+    "reason": "Malicious code in mmagrt (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10737",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10737",
+    "affected_versions": [
+      "0.1.10"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10737). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "sensorium-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in sensorium-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-10747",
+    "first_seen": "2026-07-16",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-10747",
+    "affected_versions": [
+      "3.0.95"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-10747). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  }
+]
