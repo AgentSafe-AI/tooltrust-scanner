@@ -1,0 +1,20 @@
+[
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "extra-huggingface",
+    "confidence": "high",
+    "reason": "Malicious code in extra-huggingface (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-6489",
+    "first_seen": "2026-06-25",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-6489",
+    "affected_versions": [
+      "0.4.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-6489). Reported by: kam193, amazon-inspector, Amazon Inspector, Kamil Mańkowski (kam193). Review affected versions before promoting to AS-008."
+  }
+]
