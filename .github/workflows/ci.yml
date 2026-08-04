@@ -230,6 +230,8 @@ jobs:
           cache: true
 
       - name: Verify go install (README primary method)
+        env:
+          GONOSUMDB: github.com/AgentSafe-AI/tooltrust-scanner
         run: |
           # Use @main: v0.1.2 lacks cmd/tooltrust-scanner; main has correct structure
           go install github.com/AgentSafe-AI/tooltrust-scanner/cmd/tooltrust-scanner@main
