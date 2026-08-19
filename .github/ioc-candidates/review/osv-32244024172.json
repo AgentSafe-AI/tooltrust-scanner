@@ -1,0 +1,92 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "broadcast-graphics-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in broadcast-graphics-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-14228",
+    "first_seen": "2026-08-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-14228",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-14228). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "chrome-enterprise-premium-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in chrome-enterprise-premium-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-14230",
+    "first_seen": "2026-08-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-14230",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-14230). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "code-assist-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in code-assist-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-14233",
+    "first_seen": "2026-08-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-14233",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-14233). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "homekit-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in homekit-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-14297",
+    "first_seen": "2026-08-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-14297",
+    "affected_versions": [
+      "1.0.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-14297). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "mcp-dev-toolkit",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-dev-toolkit (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-14295",
+    "first_seen": "2026-08-19",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-14295",
+    "affected_versions": [
+      "1.5.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-14295). Reported by: amazon-inspector, Amazon Inspector. Review affected versions before promoting to AS-008."
+  }
+]
