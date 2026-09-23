@@ -1,0 +1,23 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "ubiquiti-agents-link-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in ubiquiti-agents-link-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-16409",
+    "first_seen": "2026-09-22",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-16409",
+    "affected_versions": [
+      "0.0.1",
+      "0.0.2",
+      "0.2.0",
+      "0.2.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-16409). Reported by: ossf-package-analysis, amazon-inspector, Amazon Inspector, OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  }
+]
