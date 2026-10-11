@@ -1,0 +1,107 @@
+{
+  "verified_on": "2026-10-11",
+  "build": {
+    "revision": "e1436162f9bf73d766a58a4f933fcdf215cdaf9f",
+    "source_digest": "9fa661206619c3d9929a2a3519c6eeb1b37cbbbdc0a0d235fb15aff68f8eb1db",
+    "version": "verify-e1436162f9bf-9fa661206619",
+    "binaries": {
+      "tooltrust-scanner": "35c363edfe6094344a98b8c8f70701484054b700862dba4df6260cb41405259e",
+      "tooltrust-mcp": "8436565a7941b40a0971132aae84799b45faf3045b1be7323f421606fe999fa9"
+    },
+    "fixture_sha256": "8323e3f6bb6020dab44d2867845cdce25f945afe19f06861d3850fd8ea364e47",
+    "helper_sha256": {
+      "verify.py": "9297c96407b75e75d1d355694339eb3b3262ef7aa76e41182b15d13e732a374d",
+      "fixture_server.py": "f31feb197b7aaae58e23f808319c2da24244ffb5d39b1ca668daa84d5b1fa723"
+    }
+  },
+  "baseline": [
+    {
+      "feature": "static",
+      "status": "PASS"
+    },
+    {
+      "feature": "live",
+      "status": "PASS"
+    },
+    {
+      "feature": "source",
+      "status": "PASS"
+    },
+    {
+      "feature": "mcp",
+      "status": "PASS"
+    },
+    {
+      "feature": "gate",
+      "status": "PASS"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "rust-presence",
+      "status": "FAIL",
+      "detail": "Handwritten Rust MCP presence must not be silently missed; this is not full schema extraction."
+    },
+    {
+      "id": "all-pages",
+      "status": "PASS",
+      "detail": "Page two contains the risky tool; nextCursor must be followed."
+    },
+    {
+      "id": "empty-not-clean",
+      "status": "FAIL",
+      "detail": "Zero tools require explicit incomplete/empty status or nonzero exit, not a clean grade."
+    }
+  ],
+  "empty_input_observed": {
+    "schema_version": "1.0",
+    "policies": null,
+    "summary": {
+      "total": 0,
+      "allowed": 0,
+      "require_approval": 0,
+      "blocked": 0,
+      "avg_score": 0,
+      "avg_grade": "A",
+      "scanned_at": "2026-10-11T23:08:02.092305Z"
+    }
+  },
+  "pagination_requests": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2024-11-05",
+        "clientInfo": {
+          "name": "tooltrust-scanner",
+          "version": "1.0.0"
+        },
+        "capabilities": {}
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "notifications/initialized",
+      "params": {}
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/list",
+      "params": {}
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "method": "tools/list",
+      "params": {
+        "cursor": "page-two"
+      }
+    }
+  ],
+  "cleanup": {
+    "runtime_removed": true,
+    "retained_artifacts": 117
+  }
+}
