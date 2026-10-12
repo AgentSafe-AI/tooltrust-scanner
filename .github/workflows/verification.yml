@@ -1,0 +1,58 @@
+name: User-path Verification
+
+on:
+  pull_request:
+  push:
+    branches: [main, master, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verification:
+    name: CLI and MCP Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TT_VERIFY_SCRIPT: .agents/skills/verify-tooltrust-scanner/scripts/verify.py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Select owned run directory
+        run: echo "TT_VERIFY_RUN=$RUNNER_TEMP/tooltrust-verification" >> "$GITHUB_ENV"
+      - name: Build owned binaries and record fingerprints
+        id: launch
+        run: python3 "$TT_VERIFY_SCRIPT" launch --run "$TT_VERIFY_RUN"
+      - name: Verify baseline user paths
+        if: ${{ always() && steps.launch.outcome == 'success' }}
+        run: python3 "$TT_VERIFY_SCRIPT" drive --run "$TT_VERIFY_RUN" --feature all
+      - name: Verify discovery acceptance cases
+        if: ${{ always() && steps.launch.outcome == 'success' }}
+        run: python3 "$TT_VERIFY_SCRIPT" drive --run "$TT_VERIFY_RUN" --feature gaps
+      - name: Verify vulnerability service failure handling
+        if: ${{ always() && steps.launch.outcome == 'success' }}
+        run: python3 "$TT_VERIFY_SCRIPT" drive --run "$TT_VERIFY_RUN" --feature osv
+      - name: Clean owned runtime and retain evidence
+        if: ${{ always() }}
+        run: |
+          if [ -f "$TT_VERIFY_RUN/owner.json" ]; then
+            python3 "$TT_VERIFY_SCRIPT" cleanup --run "$TT_VERIFY_RUN"
+          fi
+      - name: Upload verification evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: user-path-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/tooltrust-verification/evidence/
+          if-no-files-found: warn
+          retention-days: 14

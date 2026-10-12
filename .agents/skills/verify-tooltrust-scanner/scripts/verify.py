@@ -2,6 +2,8 @@
 """Drive real ToolTrust binaries; Python standard library only (macOS/Linux)."""
 import argparse
 import hashlib
+import http.server
+import threading
 import json
 import os
 import shlex
@@ -320,6 +322,98 @@ class Run:
         save(self.evidence / "gaps.summary.json", results)
         return all(r["status"] == "PASS" for r in results)
 
+    def osv(self):
+        # Only replace the network service. Real binaries, HTTP client, checker,
+        # scoring and error propagation run unchanged.
+        requests = []
+        mode = {"value": "clean"}
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *_):
+                pass
+
+            def do_POST(self):
+                request = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                requests.append({"mode": mode["value"], "path": self.path, "body": request})
+                status, body = 200, b'{}'
+                case = mode["value"]
+                if case in ("unavailable", "partial") and (case != "partial" or request["package"]["name"] == "verify-second"):
+                    status, body = 503, b'service unavailable'
+                elif case == "rate-limit":
+                    status, body = 429, b'try later'
+                elif case == "malformed":
+                    body = b'{broken'
+                elif case == "null":
+                    body = b'null'
+                elif case == "timeout":
+                    time.sleep(11)
+                elif case == "vulnerable":
+                    body = json.dumps({"vulns": [{"id": "MAL-VERIFY-001", "summary": "Owned malicious-package fixture"}]}).encode()
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                try:
+                    self.wfile.write(body)
+                except (BrokenPipeError, ConnectionResetError):
+                    pass
+
+        service = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        worker = threading.Thread(target=service.serve_forever, daemon=True)
+        worker.start()
+        env = self.env()
+        env["TOOLTRUST_OSV_URL"] = "http://127.0.0.1:%d/v1/query" % service.server_port
+        manifest = self.work / "osv-tools.json"
+        data = {"tools": [{"name": "verify_catalog_lookup", "description": "Read a catalog", "inputSchema": {"type": "object"}, "metadata": {"dependencies": [
+            {"name": "verify-first", "version": "1.0.0", "ecosystem": "npm"},
+            {"name": "verify-second", "version": "2.0.0", "ecosystem": "npm"},
+        ]}}]}
+        save(manifest, data)
+        try:
+            for case in ("clean", "vulnerable", "unavailable", "rate-limit", "malformed", "null", "partial", "timeout"):
+                mode["value"] = case
+                out = self.evidence / ("osv-" + case + ".report.json")
+                code, stdout, stderr = self.scanner("osv-" + case, ["scan", "--input", manifest, "--output", "json", "--file", out], env=env, expected=None)
+                if case in ("clean", "vulnerable"):
+                    assert code == 0
+                    report = json.loads(out.read_text())
+                    findings = report["policies"][0]["score"]["findings"]
+                    assert any(f["rule_id"] == "AS-004" for f in findings) is (case == "vulnerable")
+                else:
+                    assert code != 0 and "scan incomplete" in stdout + stderr and not out.exists(), case
+                assert len([r for r in requests if r["mode"] == case]) == 2, "Both declared dependencies must be queried"
+            mode["value"] = "unavailable"
+            reqs = [
+                {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "verification", "version": "1"}}},
+                {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "tooltrust_scanner_scan", "arguments": {"tools_json": manifest.read_text()}}},
+            ]
+            payload = "\n".join(json.dumps(r) for r in reqs) + "\n"
+            (self.evidence / "osv-mcp.requests.jsonl").write_text(payload)
+            _, stdout, _ = self.command("osv-mcp-error", [self.bin / "tooltrust-mcp"], stdin=payload, env=env)
+            replies = {r["id"]: r for r in map(json.loads, stdout.splitlines()) if "id" in r}
+            assert replies[2]["result"].get("isError") is True
+            assert "scan incomplete" in json.dumps(replies[2])
+            # Gate must not install even under --force when vulnerability lookup fails.
+            npx = self.bin / "npx"
+            args = [sys.executable, str(self.work / "fixture_server.py"), "--tools", str(manifest), "--log", str(self.evidence / "osv-gate.requests.jsonl")]
+            npx.write_text("#!" + sys.executable + "\nimport os\nos.execv(" + repr(sys.executable) + ", " + repr(args) + ")\n")
+            npx.chmod(0o755)
+            config = self.work / ".mcp.json"
+            save(config, {"mcpServers": {"existing": {"command": "keep-me", "args": []}}})
+            before = config.read_bytes()
+            package = self.work / "owned-osv-package"
+            package.mkdir()
+            save(package / "package.json", {"name": "owned-osv-package", "version": "1.0.0"})
+            save(package / "package-lock.json", {"lockfileVersion": 3, "packages": {"node_modules/verify-first": {"version": "1.0.0"}}})
+            code, stdout, stderr = self.scanner("osv-gate-error", ["gate", package, "--force", "--scope", "project"], env=env, expected=None)
+            assert code != 0 and "scan incomplete" in stdout + stderr and config.read_bytes() == before
+            save(self.evidence / "osv-gate.config.json", json.loads(config.read_text()))
+            assert all(r["path"] == "/v1/query" and r["body"]["package"]["ecosystem"] == "npm" for r in requests)
+        finally:
+            service.shutdown()
+            service.server_close()
+            worker.join(timeout=5)
+            save(self.evidence / "osv.http-requests.json", requests)
+
     def cleanup(self):
         self.require_owned()
         artifacts = sorted(str(p.relative_to(self.evidence)) for p in self.evidence.rglob("*") if p.is_file())
@@ -335,7 +429,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("action", choices=["launch", "doctor", "drive", "cleanup"])
     p.add_argument("--run", required=True)
-    p.add_argument("--feature", choices=["static", "live", "source", "mcp", "gate", "all", "gaps"], default="all")
+    p.add_argument("--feature", choices=["static", "live", "source", "mcp", "gate", "all", "gaps", "osv"], default="all")
     args = p.parse_args()
     run = Run(args.run)
     if args.action != "drive":
