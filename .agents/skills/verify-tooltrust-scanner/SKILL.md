@@ -9,7 +9,7 @@ Read [features/README.md](features/README.md) first. This is a project-local ver
 
 ## Launch
 
-Requirements: macOS or Linux, Python 3.9+ with its standard library, Git, and Go capable of using the toolchain in `go.mod` (currently Go 1.26.5). Initial builds may download that toolchain and modules. The checkout must build as-is. If it fails, preserve build logs and report the blocker; do not substitute a previously installed scanner.
+Requirements: macOS or Linux, Python 3.9+ with its standard library, Git, and Go capable of using the toolchain in `go.mod` (currently Go 1.26.9). Initial builds may download that toolchain and modules. The checkout must build as-is. If it fails, preserve build logs and report the blocker; do not substitute a previously installed scanner.
 
 Run from the scanner repository root:
 
