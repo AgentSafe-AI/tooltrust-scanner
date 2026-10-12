@@ -182,11 +182,7 @@ func handleScanServer(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.
 
 	tools, err := scanLiveServer(ctx, args, nil)
 	if err != nil {
-		return mcplib.NewToolResultText(fmt.Sprintf("Failed to scan live server: %v", err)), nil
-	}
-
-	if len(tools) == 0 {
-		return mcplib.NewToolResultText("Server connected successfully, but no tools were exported by this server."), nil
+		return mcplib.NewToolResultError(fmt.Sprintf("Failed to scan live server: %v", err)), nil
 	}
 
 	return processTools(ctx, tools)
@@ -234,6 +230,10 @@ func scanLiveServer(ctx context.Context, args, extraEnv []string) ([]model.Unifi
 	resp, err := c.ListTools(execCtx, listReq)
 	if err != nil {
 		return nil, fmt.Errorf("tools/list map failed: %w", err)
+	}
+
+	if len(resp.Tools) == 0 {
+		return nil, model.ErrNoTools
 	}
 
 	// We serialize the response back to JSON so we can use our existing adapter,
@@ -475,14 +475,6 @@ func scanOneServer(ctx context.Context, name string, entry mcpServerEntry) serve
 			Server: name,
 			Status: "error",
 			Error:  err.Error(),
-		}
-	}
-
-	if len(tools) == 0 {
-		return serverScanResult{
-			Server: name,
-			Status: "ok",
-			Result: &ScanResult{Summary: ScanSummary{Total: 0}},
 		}
 	}
 
@@ -793,6 +785,9 @@ func recommendationForPolicy(policy model.GatewayPolicy) (actionNow, saferConfig
 // processToolsRaw runs the scanner and returns raw results (used by both
 // processTools and scanOneServer to avoid double-serialization).
 func processToolsRaw(ctx context.Context, tools []model.UnifiedTool) (*ScanResult, error) {
+	if len(tools) == 0 {
+		return nil, model.ErrNoTools
+	}
 	scanner, err := analyzer.NewScanner(false, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize scanner: %v", err)

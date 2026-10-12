@@ -274,6 +274,49 @@ class Run:
         code, _, _ = self.scanner("gap-empty", ["scan", "--input", empty, "--output", "json", "--file", out], expected=None)
         r = json.loads(out.read_text()) if out.exists() else {}
         check("empty-not-clean", code != 0 or r.get("scan_incomplete") is True or r.get("coverage", {}).get("status") in ("incomplete", "unsupported", "empty"), "Zero tools require explicit incomplete/empty status or nonzero exit, not a clean grade.")
+        # Exercise every public empty-discovery path with a real stdio child.
+        args = [sys.executable, str(self.work / "fixture_server.py"), "--tools", str(empty), "--log", str(self.evidence / "empty.requests.jsonl")]
+        command = shlex.join(args)
+        code, stdout, stderr = self.scanner("gap-empty-live", ["scan", "--server", command, "--output", "json"], expected=None)
+        check("empty-live", code != 0 and "scan incomplete" in stdout + stderr, "Live empty discovery must fail explicitly.")
+        config = self.work / ".mcp.json"
+        save(config, {"mcpServers": {"empty-fixture": {"command": args[0], "args": args[1:]}}})
+        before = config.read_bytes()
+        npx = self.bin / "npx"
+        npx.write_text("#!" + sys.executable + "\nimport os\nos.execv(" + repr(sys.executable) + ", " + repr(args) + ")\n")
+        npx.chmod(0o755)
+        for flag in ("--dry-run", "--force"):
+            code, stdout, stderr = self.scanner("gap-empty-gate" + flag, ["gate", "owned-empty", flag, "--scope", "project"], expected=None)
+            check("empty-gate" + flag, code != 0 and "scan incomplete" in stdout + stderr and config.read_bytes() == before, "Empty discovery cannot install or be overridden.")
+        for name, arguments in (("tooltrust_scanner_scan", {"tools_json": empty.read_text()}), ("tooltrust_scan_server", {"command": command}), ("tooltrust_scan_config", {})):
+            reqs = [
+                {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "verification", "version": "1"}}},
+                {"jsonrpc": "2.0", "method": "notifications/initialized"},
+                {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": name, "arguments": arguments}},
+            ]
+            payload = "\n".join(json.dumps(q) for q in reqs) + "\n"
+            (self.evidence / (name + "-empty.requests.jsonl")).write_text(payload)
+            _, stdout, _ = self.command("gap-empty-" + name, [self.bin / "tooltrust-mcp"], stdin=payload)
+            replies = {q["id"]: q for q in map(json.loads, stdout.splitlines()) if "id" in q}
+            result = replies[2]["result"]
+            text = "\n".join(c.get("text", "") for c in result["content"])
+            if name == "tooltrust_scan_config":
+                report = json.loads(text)
+                ok = report["summary"]["errors"] == 1 and report["summary"]["scanned"] == 0
+            else:
+                ok = result.get("isError") is True
+            check("empty-" + name, ok and "scan incomplete" in text and "GRADE A" not in text, "MCP empty results must report an error, including config aggregation.")
+        for name, code, want in [
+            ("sdk", "use rmcp::ServerHandler; impl ServerHandler for Server {}", True),
+            ("client", "use rmcp::ServiceExt; fn client() {}", False),
+            ("comment", "/* use rmcp::ServerHandler; impl ServerHandler for Server {} */", False),
+            ("raw", 'const DOC: &str = r#"use rmcp::ServerHandler; impl ServerHandler for Server {}"#;', False),
+        ]:
+            (rust / "main.rs").write_text(code)
+            out = self.evidence / ("gap-rust-" + name + ".json")
+            self.scanner("gap-rust-" + name, ["scan-repo", "--repo", rust, "--output", "json", "--file", out])
+            report = json.loads(out.read_text())
+            check("rust-" + name, report["has_embedded_mcp"] is want and "policies" not in report, "Presence is heuristic evidence, never extracted schemas or a grade.")
         save(self.evidence / "gaps.summary.json", results)
         return all(r["status"] == "PASS" for r in results)
 

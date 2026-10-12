@@ -7,7 +7,7 @@ A user points `scan-repo` at a directory to identify embedded MCP server usage a
 - `source-presence`: supported Go, Python and TypeScript fixtures are detected.
 - `source-negative`: documentation snippets do not count as embedded servers.
 - `source-routes`: the Go asymmetric-auth fixture emits AS-019.
-- `source-rust`: a handwritten Rust JSON-RPC tools/list handler needs explicit recognition; tracked as an acceptance gap.
+- `source-rust`: Rust rmcp `ServerHandler` implementations and handwritten serde_json `tools/list` match arms with `inputSchema` evidence are recognized by the gap drive; client-only, comments, and raw-string snippets remain negative.
 
 ## How to get to it (user POV)
 
@@ -24,3 +24,5 @@ Preconditions: launch and doctor pass. Existing `pkg/sourcedetect/testdata/fixtu
 ## Gotchas
 
 A false presence result is not proof a repository has no MCP implementation. Scan limits, ignored files and SDK-less servers affect coverage. Current route fixtures are source snippets, not running HTTP services; they prove source findings only. Do not infer complete Rust schema support from recognizing an SDK import or tool name.
+
+Rust detection is a same-file heuristic. Aliased imports, generic trait implementations, split-module handlers and other Rust SDKs may be missed. It does not resolve Cargo dependencies or extract dynamic schemas.
