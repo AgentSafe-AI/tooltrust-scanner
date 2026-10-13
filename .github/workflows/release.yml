@@ -48,6 +48,11 @@ jobs:
           go-version: "1.26.9"
           cache: true
       - run: go test -race -count=1 ./...
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify release versions and packed npm wrapper
+        run: node scripts/verify-npm-release.js --run "$RUNNER_TEMP/release-preflight"
 
   # ── 2. Cross-compile binaries for all target platforms ────────────────────
   build:
@@ -126,6 +131,7 @@ jobs:
     needs: [build]
 
     steps:
+      - uses: actions/checkout@v4
       - name: Download all binary artifacts
         uses: actions/download-artifact@v4
         with:
@@ -140,6 +146,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
+          body_path: docs/releases/${{ github.ref_name }}.md
           files: |
             dist/tooltrust-scanner_*
             dist/tooltrust-mcp_*
@@ -260,17 +267,21 @@ jobs:
           # Send a basic initialize request and check if it replies without crashing
           echo '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "test", "version": "1.0.0"}}}' | $BIN_PATH
 
+      - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Test NPM Wrapper
+          node-version: 22
+      - name: Verify exact packaged wrapper and released assets
         shell: bash
-        run: |
-          # Use npx to download and run the wrapper. We must use tooltrust-mcp
-          # Note: Since the release was just created, the binary is already available on GitHub.
-          npx -y tooltrust-mcp@latest --help
+        run: node scripts/verify-npm-release.js --published --run "$RUNNER_TEMP/release-distribution"
+      - name: Upload distribution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: distribution-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ runner.temp }}/release-distribution/evidence/
+          retention-days: 14
 
   # ── 6. Update Homebrew Formula ─────────────────────────────────────────────
   update-formula:

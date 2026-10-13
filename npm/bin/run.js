@@ -61,9 +61,10 @@ function runBinary(binPath, args) {
   const child = spawn(binPath, args, { stdio: 'inherit' });
   child.on('error', (err) => {
     console.error(`Failed to start subprocess: ${err}`);
+    process.exitCode = 1;
   });
-  child.on('exit', (code) => {
-    process.exit(code || 0);
+  child.on('exit', (code, signal) => {
+    process.exit(code === null || signal ? 1 : code);
   });
 }
 
@@ -73,7 +74,7 @@ async function main() {
   const binaryVersion = pkg.tooltrustBinaryVersion || 'latest';
   const cacheBinName = `${binaryVersion}_${releaseBinName}`;
   const downloadUrl = `https://github.com/AgentSafe-AI/tooltrust-scanner/releases/download/${binaryVersion}/${releaseBinName}`;
-  const cacheDir = path.join(os.homedir(), '.tooltrust-mcp', 'bin');
+  const cacheDir = process.env.TOOLTRUST_CACHE_DIR || path.join(os.homedir(), '.tooltrust-mcp', 'bin');
   const binPath = path.join(cacheDir, cacheBinName);
 
   // --version is the only flag handled by the wrapper (shows npm package version).
@@ -90,7 +91,7 @@ async function main() {
       await downloadFile(downloadUrl, binPath);
     } catch (e) {
       console.error(`Error downloading binary: ${e.message}`);
-      console.error("Failed to download binary. If you are behind a proxy, try setting NODE_TLS_REJECT_UNAUTHORIZED=0 or download the binary manually from GitHub Releases.");
+      console.error("Failed to download binary. Check your network/proxy settings or download the binary manually from GitHub Releases.");
       process.exit(1);
     }
   }
