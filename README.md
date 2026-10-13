@@ -180,3 +180,11 @@ If your MCP server passes ToolTrust, let people know:
 ---
 
 [Usage guide](docs/USAGE.md) · [Developer guide](docs/DEVELOPER.md) · [Contributing](docs/CONTRIBUTING.md) · [Deployment & security](#deployment-and-security) · [Changelog](CHANGELOG.md) · [Security](docs/SECURITY.md) · [License: MIT](LICENSE)
+
+### Vulnerability lookup completeness
+
+If an OSV lookup fails (including rate limiting, service errors, malformed responses or timeouts), the scan fails with `scan incomplete` instead of issuing a success report or security grade. Partial lookup failure also fails the scan. CLI exits nonzero, MCP scan calls return tool errors, and gate does not install the server. This deliberately favors explicit incomplete results over availability; an OSV outage can prevent scans of tools with declared dependencies.
+
+`TOOLTRUST_OSV_URL` optionally selects an OSV-compatible query endpoint (default: `https://api.osv.dev/v1/query`). Use only a trusted service: declared dependency names and versions are sent there. HTTPS is required, except numeric loopback HTTP for local integration fixtures; embedded credentials and fragments are rejected. There is no fallback to the public API when an override fails.
+
+The project-local verification skill runs in GitHub Actions as **CLI and MCP Verification**, covering baseline paths, discovery regressions, and an owned loopback OSV fixture. Reports and command transcripts are uploaded even on failure. Live public OSV availability and MCP HTTP transport are not part of this job.

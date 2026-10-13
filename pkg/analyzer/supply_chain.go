@@ -5,9 +5,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -101,13 +105,27 @@ type httpOSVClient struct {
 }
 
 func newHTTPOSVClient() *httpOSVClient {
+	endpoint := strings.TrimSpace(os.Getenv("TOOLTRUST_OSV_URL"))
+	if endpoint == "" {
+		endpoint = osvAPIURL
+	}
 	return &httpOSVClient{
 		http:    &http.Client{Timeout: osvQueryTimeout},
-		baseURL: osvAPIURL,
+		baseURL: endpoint,
 	}
 }
 
 func (c *httpOSVClient) Query(ctx context.Context, dep Dependency) ([]osvVuln, error) {
+	// Alternate endpoints must use HTTPS, except numeric loopback fixtures.
+	endpoint, err := url.Parse(c.baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("osv: invalid endpoint")
+	}
+	ip := net.ParseIP(endpoint.Hostname())
+	loopbackHTTP := endpoint.Scheme == "http" && ip != nil && ip.IsLoopback()
+	if endpoint.Host == "" || endpoint.User != nil || endpoint.Fragment != "" || (endpoint.Scheme != "https" && !loopbackHTTP) {
+		return nil, fmt.Errorf("osv: endpoint must use HTTPS or numeric loopback HTTP, without credentials or fragment")
+	}
 	body, err := json.Marshal(osvQueryBody{
 		Package: osvPackage{Name: dep.Name, Ecosystem: dep.Ecosystem},
 		Version: dep.Version,
@@ -141,6 +159,9 @@ func (c *httpOSVClient) Query(ctx context.Context, dep Dependency) ([]osvVuln, e
 		return nil, fmt.Errorf("osv: read body: %w", err)
 	}
 
+	if trimmed := bytes.TrimSpace(data); len(trimmed) == 0 || trimmed[0] != '{' {
+		return nil, fmt.Errorf("osv: response must be a JSON object")
+	}
 	var result osvResponse
 	if err = json.Unmarshal(data, &result); err != nil {
 		return nil, fmt.Errorf("osv: unmarshal response: %w", err)
@@ -517,7 +538,7 @@ func newSupplyChainCheckerWithClient(c osvClient) *SupplyChainChecker {
 func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error) {
 	deps, err := collectDependencies(tool)
 	if err != nil {
-		return nil, nil
+		return nil, fmt.Errorf("scan incomplete: dependency inventory: %w", err)
 	}
 	if len(deps) == 0 {
 		return nil, nil
@@ -528,6 +549,7 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 
 	// Query OSV in parallel (capped at maxOSVConcurrency goroutines).
 	ch := make(chan []model.Issue, len(deps))
+	errorsCh := make(chan error, len(deps))
 	sem := make(chan struct{}, maxOSVConcurrency)
 	var wg sync.WaitGroup
 
@@ -541,6 +563,7 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 
 			vulns, qErr := c.client.Query(ctx, dep.Dependency)
 			if qErr != nil {
+				errorsCh <- fmt.Errorf("%s@%s: %w", dep.Name, dep.Version, qErr)
 				ch <- nil
 				return
 			}
@@ -554,12 +577,20 @@ func (c *SupplyChainChecker) Check(tool model.UnifiedTool) ([]model.Issue, error
 
 	go func() {
 		wg.Wait()
+		close(errorsCh)
 		close(ch)
 	}()
 
 	var allIssues []model.Issue
 	for batch := range ch {
 		allIssues = append(allIssues, batch...)
+	}
+	var lookupErrors []error
+	for lookupErr := range errorsCh {
+		lookupErrors = append(lookupErrors, lookupErr)
+	}
+	if len(lookupErrors) > 0 {
+		return nil, fmt.Errorf("scan incomplete: OSV lookup failed for %d of %d dependencies: %w", len(lookupErrors), len(deps), errors.Join(lookupErrors...))
 	}
 	return allIssues, nil
 }

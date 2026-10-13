@@ -145,7 +145,7 @@ func TestSupplyChainChecker_MultipleDeps_MultipleCVEs(t *testing.T) {
 	}
 }
 
-func TestSupplyChainChecker_NetworkError_Skipped(t *testing.T) {
+func TestSupplyChainChecker_NetworkError_Incomplete(t *testing.T) {
 	checker := analyzer.NewSupplyChainCheckerWithMock(nil, assert.AnError)
 
 	tool := model.UnifiedTool{
@@ -156,9 +156,9 @@ func TestSupplyChainChecker_NetworkError_Skipped(t *testing.T) {
 			},
 		},
 	}
-	// Network errors are non-fatal: checker returns no issues and no error.
+	// Failed lookup must not be mistaken for a completed scan with zero findings.
 	issues, err := checker.Check(tool)
-	assert.NoError(t, err)
+	assert.ErrorContains(t, err, "scan incomplete")
 	assert.Empty(t, issues)
 }
 

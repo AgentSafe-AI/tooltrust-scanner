@@ -15,6 +15,7 @@ Launch and doctor using the parent SKILL.md. Use a fresh, owned run directory an
 | source | [Inspect source for embedded MCP](source.md) | Go/Python/TS presence, negative fixture, auth-route asymmetry |
 | mcp | [Use ToolTrust from an MCP client](mcp.md) | initialize, list, raw JSON scan, rules catalog |
 | gate | [Scan before adding a server](gate.md) | dry-run, policy block, forced project-config install |
+| osv | [Vulnerability service failures](osv.md) | Local HTTP success/error/timeout, partial failure, CLI and MCP propagation |
 
 ## Proof and gaps
 
