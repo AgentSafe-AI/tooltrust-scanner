@@ -48,6 +48,9 @@ func DetectEmbeddedMCP(root string, opts Options) (*DetectionResult, error) {
 			return nil
 		}
 		text := string(content)
+		if ext == ".rs" {
+			text = maskRustNonCode(text)
+		}
 
 		for _, sig := range sigs {
 			if matchCountByLanguage[sig.Language] >= opts.MaxMatchesPerLanguage {
@@ -62,12 +65,17 @@ func DetectEmbeddedMCP(root string, opts Options) (*DetectionResult, error) {
 				continue
 			}
 
+			toolEv, hasTool := firstEvidence(text, sig.ToolDefPatterns, "tool_definition")
+			if sig.RequireToolDefinition && !hasTool {
+				continue
+			}
+
 			match := Match{
 				Language: sig.Language,
 				File:     rel,
 				Evidence: []Evidence{importEv, initEv},
 			}
-			if toolEv, ok := firstEvidence(text, sig.ToolDefPatterns, "tool_definition"); ok {
+			if hasTool {
 				match.Evidence = append(match.Evidence, toolEv)
 			}
 			result.HasEmbeddedMCP = true

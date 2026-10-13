@@ -85,6 +85,11 @@ func scanLiveServer(ctx context.Context, serverCmd string) ([]model.UnifiedTool,
 		return nil, fmt.Errorf("tools/list map failed: %w", err)
 	}
 
+	if len(resp.Tools) == 0 {
+		spinner.Fail("Scan incomplete: no tools discovered")
+		return nil, model.ErrNoTools
+	}
+
 	spinner.Success("Connected and tools fetched!")
 
 	// We serialize the response back to JSON so we can use our existing adapter,

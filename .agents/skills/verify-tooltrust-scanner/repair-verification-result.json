@@ -1,0 +1,117 @@
+{
+  "tested_build": {
+    "revision": "f61f7a468a0ab5c2b26089d52e860b955dc59a33",
+    "source_digest": "a4cd9818c114271a9e00023bdbff6b49f4603ce6723fc8b3d0df4f3e773c062d",
+    "version": "verify-f61f7a468a0a-a4cd9818c114",
+    "binaries": {
+      "tooltrust-scanner": "bb63a3be292533d9622c5e926848a9d49651afb151afbabd70c10002b0fe7e20",
+      "tooltrust-mcp": "5c699b547bd3a6079c9143f6b2c18b7812f3f40f258e382f4455f0ad48e2abcd"
+    },
+    "fixture_sha256": "8323e3f6bb6020dab44d2867845cdce25f945afe19f06861d3850fd8ea364e47",
+    "helper_sha256": {
+      "verify.py": "d8f77c2674c0eb167bfb3fca6e18f8ef2f5255504e129da3ccc7a1545a002dd6",
+      "fixture_server.py": "f31feb197b7aaae58e23f808319c2da24244ffb5d39b1ca668daa84d5b1fa723"
+    }
+  },
+  "baseline": [
+    {
+      "feature": "static",
+      "status": "PASS"
+    },
+    {
+      "feature": "live",
+      "status": "PASS"
+    },
+    {
+      "feature": "source",
+      "status": "PASS"
+    },
+    {
+      "feature": "mcp",
+      "status": "PASS"
+    },
+    {
+      "feature": "gate",
+      "status": "PASS"
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "rust-presence",
+      "status": "PASS",
+      "detail": "Handwritten Rust MCP presence must not be silently missed; this is not full schema extraction."
+    },
+    {
+      "id": "all-pages",
+      "status": "PASS",
+      "detail": "Page two contains the risky tool; nextCursor must be followed."
+    },
+    {
+      "id": "empty-not-clean",
+      "status": "PASS",
+      "detail": "Zero tools require explicit incomplete/empty status or nonzero exit, not a clean grade."
+    },
+    {
+      "id": "empty-live",
+      "status": "PASS",
+      "detail": "Live empty discovery must fail explicitly."
+    },
+    {
+      "id": "empty-gate--dry-run",
+      "status": "PASS",
+      "detail": "Empty discovery cannot install or be overridden."
+    },
+    {
+      "id": "empty-gate--force",
+      "status": "PASS",
+      "detail": "Empty discovery cannot install or be overridden."
+    },
+    {
+      "id": "empty-tooltrust_scanner_scan",
+      "status": "PASS",
+      "detail": "MCP empty results must report an error, including config aggregation."
+    },
+    {
+      "id": "empty-tooltrust_scan_server",
+      "status": "PASS",
+      "detail": "MCP empty results must report an error, including config aggregation."
+    },
+    {
+      "id": "empty-tooltrust_scan_config",
+      "status": "PASS",
+      "detail": "MCP empty results must report an error, including config aggregation."
+    },
+    {
+      "id": "rust-sdk",
+      "status": "PASS",
+      "detail": "Presence is heuristic evidence, never extracted schemas or a grade."
+    },
+    {
+      "id": "rust-client",
+      "status": "PASS",
+      "detail": "Presence is heuristic evidence, never extracted schemas or a grade."
+    },
+    {
+      "id": "rust-comment",
+      "status": "PASS",
+      "detail": "Presence is heuristic evidence, never extracted schemas or a grade."
+    },
+    {
+      "id": "rust-raw",
+      "status": "PASS",
+      "detail": "Presence is heuristic evidence, never extracted schemas or a grade."
+    }
+  ],
+  "checks": {
+    "go_test_race_all": "PASS",
+    "golangci_lint_2_10_1": "PASS",
+    "go_vet": "PASS",
+    "go_mod_verify": "PASS",
+    "pkg_internal_coverage_percent": 76.8,
+    "hyperconsciousness_source_presence": "PASS"
+  },
+  "limitations": [
+    "Rust presence is a same-file heuristic; no full schema extraction or Cargo dependency inventory.",
+    "Online vulnerability checks, deep model and installation distribution checks were not run."
+  ]
+}

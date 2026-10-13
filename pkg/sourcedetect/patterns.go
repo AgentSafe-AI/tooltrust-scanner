@@ -3,14 +3,30 @@ package sourcedetect
 import "regexp"
 
 type SDKSignature struct {
-	Language        string
-	FileExtensions  []string
-	ImportPatterns  []*regexp.Regexp
-	InitPatterns    []*regexp.Regexp
-	ToolDefPatterns []*regexp.Regexp
+	RequireToolDefinition bool
+	Language              string
+	FileExtensions        []string
+	ImportPatterns        []*regexp.Regexp
+	InitPatterns          []*regexp.Regexp
+	ToolDefPatterns       []*regexp.Regexp
 }
 
 var signatures = []SDKSignature{
+	{
+		Language:        "rust",
+		FileExtensions:  []string{".rs"},
+		ImportPatterns:  []*regexp.Regexp{regexp.MustCompile(`\buse\s+rmcp\s*::`)},
+		InitPatterns:    []*regexp.Regexp{regexp.MustCompile(`\bimpl\s+(?:rmcp\s*::\s*)?ServerHandler\s+for\b`)},
+		ToolDefPatterns: []*regexp.Regexp{regexp.MustCompile(`#\s*\[\s*tool(?:_router)?\b`)},
+	},
+	{
+		Language:              "rust",
+		FileExtensions:        []string{".rs"},
+		RequireToolDefinition: true,
+		ImportPatterns:        []*regexp.Regexp{regexp.MustCompile(`\buse\s+serde_json\s*::`)},
+		InitPatterns:          []*regexp.Regexp{regexp.MustCompile(`"tools/list"\s*=>`)},
+		ToolDefPatterns:       []*regexp.Regexp{regexp.MustCompile(`"inputSchema"\s*:`)},
+	},
 	{
 		Language:       "go",
 		FileExtensions: []string{".go"},

@@ -88,18 +88,13 @@ func TestHandleScanJSON_UnsupportedProtocol(t *testing.T) {
 func TestHandleScanJSON_EmptyToolsList(t *testing.T) {
 	req := mcplib.CallToolRequest{}
 	req.Params.Arguments = map[string]any{"tools_json": `{"tools":[]}`}
-
 	result, err := handleScanJSON(context.Background(), req)
 	require.NoError(t, err)
-	assert.False(t, result.IsError)
-
+	assert.True(t, result.IsError)
 	require.Len(t, result.Content, 1)
 	text := result.Content[0].(mcplib.TextContent).Text
-	assert.Contains(t, text, "Scan Summary:")
-	assert.Contains(t, text, "0 tools")
-	assert.Contains(t, text, "Tool Grades: None")
-	assert.Contains(t, text, "Findings by Severity: None (0 total)")
-	assert.Contains(t, text, "All tools are ✅ GRADE A")
+	assert.Contains(t, text, "scan incomplete")
+	assert.NotContains(t, text, "GRADE A")
 }
 
 func TestRenderTextReport_IncludesEvidenceForFlaggedTools(t *testing.T) {
@@ -211,7 +206,7 @@ func TestHandleScanServer_InvalidCommand(t *testing.T) {
 	result, err := handleScanServer(context.Background(), req)
 	require.NoError(t, err)
 	// Should return error text (not crash), because the command can't be found.
-	assert.False(t, result.IsError) // returned as text, not error
+	assert.True(t, result.IsError)
 	text := result.Content[0].(mcplib.TextContent).Text
 	assert.Contains(t, text, "Failed to scan live server")
 }
@@ -430,8 +425,8 @@ func TestScanLiveServer_WithExtraEnv(t *testing.T) {
 
 func TestProcessToolsRaw_EmptySlice(t *testing.T) {
 	result, err := processToolsRaw(context.Background(), nil)
-	require.NoError(t, err)
-	assert.Equal(t, 0, result.Summary.Total)
+	require.ErrorIs(t, err, model.ErrNoTools)
+	assert.Nil(t, result)
 }
 
 func TestProcessToolsRaw_SingleCleanTool(t *testing.T) {

@@ -20,4 +20,4 @@ Launch and doctor using the parent SKILL.md. Use a fresh, owned run directory an
 
 `--feature all` runs the baseline rows; do not equate it with all advertised product entry points. Each feature lists additional entry points explicitly as NOT RUN. To claim one verified, add and execute a real-path recipe, including side-effect evidence.
 
-`--feature gaps` probes Rust presence, pagination, and empty manifests; FAIL is an unmet acceptance condition, not a passing expected failure. See [acceptance.md](../acceptance.md) for remaining planned coverage. A failure during a drive stops the remaining baseline features; its summary records only what was attempted. Do not describe omitted features as passed.
+`--feature gaps` probes Rust presence, pagination, and empty manifests/live discovery across CLI, gate and MCP (including config aggregation); FAIL is an unmet acceptance condition, not a passing expected failure. See [acceptance.md](../acceptance.md) for remaining planned coverage. A failure during a drive stops the remaining baseline features; its summary records only what was attempted. Do not describe omitted features as passed.

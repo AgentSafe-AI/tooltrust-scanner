@@ -6,9 +6,9 @@ Baseline success is not a claim that future features are implemented or all defe
 
 Run `verify.py drive --run "$TT_VERIFY_RUN" --feature gaps`. Each condition must PASS after its corresponding feature is implemented. FAIL is an actual unresolved requirement, and the command exits nonzero if any remain.
 
-1. **Rust presence:** handwritten `tools/list` handler is recognized. Also add a common SDK/macro fixture when implementing it. Recognition alone does not prove schema extraction.
+1. **Rust presence:** handwritten `tools/list` handler is recognized. The driver also checks rmcp ServerHandler, client-only code, comments, and raw-string negatives. Recognition alone does not prove schema extraction.
 2. **Pagination:** first page is harmless, second page contains prompt injection/code execution. Both names must be scanned; requests must follow `nextCursor`.
-3. **Empty input:** empty tool manifests must exit nonzero or explicitly indicate empty/incomplete coverage, rather than produce an unqualified clean grade. The current probe recognizes `scan_incomplete` or `coverage.status`; if a different documented output contract is introduced, update the probe and verify its semantics.
+3. **Empty input:** empty tool manifests must exit nonzero or explicitly indicate empty/incomplete coverage, rather than produce an unqualified clean grade. Additional probes require errors for CLI live, gate dry-run/force (unchanged config), MCP JSON/live, and MCP config aggregation. The manifest probe recognizes `scan_incomplete` or `coverage.status`; if a different documented output contract is introduced, update the probe and verify its semantics.
 
 ## Required additional cases, not yet automated
 

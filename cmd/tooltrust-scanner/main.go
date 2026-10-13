@@ -205,6 +205,10 @@ func runScan(ctx context.Context, opts scanOpts) error {
 		}
 	}
 
+	if len(tools) == 0 {
+		return model.ErrNoTools
+	}
+
 	scanner, err := analyzer.NewScanner(opts.deepScan, opts.rulesDir)
 	if err != nil {
 		return fmt.Errorf("failed to initialize scanner: %w", err)
