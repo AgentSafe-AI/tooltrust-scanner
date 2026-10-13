@@ -75,8 +75,8 @@ func maskRustNonCode(source string) string {
 				}
 				i++
 			}
-			token := source[start:i]
-			if token != `"tools/list"` && token != `"tools"` && token != `"inputSchema"` {
+			literal := source[start:i]
+			if literal != `"tools/list"` && literal != `"tools"` && literal != `"inputSchema"` {
 				blank(start, i)
 			}
 			continue
