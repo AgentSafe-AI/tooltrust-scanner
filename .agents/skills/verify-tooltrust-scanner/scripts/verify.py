@@ -35,7 +35,7 @@ def source_digest():
     ).decode().split("\0")
     h = hashlib.sha256()
     for name in sorted(set(names)):
-        if name.endswith(".go") or name in ("go.mod", "go.sum", "VERSION"):
+        if name.endswith(".go") or name in ("go.mod", "go.sum", "VERSION", "npm/package.json", "npm/bin/run.js", "server.json", "scripts/verify-npm-release.js"):
             path = ROOT / name
             h.update(name.encode())
             h.update(path.read_bytes() if path.exists() else b"DELETED")
@@ -414,6 +414,12 @@ class Run:
             worker.join(timeout=5)
             save(self.evidence / "osv.http-requests.json", requests)
 
+    def release(self):
+        # npm uses owned config/cache; Go downloads are allowed during the build.
+        self.command("release-preflight", [shutil.which("node"), ROOT / "scripts/verify-npm-release.js",
+                     "--run", self.runtime / "release", "--evidence", self.evidence / "release"],
+                     env=os.environ.copy(), cwd=ROOT, timeout=300)
+
     def cleanup(self):
         self.require_owned()
         artifacts = sorted(str(p.relative_to(self.evidence)) for p in self.evidence.rglob("*") if p.is_file())
@@ -429,7 +435,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("action", choices=["launch", "doctor", "drive", "cleanup"])
     p.add_argument("--run", required=True)
-    p.add_argument("--feature", choices=["static", "live", "source", "mcp", "gate", "all", "gaps", "osv"], default="all")
+    p.add_argument("--feature", choices=["static", "live", "source", "mcp", "gate", "all", "gaps", "osv", "release"], default="all")
     args = p.parse_args()
     run = Run(args.run)
     if args.action != "drive":

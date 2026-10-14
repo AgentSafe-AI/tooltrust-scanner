@@ -16,6 +16,7 @@ Launch and doctor using the parent SKILL.md. Use a fresh, owned run directory an
 | mcp | [Use ToolTrust from an MCP client](mcp.md) | initialize, list, raw JSON scan, rules catalog |
 | gate | [Scan before adding a server](gate.md) | dry-run, policy block, forced project-config install |
 | osv | [Vulnerability service failures](osv.md) | Local HTTP success/error/timeout, partial failure, CLI and MCP propagation |
+| release | [Release packaging](release.md) | Version alignment, packed npm install, MCP/error/cache behavior; published assets tested separately |
 
 ## Proof and gaps
 

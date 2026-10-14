@@ -81,3 +81,7 @@ If launch itself fails, invoke the same cleanup command and preserve build error
 `.github/workflows/verification.yml` runs `all`, `gaps` and `osv` for every pull request (including stacked bases) and pushes to main/master/dev. Each drive validates fingerprints first. Cleanup and evidence upload run even after failures; evidence is retained for 14 days. Build steps may download Go dependencies; runtime OSV requests use only the owned local fixture. No npm packages are downloaded and no user configuration is modified.
 
 Keep this skill and its feature map aligned with changes using `/maintain-verification-skill`.
+
+## Releases
+
+Use [features/release.md](features/release.md) before every version bump/tag/npm publication. `--feature release` runs packaging/version checks using an owned local binary; the separate `--published` recipe tests real release downloads and checksums. Node.js 22+ and npm are required. These tests use isolated caches and never publish packages themselves.

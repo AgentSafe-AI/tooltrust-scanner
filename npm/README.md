@@ -87,3 +87,7 @@ Flagged Tools:
 - **Glama:** https://glama.ai/mcp/servers/AgentSafe-AI/tooltrust-scanner
 - **Directory:** https://www.tooltrust.dev/
 - **Rules:** https://github.com/AgentSafe-AI/tooltrust-scanner/blob/main/docs/RULES.md
+
+## 1.1.13
+
+Uses scanner v0.3.20, including Rust MCP presence detection and explicit failures for empty discovery or unavailable vulnerability checks. See the [release notes](https://github.com/AgentSafe-AI/tooltrust-scanner/releases/tag/v0.3.20). Set `TOOLTRUST_CACHE_DIR` to choose an isolated binary cache; by default it remains `~/.tooltrust-mcp/bin/`.

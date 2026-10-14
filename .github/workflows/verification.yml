@@ -28,6 +28,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Select owned run directory
         run: echo "TT_VERIFY_RUN=$RUNNER_TEMP/tooltrust-verification" >> "$GITHUB_ENV"
       - name: Build owned binaries and record fingerprints
@@ -42,6 +45,9 @@ jobs:
       - name: Verify vulnerability service failure handling
         if: ${{ always() && steps.launch.outcome == 'success' }}
         run: python3 "$TT_VERIFY_SCRIPT" drive --run "$TT_VERIFY_RUN" --feature osv
+      - name: Verify release packaging and versions
+        if: ${{ always() && steps.launch.outcome == 'success' }}
+        run: python3 "$TT_VERIFY_SCRIPT" drive --run "$TT_VERIFY_RUN" --feature release
       - name: Clean owned runtime and retain evidence
         if: ${{ always() }}
         run: |
