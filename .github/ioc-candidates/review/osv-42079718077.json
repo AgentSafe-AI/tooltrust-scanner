@@ -1,0 +1,38 @@
+[
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "mcp-teamviewer",
+    "confidence": "high",
+    "reason": "Malicious code in mcp-teamviewer (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-18706",
+    "first_seen": "2026-11-05",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-18706",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-18706). Reported by: ossf-package-analysis, kam193, Kamil Mańkowski (kam193), OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  },
+  {
+    "ecosystem": "PyPI",
+    "ioc_type": "package_name",
+    "value": "teamviewer-mcp-server",
+    "confidence": "high",
+    "reason": "Malicious code in teamviewer-mcp-server (PyPI)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-18705",
+    "first_seen": "2026-11-05",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "MAL-2026-18705",
+    "affected_versions": [
+      "0.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-18705). Reported by: ossf-package-analysis, kam193, Kamil Mańkowski (kam193), OpenSSF: Package Analysis. Review affected versions before promoting to AS-008."
+  }
+]
