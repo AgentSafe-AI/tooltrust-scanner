@@ -1,0 +1,21 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@lemili9804/mcp-weather-server",
+    "confidence": "high",
+    "reason": "Malicious code in @lemili9804/mcp-weather-server (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-19085",
+    "first_seen": "2026-11-10",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-qwfq-cw9x-55x4",
+    "affected_versions": [
+      "1.0.3",
+      "1.0.6"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-19085). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  }
+]
