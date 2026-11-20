@@ -1,0 +1,20 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "@guicai777/mcp-doctor",
+    "confidence": "high",
+    "reason": "Malicious code in @guicai777/mcp-doctor (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-20295",
+    "first_seen": "2026-11-20",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-h82f-cjm4-g22r",
+    "affected_versions": [
+      "1.0.1"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-20295). Reported by: amazon-inspector, ghsa-malware, Amazon Inspector. Review affected versions before promoting to AS-008."
+  }
+]
