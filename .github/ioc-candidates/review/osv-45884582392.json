@@ -1,0 +1,20 @@
+[
+  {
+    "ecosystem": "npm",
+    "ioc_type": "package_name",
+    "value": "tzero-mcp",
+    "confidence": "high",
+    "reason": "Malicious code in tzero-mcp (npm)",
+    "source": "https://osv.dev/vulnerability/MAL-2026-20659",
+    "first_seen": "2026-11-26",
+    "suggested_action": "block",
+    "promote_to": "watch_only",
+    "blacklist_id": "GHSA-pm3r-rxg9-cj5j",
+    "affected_versions": [
+      "12.3.0"
+    ],
+    "action": "BLOCK",
+    "severity": "CRITICAL",
+    "notes": "OSV-confirmed malicious package (MAL-2026-20659). Reported by: ghsa-malware. Review affected versions before promoting to AS-008."
+  }
+]
